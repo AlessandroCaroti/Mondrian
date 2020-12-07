@@ -17,7 +17,9 @@ n_entry = 10
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease.csv")
-mainTable_filename = 'database_' + str(n_entry) + '.csv'
+
+mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
+externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
 mainTable_indices = []
