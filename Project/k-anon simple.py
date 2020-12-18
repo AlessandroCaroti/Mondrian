@@ -100,11 +100,3 @@ def debug():
 
 if __name__ == "__main__":
     debug()
-
-# TODO: implementare una choise_dim() migliore, che ritorna la dimensione con norma maggiore                ()
-# TODO: implementare la scelta della MEDIANA anche per valori che non sono numeri(da discutere come)        ()
-# TODO: implementare la SPLIT anche per valori che non sono numeri(da discutere come)                       ()
-# TODO: implemetare summary statistic anche per valori che non sono numeri(da discutere come)               ()
-# TODO: implementare la parte in cui dato il dizionario, si anonimizza la tabella originale                 ()
-# TODO: implementare metodi di valutazione per l'anonimizzazione ottenuta                                   ()
-# TODO: completare la creazione di un database                                                              (ALE)
