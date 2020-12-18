@@ -4,14 +4,15 @@ from pandas.api.types import is_numeric_dtype
 
 
 def chose_dimension(dimensions, step):
-    return step % len(dimensions)
+    dim_pos = int(step % len(dimensions))
+    return dimensions[dim_pos]
 
 
-def compute_phi(partition, dim):
+def compute_phi(partition):
     return 0
 
 
-def find_median(partition, dim, k):
+def find_median(partition, dim):
     if is_numeric_dtype(partition[dim]):
         return partition[dim].median()
 
@@ -19,7 +20,7 @@ def find_median(partition, dim, k):
     return None
 
 
-def split_partition(partition, dim, split_val, k):
+def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
         left_p = partition[partition[dim] >= split_val]
         right_p = partition[partition[dim] < split_val]
@@ -29,13 +30,21 @@ def split_partition(partition, dim, split_val, k):
     return left_p, right_p
 
 
+def allowable_cut(partition, dim, split_val, k):
+    # TODO: test if is allowable multidimensional cut for partition
+    value_list = partition[dim].unique()
+
+
 def anonymize(partition, columns, step, k):
-    # If nor allowed multidimensional cut for partition
+    # If not allowed multidimensional cut for partition
     #   return phi: partition -> summary
 
     dim = chose_dimension(columns, step)
-    mean = find_median(partition, dim, k)
-    lhs, rhs = split_partition(partition, dim, mean, k)
+    mean = find_median(partition, dim)
+    if not allowable_cut(partition, dim, mean, k):
+        return compute_phi(partition)
+
+    lhs, rhs = split_partition(partition, dim, mean)
 
     return [anonymize(lhs, columns, step + 1, k),
             anonymize(rhs, columns, step + 1, k)]
