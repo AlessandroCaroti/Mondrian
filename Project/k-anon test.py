@@ -1,6 +1,9 @@
+import collections
 from numbers import Number
 
 import numpy as np
+import pandas as pd
+from numpy import random
 from pandas.api.types import is_numeric_dtype
 
 
@@ -10,21 +13,25 @@ def chose_dimension(dimensions, step):
 
 
 def merge_dictionary(dict1, dict2):
-    return dict2.update(dict2)
+    return {**dict1, **dict2}
 
 
 def compute_phi(partition):
     np_partition = partition.to_numpy()
-    summary = np.empty((np_partition.shape[0],), str)
+    summary = []
 
-    for col in range(np_partition.shape[0]):
+    for col in range(np_partition.shape[1]):
         _max = np.max(np_partition[col, :])
         _min = np.min(np_partition[col, :])
-        summary[col] = "[" + str(_min) + "-" + str(_max) + "]"
+        col_summary = "[" + str(_min) + " - " + str(_max) + "]"
+        if _min == _max:
+            col_summary = str(_min)
+        summary.append(col_summary)
 
     phi = {}
-    for i in range(len(partition.index)):
-        phi[partition.iloc(i)] = summary
+    for idx in partition.index:
+        phi[idx] = summary
+        # phi[partition.iloc(idx)] = summary
     return phi
 
 
@@ -51,7 +58,7 @@ def allowable_cut(partition, dim, split_val, k):
     value_list = partition[dim].unique()
     if len(value_list) <= 1:
         return False
-    if np.where(value_list == split_val) < k:
+    if len(np.where(value_list < split_val)[0]) < k:
         return False
     return True
 
@@ -66,5 +73,31 @@ def anonymize(partition, columns, step, k):
 
     lhs, rhs = split_partition(partition, dim, mean)
 
-    return merge_dictionary(anonymize(lhs, columns, step + 1, k),
-                            anonymize(rhs, columns, step + 1, k))
+    phi_merger = merge_dictionary(anonymize(lhs, columns, step + 1, k),
+                                  anonymize(rhs, columns, step + 1, k))
+
+    return phi_merger
+
+
+def debug():
+    # GENERATE A TOY DATASET
+    n_sample = 20
+    n_cols = 2
+    cols = []
+
+    for i in range(n_cols):
+        cols.append("dim_" + str(i))
+
+    data = random.randint(0, 10, (n_sample, n_cols))
+    df = pd.DataFrame(data, columns=cols)
+
+    # ANONYMIZE DATA
+    dict_phi = anonymize(df, cols, 0, 3)
+
+    od = collections.OrderedDict(sorted(dict_phi.items()))
+    for pair in od.items():
+        print(pair)
+
+
+if __name__ == "__main__":
+    debug()
