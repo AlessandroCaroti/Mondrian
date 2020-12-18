@@ -54,7 +54,6 @@ def split_partition(partition, dim, split_val):
 
 
 def allowable_cut(partition, dim, split_val, k):
-    # TODO: test if is allowable multidimensional cut for partition
     value_list = partition[dim].unique()
     if len(value_list) <= 1:
         return False
