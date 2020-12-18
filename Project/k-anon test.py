@@ -9,8 +9,23 @@ def chose_dimension(dimensions, step):
     return dimensions[dim_pos]
 
 
+def merge_dictionary(dict1, dict2):
+    return dict2.update(dict2)
+
+
 def compute_phi(partition):
-    return 0
+    np_partition = partition.to_numpy()
+    summary = np.empty((np_partition.shape[0],), str)
+
+    for col in range(np_partition.shape[0]):
+        _max = np.max(np_partition[col, :])
+        _min = np.min(np_partition[col, :])
+        summary[col] = "[" + str(_min) + "-" + str(_max) + "]"
+
+    phi = {}
+    for i in range(len(partition.index)):
+        phi[partition.iloc(i)] = summary
+    return phi
 
 
 def find_median(partition, dim):
@@ -42,15 +57,14 @@ def allowable_cut(partition, dim, split_val, k):
 
 
 def anonymize(partition, columns, step, k):
-    # If not allowed multidimensional cut for partition
-    #   return phi: partition -> summary
-
     dim = chose_dimension(columns, step)
     mean = find_median(partition, dim)
+
+    # If not allowed multidimensional cut for partition
     if not allowable_cut(partition, dim, mean, k):
-        return compute_phi(partition)
+        return compute_phi(partition)  # return phi: partition -> summary
 
     lhs, rhs = split_partition(partition, dim, mean)
 
-    return [anonymize(lhs, columns, step + 1, k),
-            anonymize(rhs, columns, step + 1, k)]
+    return merge_dictionary(anonymize(lhs, columns, step + 1, k),
+                            anonymize(rhs, columns, step + 1, k))
