@@ -1,5 +1,6 @@
 from numbers import Number
 
+import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 
@@ -33,6 +34,11 @@ def split_partition(partition, dim, split_val):
 def allowable_cut(partition, dim, split_val, k):
     # TODO: test if is allowable multidimensional cut for partition
     value_list = partition[dim].unique()
+    if len(value_list) <= 1:
+        return False
+    if np.where(value_list == split_val) < k:
+        return False
+    return True
 
 
 def anonymize(partition, columns, step, k):
