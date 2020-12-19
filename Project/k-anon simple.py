@@ -82,20 +82,31 @@ def debug():
     # GENERATE A TOY DATASET
     n_sample = 20
     n_cols = 2
-    cols = []
+    cols_to_anonymize = []
 
     for i in range(n_cols):
-        cols.append("dim_" + str(i))
+        cols_to_anonymize.append("dim" + str(i))
 
+    # Create a toy dataset
     data = random.randint(0, 10, (n_sample, n_cols))
-    df = pd.DataFrame(data, columns=cols)
+    df = pd.DataFrame(data, columns=cols_to_anonymize)
 
-    # ANONYMIZE DATA
-    dict_phi = anonymize(df, cols, 0, 3)
+    # ANONYMIZE SEMI-IDENTIFIERS DATA
+    dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
 
-    od = collections.OrderedDict(sorted(dict_phi.items()))
-    for pair in od.items():
-        print(pair)
+    # Reorder the semi-identifiers anonymize
+    dict_phi = collections.OrderedDict(sorted(dict_phi.items()))
+
+    # Crete a Dataframe from the dictionary
+    cols_anonymize = [col + "_anon" for col in cols_to_anonymize]
+    anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
+
+    # Concatenate the 2 DF
+    df_merged = pd.concat([df, anon_df], axis=1, sort=False)
+    print(df_merged)
+
+    # Drop anonymize column
+    final_db = df_merged.drop(cols_to_anonymize, axis=1)
 
 
 if __name__ == "__main__":
