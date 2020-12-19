@@ -22,10 +22,12 @@ mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
-mainTable_indices = []
-externalTable_indices = []
-identifiers = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day']
+semi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-day']
+identifiers = ['Name']
 sensible_data = ['Disease', 'Blood type', 'Weight (Kg)']
+
+mainTable_indices = semi_identifiers + sensible_data
+externalTable_indices = identifiers + semi_identifiers
 
 
 def random_age():
@@ -112,3 +114,6 @@ if __name__ == "__main__":
     #       -one with the sensible data and some Quasi-Identifier attribute (the Main_DataBase)
     #       -one that contain external information that can be joined with the previous
     #        dataset to re-identify individual records (the external_DataBase)
+
+    main_df = df[mainTable_indices]
+    main_df.to_csv(os.path.join(dataset_folder, mainDB_filename))
