@@ -36,9 +36,14 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim):
-    if is_numeric_dtype(partition[dim]):
-        return partition[dim].median()
 
+    partition_np = partition[dim].to_numpy()
+    unique, index, counts = np.unique(partition_np, return_index=True, return_counts=True)
+    index_sorted = np.sort(index)
+    median_idx = index_sorted[(len(index_sorted) - 1) // 2]
+
+    if is_numeric_dtype(partition[dim]):
+        return partition_np[median_idx]
     # todo: gestire le colonne che non sono numeri
     return None
 
