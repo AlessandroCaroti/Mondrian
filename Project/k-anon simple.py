@@ -21,8 +21,8 @@ def compute_phi(partition):
     summary = []
 
     for col in range(np_partition.shape[1]):
-        _max = np.max(np_partition[col, :])
-        _min = np.min(np_partition[col, :])
+        _max = np.max(np_partition[:, col])
+        _min = np.min(np_partition[:, col])
         col_summary = "[" + str(_min) + " - " + str(_max) + "]"
         if _min == _max:
             col_summary = str(_min)
@@ -78,6 +78,23 @@ def anonymize(partition, columns, step, k):
     return phi_merger
 
 
+def anonymization(df, columns_to_anonymize, anon_dict):
+    # Reorder the semi-identifiers anonymize
+    dict_phi = collections.OrderedDict(sorted(anon_dict.items()))
+
+    # Crete a Dataframe from the dictionary
+    cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
+    anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
+
+    # Concatenate the 2 DF
+    df_merged = pd.concat([df, anon_df], axis=1, sort=False)
+    print(df_merged)
+
+    # Drop anonymize column
+    final_db = df_merged.drop(columns_to_anonymize, axis=1)
+    return final_db
+
+
 def debug():
     # GENERATE A TOY DATASET
     n_sample = 20
@@ -94,19 +111,8 @@ def debug():
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
 
-    # Reorder the semi-identifiers anonymize
-    dict_phi = collections.OrderedDict(sorted(dict_phi.items()))
-
-    # Crete a Dataframe from the dictionary
-    cols_anonymize = [col + "_anon" for col in cols_to_anonymize]
-    anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
-
-    # Concatenate the 2 DF
-    df_merged = pd.concat([df, anon_df], axis=1, sort=False)
-    print(df_merged)
-
-    # Drop anonymize column
-    final_db = df_merged.drop(cols_to_anonymize, axis=1)
+    df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
+    print(df_anonymize)
 
 
 if __name__ == "__main__":
