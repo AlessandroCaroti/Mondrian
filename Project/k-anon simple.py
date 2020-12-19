@@ -69,13 +69,13 @@ def allowable_cut(partition, dim, split_val, k):
 
 def anonymize(partition, columns, step, k):
     dim = chose_dimension(columns, step)
-    mean = find_median(partition, dim)
+    median = find_median(partition, dim)
 
     # If not allowed multidimensional cut for partition
-    if not allowable_cut(partition, dim, mean, k):
+    if not allowable_cut(partition, dim, median, k):
         return compute_phi(partition)  # return phi: partition -> summary
 
-    lhs, rhs = split_partition(partition, dim, mean)
+    lhs, rhs = split_partition(partition, dim, median)
 
     phi_merger = merge_dictionary(anonymize(lhs, columns, step + 1, k),
                                   anonymize(rhs, columns, step + 1, k))
