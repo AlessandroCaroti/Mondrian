@@ -1,6 +1,6 @@
 """
 @param e_c: group-bys on quasi-identifier (equivalence classes)
-ref: https://www.mdpi.com/2079-9292/9/5/716/htm
+ref: https://www.mdpi.com/2079-9292/9/5/716/html
 """
 
 
