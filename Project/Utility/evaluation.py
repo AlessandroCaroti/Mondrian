@@ -1,6 +1,3 @@
-# TODO : quality measure is based on the size of the equivalence
-#  classes E in V . Cdm assigns to each tuple t in V a penalty,
-#  which is determined by the size of the equivalence class containing t.
 
 """
 @param e_c: group-bys on quasi-identifier (equivalence classes)
