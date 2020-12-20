@@ -148,7 +148,7 @@ def anonymize(partition, columns, step, k):
     dim = chose_dimension(columns, partition, k)
 
     # If not allowed multidimensional cut for partition
-    if dim == None:
+    if dim is None:
         global num_partition
         num_partition += 1
         return compute_phi(partition)  # return phi: partition -> summary
