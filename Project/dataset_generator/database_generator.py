@@ -41,15 +41,36 @@ def random_zipcode():
     return zipcode
 
 
+def rand_day(month):
+    if month != 2:
+        return random.randint(1, 30)
+    else:
+        return random.randint(1, 28)
+
+
 def random_Bday(age):
-    day = np.random.randint(1, 28)
-    mouth = np.random.randint(1, 12)
+    month = np.random.randint(1, 12)
+    day = rand_day(month)
     year = datetime.datetime.now().year - age
-    return "{:02d}-{:02d}-{}".format(day, mouth, year)
+    return "{:02d}-{:02d}-{}".format(day, month, year)
 
 
-def therapy_day():
-    pass
+def random_therapy_day():
+    this_year = datetime.datetime.now().year
+
+    start_month = np.random.randint(1, 12)
+    start_day = rand_day(start_month)
+    start_year = np.random.randint(this_year - 5, this_year)
+
+    end_month = start_month + np.random.randint(1, 12)
+    end_year = start_year + np.random.randint(0, 3)
+    if end_month > 12 and end_year == start_year:
+        end_month = end_month - 12
+        end_year += 1
+    end_day = rand_day(end_month)
+
+    return "{:02d}-{:02d}-{} - {:02d}-{:02d}-{}".format(start_day, start_month,
+                                                        start_year, end_day, end_month, end_year)
 
 
 def random_height(gender):
@@ -107,10 +128,11 @@ if __name__ == "__main__":
         disease = df_disease.loc[k, :]
         new_entry.append(disease.Name)
 
+        # Therapy day (start - end)
+        new_entry.append(random_therapy_day())
+
         # Blood type
         new_entry.append(random_blood_group())
-
-        # Therapy day (start - end) TODO: to implement if we want it
 
         # Weight
         new_entry.append(random_weight())
@@ -120,7 +142,7 @@ if __name__ == "__main__":
 
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Blood type', 'Weight (Kg)','Height (cm)']
+    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Therapy day (start - end)', 'Blood type', 'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
     print(df)
 
