@@ -22,9 +22,9 @@ mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
-semi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-day']
+semi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-day', 'Height (cm)', 'Weight (Kg)']
 identifiers = ['Name']
-sensible_data = ['Disease', 'Blood type', 'Weight (Kg)']
+sensible_data = ['Disease', 'Blood type']
 
 mainTable_indices = semi_identifiers + sensible_data
 externalTable_indices = identifiers + semi_identifiers
