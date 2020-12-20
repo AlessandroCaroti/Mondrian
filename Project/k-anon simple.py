@@ -6,10 +6,9 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-initial_ranges = {}
-
 from typesManager.dateManager import DataManager
 
+initial_ranges = {}
 dim_type = {"B-day": "date"}
 num_partition = 0
 
@@ -22,7 +21,7 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
         width = max_r - min_r
 
     else:  # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
-        width = None
+        raise Exception("WITH of non number")
 
     return width
 
@@ -34,11 +33,11 @@ def compute_normalized_width(values, dim):
 
 
 def chose_dimension(dimensions, partition, k):
-    '''
+    """
     :param dimensions: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut
-    '''
+    """
 
     width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
                     dimensions)  # get list of all width and median
@@ -81,7 +80,6 @@ def compute_phi(partition):
     phi = {}
     for idx in partition.index:
         phi[idx] = summary
-        # phi[partition.iloc(idx)] = summary
     return phi
 
 
@@ -197,9 +195,10 @@ def debug():
     data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
+    # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    all_data = np.append(all_data, b_day, axis=1)
-    cols_to_anonymize.append("B-day")
+    # all_data = np.append(all_data, b_day, axis=1)
+    # cols_to_anonymize.append("B-day")
 
     df = pd.DataFrame(all_data, columns=cols_to_anonymize)
 
