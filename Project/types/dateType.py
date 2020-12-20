@@ -10,6 +10,9 @@ class MyData(AbstractType):
 
     @staticmethod
     def split(list_to_split, split_val: str, strict: bool = True):
+        if not isinstance(list_to_split, list) or not isinstance(list_to_split, np.ndarray):
+            raise TypeError("list_to_split must be a list or a np_array")
+
         left_idx, right_idx = [], []
         split_val = datetime.strptime(split_val, MyData.data_format)
         obj_list = [datetime.strptime(el, MyData.data_format) for el in list_to_split]
@@ -25,15 +28,18 @@ class MyData(AbstractType):
     @staticmethod
     def median(el_list):
         if not isinstance(el_list, list) or not isinstance(el_list, np.ndarray):
-            raise TypeError
+            raise TypeError("el_list must be a list or a np_array")
+
         obj_array = np.array([datetime.strptime(el, MyData.data_format) for el in el_list])
 
-        unique, count = np.unique(obj_array, return_counts=True)
-        
-        pass
+        unique = np.unique(obj_array)
+        return np.median(unique)
 
     @staticmethod
     def summary_statistic(el_list) -> str:
+        if not isinstance(el_list, list) or not isinstance(el_list, np.ndarray):
+            raise TypeError("el_list must be a list or a np_array")
+
         _max = datetime.strptime("30/12/3000", "%d-%m-%Y")
         _min = datetime.strptime("01/10/1800", "%d-%m-%Y")
 
@@ -42,11 +48,13 @@ class MyData(AbstractType):
         for data_obj in obj_list:
             if data_obj > _max:
                 _max = data_obj
-                continue
-            if data_obj < _min:
+            elif data_obj < _min:
                 _min = data_obj
 
-        return "[" + str(_min) + "-" + str(_max) + "]"
+        return "[" + \
+               _min.strftime(MyData.data_format) + \
+               "-" + \
+               _max.strftime(MyData.data_format) + "]"
 
 
 def test():
