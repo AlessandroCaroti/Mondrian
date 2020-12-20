@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 10
+n_entry = 15
 
 # path & filename variable
 dataset_folder = "data"
@@ -46,6 +46,17 @@ def random_Bday(age):
     mouth = np.random.randint(1, 12)
     year = datetime.datetime.now().year - age
     return "{:02d}-{:02d}-{}".format(day, mouth, year)
+
+
+def therapy_day():
+    pass
+
+
+def random_height(gender):
+    if gender == "Male":
+        return np.random.randint(160, 200)
+    else:
+        return np.random.randint(150, 185)
 
 
 def random_blood_group():
@@ -104,9 +115,12 @@ if __name__ == "__main__":
         # Weight
         new_entry.append(random_weight())
 
+        # Height
+        new_entry.append(random_height(new_entry[1]))
+
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Blood type', 'Weight (Kg)']
+    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Blood type', 'Weight (Kg)','Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
     print(df)
 
