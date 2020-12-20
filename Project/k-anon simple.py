@@ -6,6 +6,10 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
+from types.dateType import MyData
+
+dim_type = {"B-day": "date"}
+
 
 def chose_dimension(dimensions, step):
     dim_pos = int(step % len(dimensions))
@@ -36,23 +40,26 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim):
-    freq = partition[dim].value_counts(sort=True, ascending=True)
-    freq_dict = freq.to_dict()
-    values_list = freq.index.to_list()
-    # TODO: mettere controllo "stop to split the partition"
-    #   valutare se mettere il parametro K globale
-    middle = len(partition) // 2
-    acc = 0
-    split_index = 0
-    for i, qi_val in enumerate(values_list):
-        acc += freq_dict[qi_val]
-        if acc >= middle:
-            split_index = i
-            break
-    median = values_list[split_index]
-
     if is_numeric_dtype(partition[dim]):
+        freq = partition[dim].value_counts(sort=True, ascending=True)
+        freq_dict = freq.to_dict()
+        values_list = freq.index.to_list()
+        # TODO: mettere controllo "stop to split the partition"
+        #   valutare se mettere il parametro K globale
+        middle = len(partition) // 2
+        acc = 0
+        split_index = 0
+        for i, qi_val in enumerate(values_list):
+            acc += freq_dict[qi_val]
+            if acc >= middle:
+                split_index = i
+                break
+        median = values_list[split_index]
+
         return median
+    if dim_type[dim] == 'date':
+        dim_list = partition[dim].tolist()
+        return MyData.median(dim_list, 1)
     # todo: gestire le colonne che non sono numeri
     return None
 

@@ -48,7 +48,7 @@ class MyData(AbstractType):
                 break
 
         split_val = val_list[split_index].strftime(MyData.data_format)
-        return split_val, True
+        return split_val
 
     @staticmethod
     def summary_statistic(el_list) -> str:
