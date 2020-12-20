@@ -47,8 +47,16 @@ def find_median(partition, dim):
 
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
-        left_p = partition[partition[dim] >= split_val]
+        left_p = partition[partition[dim] > split_val]
         right_p = partition[partition[dim] < split_val]
+        
+        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ), also the STRICT version is handled
+        center = partition[partition[dim] == split_val]
+        int mid = int(len(center)/2)
+
+        left_p = pd.concat([left_p, center[:mid]])
+        right_p = pd.concat([right_p, center[mid + 1:]])
+
     else:  # TODO: da gestire il caso in cui non sia un numero
         left_p, right_p = None, None
 
@@ -56,12 +64,8 @@ def split_partition(partition, dim, split_val):
 
 
 def allowable_cut(partition, dim, split_val, k):
-    value_list = partition[dim].unique()
-    if len(value_list) <= 1:
-        return False
-    if len(np.where(value_list < split_val)[0]) < k:
-        return False
-    return True
+    lhs, rhs = split_partition(partition, dim, split_val)
+    return len(lhs) >= k and len(rhs) >= k # strict version, NON CAPISCO ME SIA RELAXED
 
 
 def anonymize(partition, columns, step, k):
