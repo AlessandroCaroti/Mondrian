@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 15
+n_entry = 21
 
 # path & filename variable
 dataset_folder = "data"
@@ -69,8 +69,10 @@ def random_therapy_day():
         end_year += 1
     end_day = rand_day(end_month)
 
-    return "{:02d}-{:02d}-{} - {:02d}-{:02d}-{}".format(start_day, start_month,
-                                                        start_year, end_day, end_month, end_year)
+    start_date = "{:02d}-{:02d}-{} ".format(start_day, start_month, start_year)
+    end_date = "{:02d}-{:02d}-{}".format(end_day, end_month, end_year)
+
+    return start_date, end_date
 
 
 def random_height(gender):
@@ -129,7 +131,9 @@ if __name__ == "__main__":
         new_entry.append(disease.Name)
 
         # Therapy day (start - end)
-        new_entry.append(random_therapy_day())
+        start_th, end_th = random_therapy_day()
+        new_entry.append(start_th)
+        new_entry.append(end_th)
 
         # Blood type
         new_entry.append(random_blood_group())
@@ -142,7 +146,8 @@ if __name__ == "__main__":
 
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Therapy day (start - end)', 'Blood type', 'Weight (Kg)', 'Height (cm)']
+    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Start Therapy', 'End Therapy', 'Blood type',
+                   'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
     print(df)
 
