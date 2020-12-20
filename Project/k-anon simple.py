@@ -6,7 +6,7 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-from types.dateType import MyData
+from typesManager.dateManager import DataManager
 
 dim_type = {"B-day": "date"}
 
@@ -31,9 +31,9 @@ def compute_phi(partition):
             col_summary = "[" + str(_min) + " - " + str(_max) + "]"
             if _min == _max:
                 col_summary = str(_min)
-        elif dim_type[dim] == 'date':
+        elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
-            col_summary = MyData.summary_statistic(date_list)
+            col_summary = DataManager.summary_statistic(date_list)
         else:
             col_summary = "ERROR"
         summary.append(col_summary)
@@ -63,9 +63,9 @@ def find_median(partition, dim, k):
         median = values_list[split_index]
 
         return median
-    if dim_type[dim] == 'date':
+    if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
-        return MyData.median(date_list, k)
+        return DataManager.median(date_list, k)
     # todo: gestire le colonne che non sono numeri
     return None
 
@@ -85,10 +85,10 @@ def split_partition(partition, dim, split_val):
             left_p = pd.concat([left_p, center[:mid + 1]])
         if len(center[mid + 1:].index) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
-    if dim_type[dim] == 'date':
+    elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
-        left_idxs, right_idxs = MyData.split(date_list, split_val)
+        left_idxs, right_idxs = DataManager.split(date_list, split_val)
         left_p = partition.iloc(left_idxs)
         right_p = partition.iloc(right_idxs)
 

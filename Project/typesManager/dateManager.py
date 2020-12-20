@@ -2,10 +2,10 @@ from datetime import datetime
 
 import numpy as np
 
-from abstractType import AbstractType
+from typesManager.abstractType import AbstractType
 
 
-class MyData(AbstractType):
+class DataManager(AbstractType):
     data_format = "%d-%m-%Y"
 
     @staticmethod
@@ -14,8 +14,8 @@ class MyData(AbstractType):
             raise TypeError("list_to_split must be a list or a np_array")
 
         left_idx, right_idx = [], []
-        split_val = datetime.strptime(split_val, MyData.data_format)
-        obj_list = [datetime.strptime(el, MyData.data_format) for el in list_to_split]
+        split_val = datetime.strptime(split_val, DataManager.data_format)
+        obj_list = [datetime.strptime(el, DataManager.data_format) for el in list_to_split]
 
         for idx, date in enumerate(obj_list):
             if date >= split_val:
@@ -30,7 +30,7 @@ class MyData(AbstractType):
         if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
             raise TypeError("el_list must be a list or a np_array")
 
-        obj_array = np.array([datetime.strptime(el, MyData.data_format) for el in el_list])
+        obj_array = np.array([datetime.strptime(el, DataManager.data_format) for el in el_list])
 
         val_list, frequency = np.unique(obj_array, return_counts=True)
         middle = len(el_list) // 2
@@ -47,7 +47,7 @@ class MyData(AbstractType):
                 split_index = idx
                 break
 
-        split_val = val_list[split_index].strftime(MyData.data_format)
+        split_val = val_list[split_index].strftime(DataManager.data_format)
         return split_val
 
     @staticmethod
@@ -58,7 +58,7 @@ class MyData(AbstractType):
         _max = datetime.strptime("01/10/1800", "%d/%m/%Y")
         _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
 
-        obj_list = [datetime.strptime(el, MyData.data_format) for el in el_list]
+        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
 
         for data_obj in obj_list:
             if data_obj > _max:
@@ -67,9 +67,9 @@ class MyData(AbstractType):
                 _min = data_obj
 
         return "[" + \
-               _min.strftime(MyData.data_format) + \
+               _min.strftime(DataManager.data_format) + \
                " - " + \
-               _max.strftime(MyData.data_format) + "]"
+               _max.strftime(DataManager.data_format) + "]"
 
 
 def random_Bday(age):
@@ -85,11 +85,11 @@ def test():
     b_day = [random_Bday(age) for age in ages]
     print(b_day)
 
-    median = MyData.median(b_day, 1)[0]
-    l, r = MyData.split(b_day, median)
+    median = DataManager.median(b_day, 1)[0]
+    l, r = DataManager.split(b_day, median)
 
     print("MEDIAN:", median)
-    print("RANGE:", MyData.summary_statistic(b_day))
+    print("RANGE:", DataManager.summary_statistic(b_day))
 
     print("LEFT_PART:")
     for index in l:
