@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import numpy as np
+
 from abstractType import AbstractType
 
 
@@ -22,6 +24,12 @@ class MyData(AbstractType):
 
     @staticmethod
     def median(el_list):
+        if not isinstance(el_list, list) or not isinstance(el_list, np.ndarray):
+            raise TypeError
+        obj_array = np.array([datetime.strptime(el, MyData.data_format) for el in el_list])
+
+        unique, count = np.unique(obj_array, return_counts=True)
+        
         pass
 
     @staticmethod
