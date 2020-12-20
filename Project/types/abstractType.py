@@ -20,10 +20,11 @@ class AbstractType(ABC):
 
     @staticmethod
     @abstractmethod
-    def median(el_list):
+    def median(el_list, k: int):
         """
         Compute the median along the input given.
 
+        :param k:
         :param el_list: Input list
         :rtype: the median of the input
         """
