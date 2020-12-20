@@ -6,7 +6,6 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-
 initial_ranges = {}
 
 from typesManager.dateManager import DataManager
@@ -14,43 +13,46 @@ from typesManager.dateManager import DataManager
 dim_type = {"B-day": "date"}
 
 
-def compute_width(values, dim): # dim dovrebbe servire per le colonne categoriche
+def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
     width = 0
-    if is_numeric_dtype(values): # range width = max - min
+    if is_numeric_dtype(values):  # range width = max - min
         max_r = max(values)
         min_r = min(values)
         width = max_r - min_r
 
-    else: # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
+    else:  # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
         width = None
 
     return width
 
+
 def compute_normalized_width(values, dim):
     width = compute_width(values, dim)
 
-    return width / initial_ranges[dim] # normalized with statistic of the original dimension
+    return width / initial_ranges[dim]  # normalized with statistic of the original dimension
 
 
-def chose_dimension(dimensions ,partition, k):
+def chose_dimension(dimensions, partition, k):
     '''
     :param dimensions: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut
     '''
 
-    width_map = map(lambda dim: [dim ,compute_normalized_width(partition[dim], dim), find_median(partition, dim)], dimensions) # get list of all width and median
-    width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k), width_map) # filter out the dimensions which don't allow cut
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim,k)],
+                    dimensions)  # get list of all width and median
+    width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
+                            width_map)  # filter out the dimensions which don't allow cut
 
-    width_list = list(width_filtered) # convert to list
+    width_list = list(width_filtered)  # convert to list
 
-    if len(width_list) == 0: # no columns allow cut
+    if len(width_list) == 0:  # no columns allow cut
         return None
 
-    get_width = lambda x: x[1] # function return the width from the tuple
-    width_list.sort(key=get_width, reverse=True) # sort wrt width, maximum first
+    get_width = lambda x: x[1]  # function return the width from the tuple
+    width_list.sort(key=get_width, reverse=True)  # sort wrt width, maximum first
 
-    return width_list[0][0] # name of the column with max width
+    return width_list[0][0]  # name of the column with max width
 
 
 def merge_dictionary(dict1, dict2):
@@ -138,7 +140,7 @@ def split_partition(partition, dim, split_val):
 def allowable_cut(partition, dim, split_val, k):
     lhs, rhs = split_partition(partition, dim, split_val)
 
-    return len(lhs) >= k and len(rhs) >= k # strict version, NON CAPISCO COME SIA RELAXED
+    return len(lhs) >= k and len(rhs) >= k  # strict version, NON CAPISCO COME SIA RELAXED
 
 
 def anonymize(partition, columns, step, k):
@@ -148,8 +150,7 @@ def anonymize(partition, columns, step, k):
     if dim == None:
         return compute_phi(partition)  # return phi: partition -> summary
 
-    median = find_median(partition, dim)
-
+    median = find_median(partition, dim,k)
 
     lhs, rhs = split_partition(partition, dim, median)
 
@@ -175,8 +176,8 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
-def debug():
 
+def debug():
     # GENERATE A TOY DATASET
     n_sample = 30
     n_cols = 2
