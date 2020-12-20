@@ -47,32 +47,34 @@ def find_median(partition, dim):
 
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
+        # print("Split_val: ", split_val)
         left_p = partition[partition[dim] > split_val]
         right_p = partition[partition[dim] < split_val]
-        
         # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
         # also the STRICT version is handled
         center = partition[partition[dim] == split_val]
-        mid = int(len(center)/2)
 
-        left_p = pd.concat([left_p, center[:mid]])
-        right_p = pd.concat([right_p, center[mid + 1:]])
+        mid = int(len(center.index) / 2)
+
+        if len(center[:mid+1].index) > 0:
+            left_p = pd.concat([left_p, center[:mid + 1]])
+        if len(center[mid + 1:].index) > 0:
+            right_p = pd.concat([right_p, center[mid + 1:]])
 
     else:  # TODO: da gestire il caso in cui non sia un numero
         left_p, right_p = None, None
-
+    # print("LEFT:\n", left_p,"\n\nRIGHT:\n",right_p)
     return left_p, right_p
 
 
 def allowable_cut(partition, dim, split_val, k):
     lhs, rhs = split_partition(partition, dim, split_val)
-    return len(lhs) >= k and len(rhs) >= k # strict version, NON CAPISCO ME SIA RELAXED
+    return len(lhs) >= k and len(rhs) >= k  # strict version, NON CAPISCO ME SIA RELAXED
 
 
 def anonymize(partition, columns, step, k):
     dim = chose_dimension(columns, step)
     median = find_median(partition, dim)
-
     # If not allowed multidimensional cut for partition
     if not allowable_cut(partition, dim, median, k):
         return compute_phi(partition)  # return phi: partition -> summary
@@ -104,7 +106,7 @@ def anonymization(df, columns_to_anonymize, anon_dict):
 
 def debug():
     # GENERATE A TOY DATASET
-    n_sample = 20
+    n_sample = 30
     n_cols = 2
     cols_to_anonymize = []
 
