@@ -11,6 +11,7 @@ initial_ranges = {}
 from typesManager.dateManager import DataManager
 
 dim_type = {"B-day": "date"}
+num_partition = 0
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
@@ -74,7 +75,7 @@ def compute_phi(partition):
             date_list = partition[dim].tolist()
             col_summary = DataManager.summary_statistic(date_list)
         else:
-            col_summary = "ERROR"
+            raise Exception("MEDIAN")
         summary.append(col_summary)
 
     phi = {}
@@ -106,7 +107,7 @@ def find_median(partition, dim, k):
         date_list = partition[dim].tolist()
         return DataManager.median(date_list, k)
     # todo: gestire le colonne che non sono numeri
-    return None
+    raise Exception("MEDIAN")
 
 
 def split_partition(partition, dim, split_val):
@@ -128,11 +129,11 @@ def split_partition(partition, dim, split_val):
         date_list = partition[dim].tolist()
 
         left_idxs, right_idxs = DataManager.split(date_list, split_val)
-        left_p = partition.iloc(left_idxs)
-        right_p = partition.iloc(right_idxs)
+        left_p = partition.iloc[left_idxs]
+        right_p = partition.iloc[right_idxs]
 
     else:  # TODO: da gestire il caso in cui non sia un numero
-        left_p, right_p = None, None
+        raise Exception("SPLIT")
     # print("LEFT:\n", left_p,"\n\nRIGHT:\n",right_p)
     return left_p, right_p
 
@@ -148,6 +149,8 @@ def anonymize(partition, columns, step, k):
 
     # If not allowed multidimensional cut for partition
     if dim == None:
+        global num_partition
+        num_partition += 1
         return compute_phi(partition)  # return phi: partition -> summary
 
     median = find_median(partition, dim, k)
@@ -170,25 +173,38 @@ def anonymization(df, columns_to_anonymize, anon_dict):
 
     # Concatenate the 2 DF
     df_merged = pd.concat([df, anon_df], axis=1, sort=False)
-    print(df_merged)
+    # print(df_merged.to_string())
 
     # Drop anonymize column
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
 
+from dataset_generator.database_generator import random_Bday
+
+
 def debug():
     # GENERATE A TOY DATASET
-    n_sample = 30
+    n_sample = 10000
     n_cols = 2
     cols_to_anonymize = []
+    all_data = np.empty((n_sample, 0), dtype=np.object)
 
     for i in range(n_cols):
         cols_to_anonymize.append("dim" + str(i))
 
     # Create a toy dataset
-    data = random.randint(0, 10, (n_sample, n_cols))
-    df = pd.DataFrame(data, columns=cols_to_anonymize)
+    data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
+    all_data = np.append(all_data, data, axis=1)
+
+    b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
+    all_data = np.append(all_data, b_day, axis=1)
+    cols_to_anonymize.append("B-day")
+
+    df = pd.DataFrame(all_data, columns=cols_to_anonymize)
+
+    df = df.infer_objects()
+    df = df.convert_dtypes()
 
     # Create dictionary with Range statistic for each QI
     global initial_ranges
@@ -196,6 +212,7 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
+    print("Partition created:", num_partition)
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
     print(df_anonymize)
