@@ -50,9 +50,10 @@ def split_partition(partition, dim, split_val):
         left_p = partition[partition[dim] > split_val]
         right_p = partition[partition[dim] < split_val]
         
-        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ), also the STRICT version is handled
+        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
+        # also the STRICT version is handled
         center = partition[partition[dim] == split_val]
-        int mid = int(len(center)/2)
+        mid = int(len(center)/2)
 
         left_p = pd.concat([left_p, center[:mid]])
         right_p = pd.concat([right_p, center[mid + 1:]])
