@@ -36,41 +36,50 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim):
-    if is_numeric_dtype(partition[dim]):
-        return partition[dim].median()
+    freq = partition[dim].value_counts(sort=True, ascending=True)
+    value_list = freq.index.to_list()
 
+    if is_numeric_dtype(partition[dim]):
+        return np.median(value_list)
     # todo: gestire le colonne che non sono numeri
     return None
 
 
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
-        left_p = partition[partition[dim] >= split_val]
+        # print("Split_val: ", split_val)
+        left_p = partition[partition[dim] > split_val]
         right_p = partition[partition[dim] < split_val]
+        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
+        # also the STRICT version is handled
+        center = partition[partition[dim] == split_val]
+
+        mid = int(len(center.index) / 2)
+
+        if len(center[:mid+1].index) > 0:
+            left_p = pd.concat([left_p, center[:mid + 1]])
+        if len(center[mid + 1:].index) > 0:
+            right_p = pd.concat([right_p, center[mid + 1:]])
+
     else:  # TODO: da gestire il caso in cui non sia un numero
         left_p, right_p = None, None
-
+    # print("LEFT:\n", left_p,"\n\nRIGHT:\n",right_p)
     return left_p, right_p
 
 
 def allowable_cut(partition, dim, split_val, k):
-    value_list = partition[dim].unique()
-    if len(value_list) <= 1:
-        return False
-    if len(np.where(value_list < split_val)[0]) < k:
-        return False
-    return True
+    lhs, rhs = split_partition(partition, dim, split_val)
+    return len(lhs) >= k and len(rhs) >= k  # strict version, NON CAPISCO ME SIA RELAXED
 
 
 def anonymize(partition, columns, step, k):
     dim = chose_dimension(columns, step)
-    mean = find_median(partition, dim)
-
+    median = find_median(partition, dim)
     # If not allowed multidimensional cut for partition
-    if not allowable_cut(partition, dim, mean, k):
+    if not allowable_cut(partition, dim, median, k):
         return compute_phi(partition)  # return phi: partition -> summary
 
-    lhs, rhs = split_partition(partition, dim, mean)
+    lhs, rhs = split_partition(partition, dim, median)
 
     phi_merger = merge_dictionary(anonymize(lhs, columns, step + 1, k),
                                   anonymize(rhs, columns, step + 1, k))
@@ -97,7 +106,7 @@ def anonymization(df, columns_to_anonymize, anon_dict):
 
 def debug():
     # GENERATE A TOY DATASET
-    n_sample = 20
+    n_sample = 30
     n_cols = 2
     cols_to_anonymize = []
 
