@@ -37,10 +37,22 @@ def compute_phi(partition):
 
 def find_median(partition, dim):
     freq = partition[dim].value_counts(sort=True, ascending=True)
-    value_list = freq.index.to_list()
+    freq_dict = freq.to_dict()
+    values_list = freq.index.to_list()
+    # TODO: mettere controllo "stop to split the partition"
+    #   valutare se mettere il parametro K globale
+    middle = len(partition) // 2
+    acc = 0
+    split_index = 0
+    for i, qi_val in enumerate(values_list):
+        acc += freq_dict[qi_val]
+        if acc >= middle:
+            split_index = i
+            break
+    median = values_list[split_index]
 
     if is_numeric_dtype(partition[dim]):
-        return np.median(value_list)
+        return median
     # todo: gestire le colonne che non sono numeri
     return None
 
@@ -56,7 +68,7 @@ def split_partition(partition, dim, split_val):
 
         mid = int(len(center.index) / 2)
 
-        if len(center[:mid+1].index) > 0:
+        if len(center[:mid + 1].index) > 0:
             left_p = pd.concat([left_p, center[:mid + 1]])
         if len(center[mid + 1:].index) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
