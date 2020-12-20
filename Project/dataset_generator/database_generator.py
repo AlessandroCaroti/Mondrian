@@ -149,6 +149,10 @@ if __name__ == "__main__":
     column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Start Therapy', 'End Therapy', 'Blood type',
                    'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
+
+    df = df.infer_objects()
+    df = df.convert_dtypes()
+
     print(df)
 
     # TODO: split all data into 2 dataset:
