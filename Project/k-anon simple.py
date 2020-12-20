@@ -24,12 +24,18 @@ def compute_phi(partition):
     np_partition = partition.to_numpy()
     summary = []
 
-    for col in range(np_partition.shape[1]):
-        _max = np.max(np_partition[:, col])
-        _min = np.min(np_partition[:, col])
-        col_summary = "[" + str(_min) + " - " + str(_max) + "]"
-        if _min == _max:
-            col_summary = str(_min)
+    for col, dim in enumerate(partition.columns):
+        if is_numeric_dtype(partition[dim]):
+            _max = np.max(np_partition[:, col])
+            _min = np.min(np_partition[:, col])
+            col_summary = "[" + str(_min) + " - " + str(_max) + "]"
+            if _min == _max:
+                col_summary = str(_min)
+        elif dim_type[dim] == 'date':
+            date_list = partition[dim].tolist()
+            col_summary = MyData.summary_statistic(date_list)
+        else:
+            col_summary = "ERROR"
         summary.append(col_summary)
 
     phi = {}
@@ -39,7 +45,7 @@ def compute_phi(partition):
     return phi
 
 
-def find_median(partition, dim):
+def find_median(partition, dim, k):
     if is_numeric_dtype(partition[dim]):
         freq = partition[dim].value_counts(sort=True, ascending=True)
         freq_dict = freq.to_dict()
@@ -58,8 +64,8 @@ def find_median(partition, dim):
 
         return median
     if dim_type[dim] == 'date':
-        dim_list = partition[dim].tolist()
-        return MyData.median(dim_list, 1)
+        date_list = partition[dim].tolist()
+        return MyData.median(date_list, k)
     # todo: gestire le colonne che non sono numeri
     return None
 
@@ -79,6 +85,12 @@ def split_partition(partition, dim, split_val):
             left_p = pd.concat([left_p, center[:mid + 1]])
         if len(center[mid + 1:].index) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
+    if dim_type[dim] == 'date':
+        date_list = partition[dim].tolist()
+
+        left_idxs, right_idxs = MyData.split(date_list, split_val)
+        left_p = partition.iloc(left_idxs)
+        right_p = partition.iloc(right_idxs)
 
     else:  # TODO: da gestire il caso in cui non sia un numero
         left_p, right_p = None, None
@@ -93,7 +105,7 @@ def allowable_cut(partition, dim, split_val, k):
 
 def anonymize(partition, columns, step, k):
     dim = chose_dimension(columns, step)
-    median = find_median(partition, dim)
+    median = find_median(partition, dim, k)
     # If not allowed multidimensional cut for partition
     if not allowable_cut(partition, dim, median, k):
         return compute_phi(partition)  # return phi: partition -> summary
