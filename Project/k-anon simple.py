@@ -39,7 +39,7 @@ def chose_dimension(dimensions, partition, k):
     :return: the dimension with max width and which allow cut
     '''
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim,k)],
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
                     dimensions)  # get list of all width and median
     width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
                             width_map)  # filter out the dimensions which don't allow cut
@@ -150,7 +150,7 @@ def anonymize(partition, columns, step, k):
     if dim == None:
         return compute_phi(partition)  # return phi: partition -> summary
 
-    median = find_median(partition, dim,k)
+    median = find_median(partition, dim, k)
 
     lhs, rhs = split_partition(partition, dim, median)
 
