@@ -4,7 +4,6 @@ import numpy as np
 
 from typesManager.abstractType import AbstractType
 
-
 class DataManager(AbstractType):
     data_format = "%d-%m-%Y"
 

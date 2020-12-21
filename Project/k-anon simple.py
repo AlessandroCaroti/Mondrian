@@ -8,11 +8,12 @@ from pandas.api.types import is_numeric_dtype
 
 from typesManager.dateManager import DataManager
 
+root = "" # folder of the data
 
-initial_ranges = {}
+initial_ranges = dict() # dictionary with the range of each dim of the original table
+dgh_dict = dict() # dictionary of dgh for each categorical dim
+
 dim_type = {"B-day": "date"}
-
-
 
 def compute_width(values, dim): # dim dovrebbe servire per le colonne categoriche
     width = 0
@@ -28,14 +29,13 @@ def compute_width(values, dim): # dim dovrebbe servire per le colonne categorich
 
 def compute_normalized_width(values, dim):
     width = compute_width(values, dim)
-
     return width / initial_ranges[dim] # normalized with statistic of the original dimension
 
 def chose_dimension(dimensions, partition, k):
     '''
     :param dimensions: list of columns
     :param partition: partition to split
-    :return: the dimension with max width and which allow cut
+    :return: the dimension with max width and which allow cut and the median
     '''
 
     width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim,k)],
@@ -108,20 +108,21 @@ def find_median(partition, dim, k):
 
     return None
 
-
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
-        # print("Split_val: ", split_val)
+
         left_p = partition[partition[dim] > split_val]
         right_p = partition[partition[dim] < split_val]
         # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
         # also the STRICT version is handled
+
         center = partition[partition[dim] == split_val]
 
         mid = int(len(center.index) / 2)
 
         if len(center[:mid + 1].index) > 0:
             left_p = pd.concat([left_p, center[:mid + 1]])
+
         if len(center[mid + 1:].index) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
 
@@ -193,6 +194,11 @@ def debug():
     # Create dictionary with Range statistic for each QI
     global initial_ranges
     initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
+
+    # Load dgh for each categorical dim
+    global dgh_dict
+    dgh_dict = {col: compute_width(df[col], col) if
+                        for col in cols_to_anonymize}
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)

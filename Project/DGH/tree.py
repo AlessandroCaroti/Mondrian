@@ -13,10 +13,20 @@ class Node:
         data.
         """
 
+        self.leaf = list()
+        '''
+        List whose values are the values of the leaf Nodes in the subtree of the current Node (as the current node is a root)
+        '''
+
     def add_child(self, child):
 
         child.parent = self
         self.children[child.data] = child
+
+    def add_leaf(self, leaf):
+
+        if leaf not in self.leaf:
+            self.leaf.append(leaf)
 
 
 class Tree:
@@ -99,3 +109,22 @@ class Tree:
             return node.parent
         else:
             return None
+
+    def print_leaf(self):
+
+        # BFS print
+        visited, queue = set(), Queue()
+
+        queue.put((self.root, 0))
+
+        while not queue.empty():
+
+            node, level = queue.get()
+
+            for child in node.children.values():
+                if child in visited:
+                    continue
+                queue.put((child, level + 1))
+
+            print("level: " + level + " (" + node.leaf + ")")
+            visited.add(node)
