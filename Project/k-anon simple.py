@@ -11,7 +11,7 @@ from typesManager.dateManager import DataManager
 initial_ranges = {}
 dim_type = {"B-day": "date"}
 num_partition = 0
-partition_size = {i: 0 for i in range(1, 13)}
+partition_size = {i: 0 for i in range(1, 15)}
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
@@ -45,16 +45,11 @@ def chose_dimension(dimensions, partition, k):
 
     width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
                     dimensions)  # get list of all width and median
+
     width_list = list(width_map)  # convert to list
+    width_list.sort(key=lambda x: x[1], reverse=True)
 
-    _max = -1
-    best_col = ''
-    for row in width_list:
-        if row[1] > _max:
-            _max = row[1]
-            best_col = row[0]
-
-    return best_col  # name of the column with max width
+    return width_list[0][0]  # name of the column with max width
 
 
 def merge_dictionary(dict1, dict2):
@@ -170,8 +165,8 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10000
-    n_cols = 2
+    n_sample = 3000
+    n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
@@ -182,8 +177,8 @@ def toy_dataset():
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    all_data = np.append(all_data, b_day, axis=1)
-    col_list.append("B-day")
+    # all_data = np.append(all_data, b_day, axis=1)
+    # col_list.append("B-day")
 
     df = pd.DataFrame(all_data, columns=col_list)
     df = df.infer_objects()
@@ -193,28 +188,33 @@ def toy_dataset():
 
 
 def debug():
-    df, cols_to_anonymize = toy_dataset()
-    k = 3
+    t = []
+    for i in range(50):
+        df, cols_to_anonymize = toy_dataset()
+        k = 3
 
-    # Create dictionary with Range statistic for each QI
-    global initial_ranges
-    initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
+        # Create dictionary with Range statistic for each QI
+        global initial_ranges
+        initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
 
-    # ANONYMIZE SEMI-IDENTIFIERS DATA
-    t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, k)
-    t1 = datetime.now()
+        # ANONYMIZE SEMI-IDENTIFIERS DATA
+        t0 = datetime.now()
+        dict_phi = anonymize(df, cols_to_anonymize, k)
+        t1 = datetime.now()
 
-    df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
-    t2 = datetime.now()
+        df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
+        t2 = datetime.now()
 
-    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
-    print("-Partition created:", num_partition)
-    print("-Total time:      ", t2 - t0)
-    print("-Compute phi time:", t1 - t0)
-    print(partition_size)
-    print("_________________________________________________________")
-    print(df_anonymize)
+        print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
+        print("-Partition created:", num_partition)
+        print("-Total time:      ", t2 - t0)
+        print("-Compute phi time:", t1 - t0)
+        print(partition_size)
+        print("_________________________________________________________")
+        # print(df_anonymize)
+        t.append((t1 - t0).total_seconds())
+    print("\n\n\n\n")
+    print("max:{} - min:{} - mean:{}".format(np.max(t), np.min(t), np.mean(t)))
 
 
 if __name__ == "__main__":
