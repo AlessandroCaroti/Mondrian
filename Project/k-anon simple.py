@@ -1,4 +1,3 @@
-import collections
 from numbers import Number
 
 import numpy as np
@@ -18,12 +17,13 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
         max_r = max(values)
         min_r = min(values)
         width = max_r - min_r
+
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = values.tolist()
         width = DataManager.compute_width(date_list)
 
-    else:  # TODO: manage categorical data
-        raise Exception("WITH of non number")
+    else:
+        raise Exception("WITH")  # TODO: manage categorical data
 
     return width
 
@@ -75,8 +75,8 @@ def compute_phi(partition):
         elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
             col_summary = DataManager.summary_statistic(date_list)
-        else:  # TODO: manage categorical data
-            raise Exception("MEDIAN")
+        else:
+            raise Exception("MEDIAN")  # TODO: manage categorical data
         summary.append(col_summary)
 
     # assign the summary created to each row present in the current partition
@@ -151,18 +151,17 @@ def anonymize(partition, columns, step, k):
         return compute_phi(partition)  # return phi: partition -> summary
 
     median = find_median(partition, dim, k)
-
     lhs, rhs = split_partition(partition, dim, median)
 
-    phi_merger = merge_dictionary(anonymize(lhs, columns, step + 1, k),
-                                  anonymize(rhs, columns, step + 1, k))
+    phi_list = merge_dictionary(anonymize(lhs, columns, step + 1, k),
+                                anonymize(rhs, columns, step + 1, k))
 
-    return phi_merger
+    return phi_list
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
     # Reorder the semi-identifiers anonymize
-    dict_phi = collections.OrderedDict(sorted(anon_dict.items()))
+    dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
 
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
@@ -170,9 +169,8 @@ def anonymization(df, columns_to_anonymize, anon_dict):
 
     # Concatenate the 2 DF
     df_merged = pd.concat([df, anon_df], axis=1, sort=False)
-    # print(df_merged.to_string())
 
-    # Drop anonymize column
+    # Drop anonymize columns
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
