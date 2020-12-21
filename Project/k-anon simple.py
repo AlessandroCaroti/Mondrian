@@ -51,10 +51,14 @@ def chose_dimension(dimensions, partition, k):
     if len(width_list) == 0:  # no columns allow cut
         return None
 
-    get_width = lambda x: x[1]  # function return the width from the tuple
-    width_list.sort(key=get_width, reverse=True)  # sort wrt width, maximum first
+    _max = -1
+    best_col = ''
+    for row in width_list:
+        if row[1] > _max:
+            _max = row[1]
+            best_col = row[0]
 
-    return width_list[0][0]  # name of the column with max width
+    return best_col  # name of the column with max width
 
 
 def merge_dictionary(dict1, dict2):
@@ -180,7 +184,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 30
+    n_sample = 3000
     n_cols = 2
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
