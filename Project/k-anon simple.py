@@ -75,13 +75,12 @@ def compute_phi(partition):
         elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
             col_summary = DataManager.summary_statistic(date_list)
-        else:
+        else:  # TODO: manage categorical data
             raise Exception("MEDIAN")
         summary.append(col_summary)
 
-    phi = {}
-    for idx in partition.index:
-        phi[idx] = summary
+    # assign the summary created to each row present in the current partition
+    phi = {idx: summary for idx in partition.index}
     return phi
 
 
@@ -182,15 +181,12 @@ def anonymization(df, columns_to_anonymize, anon_dict):
 from dataset_generator.database_generator import random_Bday
 
 
-def debug():
+def toy_dataset():
     # GENERATE A TOY DATASET
     n_sample = 30
     n_cols = 2
-    cols_to_anonymize = []
+    col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
-
-    for i in range(n_cols):
-        cols_to_anonymize.append("dim" + str(i))
 
     # Create a toy dataset
     data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
@@ -199,12 +195,17 @@ def debug():
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
     all_data = np.append(all_data, b_day, axis=1)
-    cols_to_anonymize.append("B-day")
+    col_list.append("B-day")
 
-    df = pd.DataFrame(all_data, columns=cols_to_anonymize)
-
+    df = pd.DataFrame(all_data, columns=col_list)
     df = df.infer_objects()
     df = df.convert_dtypes()
+
+    return df, col_list
+
+
+def debug():
+    df, cols_to_anonymize = toy_dataset()
 
     # Create dictionary with Range statistic for each QI
     global initial_ranges
