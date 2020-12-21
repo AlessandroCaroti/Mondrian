@@ -12,12 +12,7 @@ class DataManager(AbstractType):
     _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
 
     @staticmethod
-    def compute_width(el_list):
-        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
-            raise TypeError("el_list must be a list or a np_array")
-        if len(el_list) == 1:
-            return 0
-
+    def max_min(el_list):
         _max = DataManager._max
         _min = DataManager._min
 
@@ -27,6 +22,18 @@ class DataManager(AbstractType):
                 _max = data_obj
             if data_obj < _min:
                 _min = data_obj
+
+        return _max, _min
+
+    @staticmethod
+    def compute_width(el_list):
+        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
+            raise TypeError("el_list must be a list or a np_array")
+        if len(el_list) == 1:
+            return 0
+
+        _max, _min = DataManager.max_min(el_list)
+
         return int((_max - _min).total_seconds())
 
     @staticmethod
@@ -78,15 +85,7 @@ class DataManager(AbstractType):
         if len(el_list) == 1:
             return el_list[0]
 
-        _max = DataManager._max
-        _min = DataManager._min
-
-        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
-        for data_obj in obj_list:
-            if data_obj > _max:
-                _max = data_obj
-            if data_obj < _min:
-                _min = data_obj
+        _max, _min = DataManager.max_min(el_list)
 
         return "[" + \
                _min.strftime(DataManager.data_format) + \
@@ -96,6 +95,7 @@ class DataManager(AbstractType):
 
 def test():
     n_sample = 20
+    np.random.seed(42)
     ages = np.random.randint(0, 120, (n_sample,))
     b_day = [random_Bday(age) for age in ages]
     print(b_day)
@@ -113,10 +113,9 @@ def test():
     print("RIGHT_PART:")
     for index in r:
         print("", b_day[index], end=",")
-
-    diff = DataManager.compute_width(b_day)
     print()
-    print("DIFFERENCE:", diff)
+
+    print("DIFFERENCE:", DataManager.compute_width(b_day))
     pass
 
 

@@ -22,7 +22,7 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = values.tolist()
         width = DataManager.compute_width(date_list)
-    
+
     else:  # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
         raise Exception("WITH of non number")
 
@@ -186,7 +186,7 @@ from dataset_generator.database_generator import random_Bday
 
 def debug():
     # GENERATE A TOY DATASET
-    n_sample = 10000
+    n_sample = 100
     n_cols = 2
     cols_to_anonymize = []
     all_data = np.empty((n_sample, 0), dtype=np.object)
@@ -200,8 +200,8 @@ def debug():
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    # all_data = np.append(all_data, b_day, axis=1)
-    # cols_to_anonymize.append("B-day")
+    all_data = np.append(all_data, b_day, axis=1)
+    cols_to_anonymize.append("B-day")
 
     df = pd.DataFrame(all_data, columns=cols_to_anonymize)
 
