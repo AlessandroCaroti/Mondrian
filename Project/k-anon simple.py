@@ -11,6 +11,7 @@ from typesManager.dateManager import DataManager
 initial_ranges = {}
 dim_type = {"B-day": "date"}
 num_partition = 0
+partition_size = {i: 0 for i in range(1, 15)}
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
@@ -62,8 +63,9 @@ def merge_dictionary(dict1, dict2):
 
 def compute_phi(partition):
     summary = []
-    if len(partition) < 2:
-        print(len(partition))
+    global partition_size, num_partition
+    partition_size[len(partition)] += 1
+    num_partition += 1
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
@@ -141,8 +143,6 @@ def anonymize(partition, columns, k):
 
     # check is lhs and rhs satisfy k-anonymity
     if len(lhs) < k or len(rhs) < k:
-        global num_partition
-        num_partition += 1
         return compute_phi(partition)  # return phi: partition -> summary
 
     return merge_dictionary(anonymize(lhs, columns, k),
@@ -212,6 +212,7 @@ def debug():
     print("-Partition created:", num_partition)
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
+    print(partition_size)
     print("_________________________________________________________")
     print(df_anonymize)
 
