@@ -185,7 +185,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 3000
+    n_sample = 10000
     n_cols = 2
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
@@ -208,6 +208,7 @@ def toy_dataset():
 
 def debug():
     df, cols_to_anonymize = toy_dataset()
+    k = 3
 
     # Create dictionary with Range statistic for each QI
     global initial_ranges
@@ -215,15 +216,16 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
+    dict_phi = anonymize(df, cols_to_anonymize, 0, k)
     t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
     t2 = datetime.now()
 
-    print("Partition created:", num_partition)
-    print("Total time:      ", t2 - t0)
-    print("Compute phi time:", t1 - t0)
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
+    print("-Partition created:", num_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
     print("_________________________________________________________")
     print(df_anonymize)
 
