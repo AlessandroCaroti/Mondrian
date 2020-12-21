@@ -19,7 +19,10 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
         max_r = max(values)
         min_r = min(values)
         width = max_r - min_r
-
+    elif dim in dim_type and dim_type[dim] == 'date':
+        date_list = values.tolist()
+        width = DataManager.compute_width(date_list)
+    
     else:  # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
         raise Exception("WITH of non number")
 
