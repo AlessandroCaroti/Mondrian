@@ -86,7 +86,7 @@ def compute_phi(partition):
 
 def find_median(partition, dim, k):
     if is_numeric_dtype(partition[dim]):
-        freq = partition[dim].value_counts(sort=True, ascending=True)
+        freq = partition[dim].value_counts(sort=False)
         freq_dict = freq.to_dict()
         values_list = freq.index.to_list()
         # TODO: mettere controllo "stop to split the partition"
