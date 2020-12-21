@@ -191,6 +191,7 @@ def toy_dataset():
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
     # Create a toy dataset
+    random.seed(42)
     data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
