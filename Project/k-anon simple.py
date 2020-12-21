@@ -14,7 +14,6 @@ num_partition = 0
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
-    width = 0
     if is_numeric_dtype(values):  # range width = max - min
         max_r = max(values)
         min_r = min(values)
@@ -23,7 +22,7 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
         date_list = values.tolist()
         width = DataManager.compute_width(date_list)
 
-    else:  # TODO: da gestire se non numerico, se categorica dipende dalle foglie della gerarchia
+    else:  # TODO: manage categorical data
         raise Exception("WITH of non number")
 
     return width
@@ -107,7 +106,7 @@ def find_median(partition, dim, k):
     if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
         return DataManager.median(date_list, k)
-    # todo: gestire le colonne che non sono numeri
+    # TODO: manage categorical data
     raise Exception("MEDIAN")
 
 
@@ -130,12 +129,11 @@ def split_partition(partition, dim, split_val):
         date_list = partition[dim].tolist()
 
         left_idxs, right_idxs = DataManager.split(date_list, split_val)
-        left_p = partition.iloc[left_idxs]
-        right_p = partition.iloc[right_idxs]
+        left_p, right_p = partition.iloc[left_idxs], partition.iloc[right_idxs]
 
-    else:  # TODO: da gestire il caso in cui non sia un numero
+    else:  # TODO: manage categorical data
         raise Exception("SPLIT")
-    # print("LEFT:\n", left_p,"\n\nRIGHT:\n",right_p)
+
     return left_p, right_p
 
 
