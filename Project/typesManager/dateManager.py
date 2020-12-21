@@ -8,6 +8,26 @@ from typesManager.abstractType import AbstractType
 
 class DataManager(AbstractType):
     data_format = "%d-%m-%Y"
+    _max = datetime.strptime("01/01/1000", "%d/%m/%Y")
+    _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
+
+    @staticmethod
+    def compute_width(el_list):
+        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
+            raise TypeError("el_list must be a list or a np_array")
+        if len(el_list) == 1:
+            return 0
+
+        _max = DataManager._max
+        _min = DataManager._min
+
+        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
+        for data_obj in obj_list:
+            if data_obj > _max:
+                _max = data_obj
+            if data_obj < _min:
+                _min = data_obj
+        return int((_max - _min).total_seconds())
 
     @staticmethod
     def split(list_to_split, split_val: str, strict: bool = True):
@@ -58,8 +78,8 @@ class DataManager(AbstractType):
         if len(el_list) == 1:
             return el_list[0]
 
-        _max = datetime.strptime("01/01/1000", "%d/%m/%Y")
-        _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
+        _max = DataManager._max
+        _min = DataManager._min
 
         obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
         for data_obj in obj_list:
@@ -80,7 +100,7 @@ def test():
     b_day = [random_Bday(age) for age in ages]
     print(b_day)
 
-    median = DataManager.median(b_day, 1)[0]
+    median = DataManager.median(b_day, 1)
     l, r = DataManager.split(b_day, median)
 
     print("MEDIAN:", median)
@@ -93,6 +113,10 @@ def test():
     print("RIGHT_PART:")
     for index in r:
         print("", b_day[index], end=",")
+
+    diff = DataManager.compute_width(b_day)
+    print()
+    print("DIFFERENCE:", diff)
     pass
 
 
