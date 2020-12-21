@@ -63,13 +63,13 @@ def merge_dictionary(dict1, dict2):
 
 
 def compute_phi(partition):
-    np_partition = partition.to_numpy()
     summary = []
 
-    for col, dim in enumerate(partition.columns):
+    for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
-            _max = np.max(np_partition[:, col])
-            _min = np.min(np_partition[:, col])
+            _max = partition[dim].max()
+            _min = partition[dim].min()
+
             col_summary = "[" + str(_min) + " - " + str(_max) + "]"
             if _min == _max:
                 col_summary = str(_min)
@@ -186,7 +186,7 @@ from dataset_generator.database_generator import random_Bday
 
 def debug():
     # GENERATE A TOY DATASET
-    n_sample = 100
+    n_sample = 30
     n_cols = 2
     cols_to_anonymize = []
     all_data = np.empty((n_sample, 0), dtype=np.object)
