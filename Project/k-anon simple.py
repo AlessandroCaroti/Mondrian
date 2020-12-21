@@ -86,27 +86,26 @@ def compute_phi(partition):
 
 def find_median(partition, dim, k):
     if is_numeric_dtype(partition[dim]):
-        freq = partition[dim].value_counts(sort=False)
-        freq_dict = freq.to_dict()
-        values_list = freq.index.to_list()
+        freq_dict = partition[dim].value_counts(sort=False).to_dict()
+        freq_dict = {k: freq_dict[k] for k in sorted(freq_dict)}  # sort by value(key)
+        middle = len(partition) // 2
+
         # TODO: mettere controllo "stop to split the partition"
 
-        middle = len(partition) // 2
         acc = 0
-        split_index = 0
-        for i, qi_val in enumerate(values_list):
+        median = 0
+        for i, qi_val in enumerate(freq_dict.keys()):
             acc += freq_dict[qi_val]
             if acc >= middle:
-                split_index = i
+                median = qi_val
                 break
-        median = values_list[split_index]
 
         return median
     if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
         return DataManager.median(date_list, k)
-    # TODO: manage categorical data
-    raise Exception("MEDIAN")
+
+    raise Exception("MEDIAN")  # TODO: manage categorical data
 
 
 def split_partition(partition, dim, split_val):
