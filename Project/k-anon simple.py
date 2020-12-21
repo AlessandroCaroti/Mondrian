@@ -1,3 +1,4 @@
+from datetime import datetime
 from numbers import Number
 
 import numpy as np
@@ -213,10 +214,17 @@ def debug():
     initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
+    t0 = datetime.now()
     dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
-    print("Partition created:", num_partition)
+    t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
+    t2 = datetime.now()
+
+    print("Partition created:", num_partition)
+    print("Total time:      ", t2 - t0)
+    print("Compute phi time:", t1 - t0)
+    print("_________________________________________________________")
     print(df_anonymize)
 
 
