@@ -44,7 +44,6 @@ def chose_dimension(dimensions, partition, k):
 
     width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
                     dimensions)  # get list of all width and median
-
     width_list = list(width_map)  # convert to list
 
     _max = -1
@@ -135,13 +134,7 @@ def split_partition(partition, dim, split_val):
     return left_p, right_p
 
 
-def allowable_cut(partition, dim, split_val, k):
-    lhs, rhs = split_partition(partition, dim, split_val)
-
-    return len(lhs) >= k and len(rhs) >= k  # strict version, NON CAPISCO COME SIA RELAXED
-
-
-def anonymize(partition, columns, step, k):
+def anonymize(partition, columns, k):
     dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
     median = find_median(partition, dim, k)  # compute the frequency set and find the median
     lhs, rhs = split_partition(partition, dim, median)  #
@@ -152,8 +145,8 @@ def anonymize(partition, columns, step, k):
         num_partition += 1
         return compute_phi(partition)  # return phi: partition -> summary
 
-    return merge_dictionary(anonymize(lhs, columns, step + 1, k),
-                            anonymize(rhs, columns, step + 1, k))
+    return merge_dictionary(anonymize(lhs, columns, k),
+                            anonymize(rhs, columns, k))
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -177,7 +170,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 5000
+    n_sample = 10000
     n_cols = 2
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
@@ -201,6 +194,7 @@ def toy_dataset():
 
 def debug():
     df, cols_to_anonymize = toy_dataset()
+    k = 3
 
     # Create dictionary with Range statistic for each QI
     global initial_ranges
@@ -208,15 +202,16 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, step=0, k=2)
+    dict_phi = anonymize(df, cols_to_anonymize, k)
     t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
     t2 = datetime.now()
 
-    print("Partition created:", num_partition)
-    print("Total time:      ", t2 - t0)
-    print("Compute phi time:", t1 - t0)
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
+    print("-Partition created:", num_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
     print("_________________________________________________________")
     print(df_anonymize)
 
