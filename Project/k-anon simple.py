@@ -11,7 +11,7 @@ from typesManager.dateManager import DataManager
 initial_ranges = {}
 dim_type = {"B-day": "date"}
 num_partition = 0
-partition_size = {i: 0 for i in range(1, 15)}
+partition_size = {i: 0 for i in range(1, 13)}
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
