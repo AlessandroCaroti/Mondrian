@@ -90,7 +90,7 @@ def find_median(partition, dim, k):
         freq_dict = freq.to_dict()
         values_list = freq.index.to_list()
         # TODO: mettere controllo "stop to split the partition"
-        #   valutare se mettere il parametro K globale
+
         middle = len(partition) // 2
         acc = 0
         split_index = 0
