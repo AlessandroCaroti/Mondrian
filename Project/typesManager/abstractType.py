@@ -40,3 +40,16 @@ class AbstractType(ABC):
         :rtype: a string representing a summary statistic of the input list
         """
         pass
+
+    @staticmethod
+    @abstractmethod
+    def find_median(partition, dim, k: int):
+        """
+        Compute the median along the input given.
+
+        :param dim:
+        :param partition:
+        :param k:
+        :rtype: the median of the input
+        """
+        pass
