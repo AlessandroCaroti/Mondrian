@@ -199,8 +199,8 @@ def toy_dataset():
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    all_data = np.append(all_data, b_day, axis=1)
-    col_list.append("B-day")
+    # all_data = np.append(all_data, b_day, axis=1)
+    # col_list.append("B-day")
 
     df = pd.DataFrame(all_data, columns=col_list)
     df = df.infer_objects()
