@@ -63,10 +63,6 @@ class DataManager(AbstractType):
         val_list, frequency = np.unique(obj_array, return_counts=True)
         middle = len(el_list) // 2
 
-        # Stop to split the partition todo rimmuovere i commenti
-        # if middle < k or len(val_list) <= 1:
-        #    return None
-
         acc = 0
         split_index = 0
         for idx, val in enumerate(val_list):

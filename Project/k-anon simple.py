@@ -42,15 +42,10 @@ def chose_dimension(dimensions, partition, k):
     :return: the dimension with max width and which allow cut
     """
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
                     dimensions)  # get list of all width and median
-    width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
-                            width_map)  # filter out the dimensions which don't allow cut
 
-    width_list = list(width_filtered)  # convert to list
-
-    if len(width_list) == 0:  # no columns allow cut
-        return None
+    width_list = list(width_map)  # convert to list
 
     _max = -1
     best_col = ''
@@ -68,6 +63,8 @@ def merge_dictionary(dict1, dict2):
 
 def compute_phi(partition):
     summary = []
+    if len(partition) < 2:
+        print(len(partition))
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
@@ -95,10 +92,8 @@ def find_median(partition, dim, k):
         freq_dict = {k: freq_dict[k] for k in sorted(freq_dict)}  # sort by value (aka the keys of the dict)
         middle = len(partition) // 2
 
-        # TODO: mettere controllo "stop to split the partition"
-
         acc = 0
-        median = 0
+        median = None
         for qi_val in freq_dict.keys():
             acc += freq_dict[qi_val]
             if acc >= middle:
@@ -147,21 +142,18 @@ def allowable_cut(partition, dim, split_val, k):
 
 
 def anonymize(partition, columns, step, k):
-    dim = chose_dimension(columns, partition, k)
+    dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
+    median = find_median(partition, dim, k)  # compute the frequency set and find the median
+    lhs, rhs = split_partition(partition, dim, median)  #
 
-    # If not allowed multidimensional cut for partition
-    if dim is None:
+    # check is lhs and rhs satisfy k-anonymity
+    if len(lhs) < k or len(rhs) < k:
         global num_partition
         num_partition += 1
         return compute_phi(partition)  # return phi: partition -> summary
 
-    median = find_median(partition, dim, k)
-    lhs, rhs = split_partition(partition, dim, median)
-
-    phi_list = merge_dictionary(anonymize(lhs, columns, step + 1, k),
-                                anonymize(rhs, columns, step + 1, k))
-
-    return phi_list
+    return merge_dictionary(anonymize(lhs, columns, step + 1, k),
+                            anonymize(rhs, columns, step + 1, k))
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -185,12 +177,13 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 3000
+    n_sample = 5000
     n_cols = 2
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
     # Create a toy dataset
+    random.seed(42)
     data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
@@ -215,7 +208,7 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, step=0, k=3)
+    dict_phi = anonymize(df, cols_to_anonymize, step=0, k=2)
     t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
