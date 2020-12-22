@@ -8,7 +8,7 @@ class NumericManager(AbstractType):
 
     @staticmethod
     def compute_width(el_list):
-        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
+        if not isinstance(el_list, np.ndarray):
             raise TypeError("list_to_split must be a np_array")
 
         max_r = max(el_list)
@@ -51,7 +51,25 @@ class NumericManager(AbstractType):
         :param el_list: Input list
         :rtype: the median of the input
         """
-        pass
+        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
+            raise TypeError("list_to_split must be a np_array")
+
+        val_list, frequency = np.unique(el_list, return_counts=True)
+        middle = len(el_list) // 2
+
+        # Stop to split the partition todo rimmuovere i commenti
+        # if middle < k or len(val_list) <= 1:
+        #    return None
+
+        acc = 0
+        split_index = 0
+        for idx, val in enumerate(val_list):
+            acc += frequency[idx]
+            if acc >= middle:
+                split_index = idx
+                break
+
+        return val_list[split_index]
 
     @staticmethod
     def summary_statistic(el_list):

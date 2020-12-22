@@ -97,22 +97,11 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim, k):
+
     if is_numeric_dtype(partition[dim]):
-        freq_dict = partition[dim].value_counts(sort=False).to_dict()
-        freq_dict = {k: freq_dict[k] for k in sorted(freq_dict)}  # sort by value (aka the keys of the dict)
-        middle = len(partition) // 2
+        list_np = partition[dim].to_numpy()
+        return NumericManager.median(list_np, k)
 
-        # TODO: mettere controllo "stop to split the partition"
-
-        acc = 0
-        median = 0
-        for qi_val in freq_dict.keys():
-            acc += freq_dict[qi_val]
-            if acc >= middle:
-                median = qi_val
-                break
-
-        return median
     if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
         return DataManager.median(date_list, k)

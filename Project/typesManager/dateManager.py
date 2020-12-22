@@ -103,7 +103,7 @@ def test():
     print(b_day)
 
     median = DataManager.median(b_day, 1)
-    l, r = DataManager.split(b_day, median)
+    l, r, c = DataManager.split(b_day, median)
 
     print("MEDIAN:", median)
     print("RANGE:", DataManager.summary_statistic(b_day))
