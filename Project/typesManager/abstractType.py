@@ -5,6 +5,11 @@ class AbstractType(ABC):
 
     @staticmethod
     @abstractmethod
+    def compute_width(el_list):
+        pass
+
+    @staticmethod
+    @abstractmethod
     def split(list_to_split, split_val, strict: bool = bool):
         """
         Given an element and a list of element of the same type, split the list in 2 part

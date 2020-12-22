@@ -2,10 +2,38 @@ from datetime import datetime
 
 import numpy as np
 
+from dataset_generator.database_generator import random_Bday
 from typesManager.abstractType import AbstractType
 
 class DataManager(AbstractType):
     data_format = "%d-%m-%Y"
+    _max = datetime.strptime("01/01/1000", "%d/%m/%Y")
+    _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
+
+    @staticmethod
+    def max_min(el_list):
+        _max = DataManager._max
+        _min = DataManager._min
+
+        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
+        for data_obj in obj_list:
+            if data_obj > _max:
+                _max = data_obj
+            if data_obj < _min:
+                _min = data_obj
+
+        return _max, _min
+
+    @staticmethod
+    def compute_width(el_list):
+        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
+            raise TypeError("el_list must be a list or a np_array")
+        if len(el_list) == 1:
+            return 0
+
+        _max, _min = DataManager.max_min(el_list)
+
+        return int((_max - _min).total_seconds())
 
     @staticmethod
     def split(list_to_split, split_val: str, strict: bool = True):
@@ -34,9 +62,9 @@ class DataManager(AbstractType):
         val_list, frequency = np.unique(obj_array, return_counts=True)
         middle = len(el_list) // 2
 
-        # Stop to split the partition
-        if middle < k or len(val_list) <= 1:
-            return None
+        # Stop to split the partition todo rimmuovere i commenti
+        # if middle < k or len(val_list) <= 1:
+        #    return None
 
         acc = 0
         split_index = 0
@@ -53,17 +81,10 @@ class DataManager(AbstractType):
     def summary_statistic(el_list) -> str:
         if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
             raise TypeError("el_list must be a list or a np_array")
+        if len(el_list) == 1:
+            return el_list[0]
 
-        _max = datetime.strptime("01/10/1800", "%d/%m/%Y")
-        _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
-
-        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
-
-        for data_obj in obj_list:
-            if data_obj > _max:
-                _max = data_obj
-            elif data_obj < _min:
-                _min = data_obj
+        _max, _min = DataManager.max_min(el_list)
 
         return "[" + \
                _min.strftime(DataManager.data_format) + \
@@ -71,20 +92,14 @@ class DataManager(AbstractType):
                _max.strftime(DataManager.data_format) + "]"
 
 
-def random_Bday(age):
-    day = np.random.randint(1, 28)
-    mouth = np.random.randint(1, 12)
-    year = datetime.now().year - age
-    return "{:02d}-{:02d}-{}".format(day, mouth, year)
-
-
 def test():
     n_sample = 20
+    np.random.seed(42)
     ages = np.random.randint(0, 120, (n_sample,))
     b_day = [random_Bday(age) for age in ages]
     print(b_day)
 
-    median = DataManager.median(b_day, 1)[0]
+    median = DataManager.median(b_day, 1)
     l, r = DataManager.split(b_day, median)
 
     print("MEDIAN:", median)
@@ -97,6 +112,9 @@ def test():
     print("RIGHT_PART:")
     for index in r:
         print("", b_day[index], end=",")
+    print()
+
+    print("DIFFERENCE:", DataManager.compute_width(b_day))
     pass
 
 
