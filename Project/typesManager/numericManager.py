@@ -9,7 +9,7 @@ class NumericManager(AbstractType):
     @staticmethod
     def compute_width(el_list):
         if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
-            raise TypeError("el_list must be a list or a np_array")
+            raise TypeError("list_to_split must be a np_array")
 
         max_r = max(el_list)
         min_r = min(el_list)
@@ -27,10 +27,20 @@ class NumericManager(AbstractType):
         :param split_val: value used to divide the list given
         :rtype: (left_part, right_part) 2 list with the position
         """
-        if not isinstance(list_to_split, list) and not isinstance(list_to_split, np.ndarray):
-            raise TypeError("list_to_split must be a list or a np_array")
+        if not isinstance(list_to_split, np.ndarray):
+            raise TypeError("list_to_split must be a np_array")
 
-        pass
+        left_idx, right_idx, center_idx = [], [], []
+
+        for idx, el in enumerate(list_to_split):
+            if el > split_val:
+                left_idx.append(idx)
+            elif el < split_val:
+                right_idx.append(idx)
+            else:
+                center_idx.append(idx)
+
+        return left_idx, right_idx, center_idx
 
     @staticmethod
     def median(el_list, k: int):

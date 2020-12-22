@@ -9,6 +9,7 @@ from pandas.api.types import is_numeric_dtype
 initial_ranges = {}
 
 from typesManager.dateManager import DataManager
+from typesManager.numericManager import NumericManager
 
 dim_type = {"B-day": "date"}
 num_partition = 0
@@ -44,7 +45,7 @@ def chose_dimension(dimensions, partition, k):
     :return: the dimension with max width and which allow cut
     '''
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim,k)],
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
                     dimensions)  # get list of all width and median
 
     width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
@@ -121,25 +122,23 @@ def find_median(partition, dim, k):
 
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
-        # print("Split_val: ", split_val)
-        left_p = partition[partition[dim] > split_val]
-        right_p = partition[partition[dim] < split_val]
-        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
-        # also the STRICT version is handled
-        center = partition[partition[dim] == split_val]
+        list_np = partition[dim].to_numpy()
 
-        mid = int(len(center.index) / 2)
+        left_idx, right_idx, center_idx = NumericManager.split(list_np, split_val)
+        mid = len(center_idx) // 2
+        left_p, right_p, center = partition.iloc[left_idx], partition.iloc[right_idx], partition.iloc[center_idx]
 
-        if len(center[:mid + 1].index) > 0:
+        if len(center_idx[:mid + 1]) > 0:
             left_p = pd.concat([left_p, center[:mid + 1]])
-        if len(center[mid + 1:].index) > 0:
+
+        if len(center_idx[mid + 1:]) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
 
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
-        left_idxs, right_idxs = DataManager.split(date_list, split_val)
-        left_p, right_p = partition.iloc[left_idxs], partition.iloc[right_idxs]
+        left_idx, right_idx = DataManager.split(date_list, split_val)
+        left_p, right_p = partition.iloc[left_idx], partition.iloc[right_idx]
 
     else:  # TODO: manage categorical data
         raise Exception("SPLIT")
@@ -190,7 +189,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10000
+    n_sample = 10
     n_cols = 2
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
