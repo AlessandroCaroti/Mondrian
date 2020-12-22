@@ -38,31 +38,19 @@ def compute_normalized_width(values, dim):
 
 
 def chose_dimension(dimensions, partition, k):
-    '''
+    """
     :param dimensions: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut
-    '''
+    """
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
                     dimensions)  # get list of all width and median
 
-    width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
-                            width_map)  # filter out the dimensions which don't allow cut
+    width_list = list(width_map)  # convert to list
+    width_list.sort(key=lambda x: x[1], reverse=True)
 
-    width_list = list(width_filtered)  # convert to list
-
-    if len(width_list) == 0:  # no columns allow cut
-        return None
-
-    _max = -1
-    best_col = ''
-    for row in width_list:
-        if row[1] > _max:
-            _max = row[1]
-            best_col = row[0]
-
-    return best_col  # name of the column with max width
+    return width_list[0][0]  # name of the column with max width
 
 
 def merge_dictionary(dict1, dict2):
@@ -129,26 +117,23 @@ def split_partition(partition, dim, split_val):
     return left_p, right_p
 
 
-def allowable_cut(partition, dim, split_val, k):
-    lhs, rhs = split_partition(partition, dim, split_val)
+def anonymize(partition, k):
+    columns = partition.columns.tolist()
 
-    return len(lhs) >= k and len(rhs) >= k  # strict version, NON CAPISCO COME SIA RELAXED
+    while columns and len(partition) >= k * 2:
+        dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
+        median = find_median(partition, dim, k)  # compute the frequency set and find the median
+        lhs, rhs = split_partition(partition, dim, median)  #
 
+        # check if, for the current dim, lhs and rhs satisfy k-anonymity
+        if len(lhs) < k or len(rhs) < k:
+            columns.remove(dim)
+            continue
 
-def anonymize(partition, columns, step, k):
-    dim = chose_dimension(columns, partition, k)
+        return merge_dictionary(anonymize(lhs, k),
+                                anonymize(rhs, k))
 
-    # If not allowed multidimensional cut for partition
-    if dim is None:
-        return compute_phi(partition)  # return phi: partition -> summary
-
-    median = find_median(partition, dim, k)
-    lhs, rhs = split_partition(partition, dim, median)
-
-    phi_list = merge_dictionary(anonymize(lhs, columns, step + 1, k),
-                                anonymize(rhs, columns, step + 1, k))
-
-    return phi_list
+    return compute_phi(partition)  # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -204,7 +189,7 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, 0, k)
+    dict_phi = anonymize(df, k)
     t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
