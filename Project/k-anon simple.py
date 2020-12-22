@@ -136,7 +136,7 @@ def anonymize(partition, columns, k):
     median = find_median(partition, dim, k)  # compute the frequency set and find the median
     lhs, rhs = split_partition(partition, dim, median)  #
 
-    # check is lhs and rhs satisfy k-anonymity
+    # check if, for the current dim, lhs and rhs satisfy k-anonymity
     if len(lhs) < k or len(rhs) < k:
         return compute_phi(partition)  # return phi: partition -> summary
 
@@ -188,33 +188,28 @@ def toy_dataset():
 
 
 def debug():
-    t = []
-    for i in range(50):
-        df, cols_to_anonymize = toy_dataset()
-        k = 3
+    df, cols_to_anonymize = toy_dataset()
+    k = 3
 
-        # Create dictionary with Range statistic for each QI
-        global initial_ranges
-        initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
+    # Create dictionary with Range statistic for each QI
+    global initial_ranges
+    initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
 
-        # ANONYMIZE SEMI-IDENTIFIERS DATA
-        t0 = datetime.now()
-        dict_phi = anonymize(df, cols_to_anonymize, k)
-        t1 = datetime.now()
+    # ANONYMIZE SEMI-IDENTIFIERS DATA
+    t0 = datetime.now()
+    dict_phi = anonymize(df, cols_to_anonymize, k)
+    t1 = datetime.now()
 
-        df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
-        t2 = datetime.now()
+    df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
+    t2 = datetime.now()
 
-        print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
-        print("-Partition created:", num_partition)
-        print("-Total time:      ", t2 - t0)
-        print("-Compute phi time:", t1 - t0)
-        print(partition_size)
-        print("_________________________________________________________")
-        # print(df_anonymize)
-        t.append((t1 - t0).total_seconds())
-    print("\n\n\n\n")
-    print("max:{} - min:{} - mean:{}".format(np.max(t), np.min(t), np.mean(t)))
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
+    print("-Partition created:", num_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
+    print(partition_size)
+    print("_________________________________________________________")
+    print(df_anonymize)
 
 
 if __name__ == "__main__":
