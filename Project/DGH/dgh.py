@@ -18,7 +18,7 @@ class _DGH:
         self.hierarchies = dict()
         """
         Dictionary where the values are trees and the keys are the values of the corresponding 
-        roots.
+        roots. The dictionary must have only one value, so there must be only one tree
         """
 
         self.gen_levels = dict()
@@ -67,21 +67,28 @@ class CsvDGH(_DGH):
 
         super().__init__(dgh_path)
 
+
         try:
             with open(dgh_path, 'r') as file:
-                for line in file:
+                for i, line in enumerate(file):
 
                     try:
                         csv_reader = csv.reader(StringIO(line))
                     except IOError:
                         raise
+
                     values = next(csv_reader)
 
-                    # If it doesn't exist a hierarchy with this root, add one:
-                    if values[-1] not in self.hierarchies:
+                    # If it doesn't exist a hierarchy with this root, add if only it's the first:
+                    if values[-1] not in self.hierarchies and i == 0:
                         self.hierarchies[values[-1]] = Tree(Node(values[-1]))
                         # Add the number of generalization levels:
                         self.gen_levels[values[-1]] = len(values) - 1
+
+                    # Only one tree, so if the value is not in the hierarchy it's ignored (unless it's the first)
+                    if values[-1] not in self.hierarchies:
+                        continue
+
                     # Populate hierarchy with the other values:
                     self._insert_hierarchy(values[:-1], self.hierarchies[values[-1]])
 
@@ -101,17 +108,26 @@ class CsvDGH(_DGH):
         :return:        True if the hierarchy has been inserted, False otherwise.
         """
 
+        leaf_value = values[0] # get the first value as leaf, the no generalized one
+
         current_node = tree.root
 
         for i, value in enumerate(reversed(values)):
 
             if value in current_node.children:
+                # update the list of leaf for each node
+                current_node.add_leaf(leaf_value)
+
                 current_node = current_node.children[value]
                 continue
             else:
-                # Insert the hierarchy from this node:
+                # Insert the hierarchy from this node
                 for v in list(reversed(values))[i:]:
                     current_node.add_child(Node(v))
+
+                    # update the list of leaf for each node
+                    current_node.add_leaf(leaf_value)
+
                     current_node = current_node.children[v]
                 return True
 

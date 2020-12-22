@@ -8,3 +8,4 @@ class Partition():
         self.table = partition # table of the corresponding partition in the tree
 
 
+
