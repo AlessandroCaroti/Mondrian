@@ -126,8 +126,6 @@ def split_partition(partition, dim, split_val):
 
     if len(center_idx[mid + 1:]) > 0:
         right_p = pd.concat([right_p, center[mid + 1:]])
-    print("LEFT: ", left_p)
-    print("Right: ", right_p)
     return left_p, right_p
 
 
