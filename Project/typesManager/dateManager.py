@@ -41,17 +41,19 @@ class DataManager(AbstractType):
         if not isinstance(list_to_split, list) and not isinstance(list_to_split, np.ndarray):
             raise TypeError("list_to_split must be a list or a np_array")
 
-        left_idx, right_idx = [], []
+        left_idx, right_idx, center_idx = [], [], []
         split_val = datetime.strptime(split_val, DataManager.data_format)
         obj_list = [datetime.strptime(el, DataManager.data_format) for el in list_to_split]
 
         for idx, date in enumerate(obj_list):
-            if date >= split_val:
+            if date > split_val:
+                left_idx.append(idx)
+            elif date < split_val:
                 right_idx.append(idx)
             else:
-                left_idx.append(idx)
+                center_idx.append(idx)
 
-        return left_idx, right_idx
+        return left_idx, right_idx, center_idx
 
     @staticmethod
     def median(el_list, k: int):
@@ -101,7 +103,7 @@ def test():
     print(b_day)
 
     median = DataManager.median(b_day, 1)
-    l, r = DataManager.split(b_day, median)
+    l, r, c = DataManager.split(b_day, median)
 
     print("MEDIAN:", median)
     print("RANGE:", DataManager.summary_statistic(b_day))

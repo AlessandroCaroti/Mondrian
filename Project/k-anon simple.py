@@ -6,9 +6,11 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-from typesManager.dateManager import DataManager
-
 initial_ranges = {}
+
+from typesManager.dateManager import DataManager
+from typesManager.numericManager import NumericManager
+
 dim_type = {"B-day": "date"}
 num_partition = 0
 partition_size = {i: 0 for i in range(1, 13)}
@@ -37,14 +39,15 @@ def compute_normalized_width(values, dim):
 
 
 def chose_dimension(dimensions, partition, k):
-    """
+    '''
     :param dimensions: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut
-    """
+    '''
 
     width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
                     dimensions)  # get list of all width and median
+
     width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
                             width_map)  # filter out the dimensions which don't allow cut
 
@@ -75,12 +78,8 @@ def compute_phi(partition):
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
-            _max = partition[dim].max()
-            _min = partition[dim].min()
-
-            col_summary = "[" + str(_min) + " - " + str(_max) + "]"
-            if _min == _max:
-                col_summary = str(_min)
+            list_np = partition[dim].to_numpy()
+            col_summary = NumericManager.summary_statistic(list_np)
         elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
             col_summary = DataManager.summary_statistic(date_list)
@@ -95,21 +94,9 @@ def compute_phi(partition):
 
 def find_median(partition, dim, k):
     if is_numeric_dtype(partition[dim]):
-        freq_dict = partition[dim].value_counts(sort=False).to_dict()
-        freq_dict = {k: freq_dict[k] for k in sorted(freq_dict)}  # sort by value (aka the keys of the dict)
-        middle = len(partition) // 2
+        list_np = partition[dim].to_numpy()
+        return NumericManager.median(list_np, k)
 
-        # TODO: mettere controllo "stop to split the partition"
-
-        acc = 0
-        median = 0
-        for qi_val in freq_dict.keys():
-            acc += freq_dict[qi_val]
-            if acc >= middle:
-                median = qi_val
-                break
-
-        return median
     if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
         return DataManager.median(date_list, k)
@@ -119,28 +106,26 @@ def find_median(partition, dim, k):
 
 def split_partition(partition, dim, split_val):
     if isinstance(split_val, Number):
-        # print("Split_val: ", split_val)
-        left_p = partition[partition[dim] > split_val]
-        right_p = partition[partition[dim] < split_val]
-        # the tuples with split_val are evenly distributed between the two partitions ( RELAXED version ),
-        # also the STRICT version is handled
-        center = partition[partition[dim] == split_val]
+        list_np = partition[dim].to_numpy()
 
-        mid = int(len(center.index) / 2)
+        left_idx, right_idx, center_idx = NumericManager.split(list_np, split_val)
 
-        if len(center[:mid + 1].index) > 0:
-            left_p = pd.concat([left_p, center[:mid + 1]])
-        if len(center[mid + 1:].index) > 0:
-            right_p = pd.concat([right_p, center[mid + 1:]])
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
-        left_idxs, right_idxs = DataManager.split(date_list, split_val)
-        left_p, right_p = partition.iloc[left_idxs], partition.iloc[right_idxs]
+        left_idx, right_idx, center_idx = DataManager.split(date_list, split_val)
 
     else:  # TODO: manage categorical data
-        raise Exception("SPLIT")
+        raise Exception("SPLIT_CATEGORICAL")
 
+    mid = len(center_idx) // 2
+    left_p, right_p, center = partition.iloc[left_idx], partition.iloc[right_idx], partition.iloc[center_idx]
+
+    if len(center_idx[:mid + 1]) > 0:
+        left_p = pd.concat([left_p, center[:mid + 1]])
+
+    if len(center_idx[mid + 1:]) > 0:
+        right_p = pd.concat([right_p, center[mid + 1:]])
     return left_p, right_p
 
 
@@ -187,8 +172,8 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10000
-    n_cols = 2
+    n_sample = 30
+    n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
