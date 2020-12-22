@@ -5,6 +5,7 @@ import numpy as np
 from dataset_generator.database_generator import random_Bday
 from typesManager.abstractType import AbstractType
 
+
 class DataManager(AbstractType):
     data_format = "%d-%m-%Y"
     _max = datetime.strptime("01/01/1000", "%d/%m/%Y")

@@ -134,6 +134,7 @@ def split_partition(partition, dim, split_val):
             left_p = pd.concat([left_p, center[:mid + 1]])
         if len(center[mid + 1:].index) > 0:
             right_p = pd.concat([right_p, center[mid + 1:]])
+
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
