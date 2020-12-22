@@ -78,12 +78,8 @@ def compute_phi(partition):
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
-            _max = partition[dim].max()
-            _min = partition[dim].min()
-
-            col_summary = "[" + str(_min) + " - " + str(_max) + "]"
-            if _min == _max:
-                col_summary = str(_min)
+            list_np = partition[dim].to_numpy()
+            col_summary = NumericManager.summary_statistic(list_np)
         elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
             col_summary = DataManager.summary_statistic(date_list)
@@ -97,7 +93,6 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim, k):
-
     if is_numeric_dtype(partition[dim]):
         list_np = partition[dim].to_numpy()
         return NumericManager.median(list_np, k)

@@ -79,4 +79,13 @@ class NumericManager(AbstractType):
         :param el_list: Input list
         :rtype: a string representing a summary statistic of the input list
         """
-        pass
+        if not isinstance(el_list, np.ndarray):
+            raise TypeError("list_to_split must be a np_array")
+        if len(el_list) == 1:
+            return el_list[0]
+        _max, _min = np.max(el_list), np.min(el_list)
+
+        return "[" + str(_min) + " - " + str(_max) + "]"
+
+
+
