@@ -6,13 +6,12 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-initial_ranges = {}
-
+from dataset_generator.database_generator import random_Bday
 from typesManager.dateManager import DataManager
 from typesManager.numericManager import NumericManager
 
+initial_ranges = {}
 dim_type = {"B-day": "date"}
-num_partition = 0
 partition_size = {i: 0 for i in range(1, 13)}
 
 
@@ -37,7 +36,7 @@ def compute_normalized_width(values, dim):
     return width / initial_ranges[dim]  # normalized with statistic of the original dimension
 
 
-def chose_dimension(dimensions, partition, k):
+def chose_dimension(dimensions, partition):
     """
     :param dimensions: list of columns
     :param partition: partition to split
@@ -59,9 +58,8 @@ def merge_dictionary(dict1, dict2):
 
 def compute_phi(partition):
     summary = []
-    global partition_size, num_partition
+    global partition_size
     partition_size[len(partition)] += 1
-    num_partition += 1
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
@@ -121,7 +119,7 @@ def anonymize(partition, k):
     columns = partition.columns.tolist()
 
     while columns and len(partition) >= k * 2:
-        dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
+        dim = chose_dimension(columns, partition)  # chooses the dimension with the widest normalized range
         median = find_median(partition, dim, k)  # compute the frequency set and find the median
         lhs, rhs = split_partition(partition, dim, median)  #
 
@@ -150,9 +148,6 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     # Drop anonymize columns
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
-
-
-from dataset_generator.database_generator import random_Bday
 
 
 def toy_dataset():
@@ -196,7 +191,7 @@ def debug():
     t2 = datetime.now()
 
     print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
-    print("-Partition created:", num_partition)
+    print("-Partition created:", sum(partition_size.values()))
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
     print(partition_size)
