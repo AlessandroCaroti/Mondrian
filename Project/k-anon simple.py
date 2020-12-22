@@ -125,24 +125,25 @@ def split_partition(partition, dim, split_val):
         list_np = partition[dim].to_numpy()
 
         left_idx, right_idx, center_idx = NumericManager.split(list_np, split_val)
-        mid = len(center_idx) // 2
-        left_p, right_p, center = partition.iloc[left_idx], partition.iloc[right_idx], partition.iloc[center_idx]
-
-        if len(center_idx[:mid + 1]) > 0:
-            left_p = pd.concat([left_p, center[:mid + 1]])
-
-        if len(center_idx[mid + 1:]) > 0:
-            right_p = pd.concat([right_p, center[mid + 1:]])
 
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
-        left_idx, right_idx = DataManager.split(date_list, split_val)
-        left_p, right_p = partition.iloc[left_idx], partition.iloc[right_idx]
+        left_idx, right_idx, center_idx = DataManager.split(date_list, split_val)
 
     else:  # TODO: manage categorical data
-        raise Exception("SPLIT")
+        raise Exception("SPLIT_CATEGORICAL")
 
+    mid = len(center_idx) // 2
+    left_p, right_p, center = partition.iloc[left_idx], partition.iloc[right_idx], partition.iloc[center_idx]
+
+    if len(center_idx[:mid + 1]) > 0:
+        left_p = pd.concat([left_p, center[:mid + 1]])
+
+    if len(center_idx[mid + 1:]) > 0:
+        right_p = pd.concat([right_p, center[mid + 1:]])
+    print("LEFT: ", left_p)
+    print("Right: ", right_p)
     return left_p, right_p
 
 
@@ -189,8 +190,8 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10
-    n_cols = 2
+    n_sample = 30
+    n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
