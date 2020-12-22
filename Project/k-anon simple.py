@@ -131,17 +131,23 @@ def split_partition(partition, dim, split_val):
     return left_p, right_p
 
 
-def anonymize(partition, columns, k):
-    dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
-    median = find_median(partition, dim, k)  # compute the frequency set and find the median
-    lhs, rhs = split_partition(partition, dim, median)  #
+def anonymize(partition, k):
+    columns = partition.columns.tolist()
 
-    # check if, for the current dim, lhs and rhs satisfy k-anonymity
-    if len(lhs) < k or len(rhs) < k:
-        return compute_phi(partition)  # return phi: partition -> summary
+    while columns and len(partition) >= k * 2:
+        dim = chose_dimension(columns, partition, k)  # chooses the dimension with the widest normalized range
+        median = find_median(partition, dim, k)  # compute the frequency set and find the median
+        lhs, rhs = split_partition(partition, dim, median)  #
 
-    return merge_dictionary(anonymize(lhs, columns, k),
-                            anonymize(rhs, columns, k))
+        # check if, for the current dim, lhs and rhs satisfy k-anonymity
+        if len(lhs) < k or len(rhs) < k:
+            columns.remove(dim)
+            continue
+
+        return merge_dictionary(anonymize(lhs, k),
+                                anonymize(rhs, k))
+
+    return compute_phi(partition)  # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -165,7 +171,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 3000
+    n_sample = 10000
     n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
@@ -197,7 +203,7 @@ def debug():
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, cols_to_anonymize, k)
+    dict_phi = anonymize(df, k)
     t1 = datetime.now()
 
     df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
