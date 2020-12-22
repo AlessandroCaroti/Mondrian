@@ -172,7 +172,7 @@ from dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 30
+    n_sample = 2500
     n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
