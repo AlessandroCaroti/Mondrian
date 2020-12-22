@@ -8,6 +8,11 @@ from typesManager.abstractType import AbstractType
 class categoricalManager(AbstractType):
 
     @staticmethod
+    def compute_width(el_list):
+
+        pass
+
+    @staticmethod
     def split(list_to_split, split_val, strict: bool = bool):
         """
         Given an element and a list of element of the same type, split the list in 2 part
@@ -19,6 +24,7 @@ class categoricalManager(AbstractType):
         :param split_val: value (Node of the tree) used to divide the list given
         :rtype: [partition1,..., partitionN] list of partition
         """
+
         pass
 
     @staticmethod

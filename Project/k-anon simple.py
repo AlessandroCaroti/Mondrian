@@ -9,7 +9,6 @@ from pandas.api.types import is_numeric_dtype
 initial_ranges = {}
 
 from typesManager.dateManager import DataManager
-from typesManager.numericManager import NumericManager
 
 dim_type = {"B-day": "date"}
 num_partition = 0

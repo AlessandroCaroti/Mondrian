@@ -3,7 +3,7 @@ from io import StringIO
 from tree import Node, Tree
 
 
-class _DGH:
+class DGH:
 
     def __init__(self, dgh_path):
 
