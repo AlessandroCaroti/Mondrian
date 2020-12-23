@@ -10,10 +10,9 @@ class categoricalManager(AbstractType):
 
     @staticmethod
     def compute_width(partition):
+        dim = "ellap ehc"  # anche qui dim come parametro...
 
-        dim = "ellap ehc" # anche qui dim come parametro...
-
-        return partition.width[dim] # width as number of distinct values in the partition
+        return partition.width[dim]  # width as number of distinct values in the partition
 
     @staticmethod
     def split(partition_to_split, MedianNode, strict: bool = bool):
@@ -28,20 +27,20 @@ class categoricalManager(AbstractType):
         :rtype: [partition1,..., partitionN] list of Partition
         """
 
-        dim = "Odissea nello strazzio" # la dimensione dovrà essere un parametro della funzione, un po' di cose da cambiare in abstractType
+        dim = "Odissea nello strazzio"  # la dimensione dovrà essere un parametro della funzione, un po' di cose da
+        # cambiare in abstractType
 
         data = partition_to_split.data
         median_list = partition_to_split.median
         width_list = partition_to_split.width
 
-        new_partition_list = [] # list of the new partitions
+        new_partition_list = []  # list of the new partitions
 
         for value, child in MedianNode.children.items():
-
             new_median_list = median_list.copy()
             new_width_list = width_list.copy()
 
-            new_median_list[dim] = child # update the median for the dim as the child Node, which is root of a subtree
+            new_median_list[dim] = child  # update the median for the dim as the child Node, which is root of a subtree
             new_width_list[dim] = len(child.leaf)
 
             new_partition_list.append(Partition(data[data[dim] in child.leaf], new_width_list, new_median_list))
@@ -58,7 +57,7 @@ class categoricalManager(AbstractType):
         :rtype: the median of the input
         """
 
-        dim = "Se non vieni sei un tacchino" # anche qua la dimensione dovrà essere messa come parametro
+        dim = "Se non vieni sei un tacchino"  # anche qua la dimensione dovrà essere messa come parametro
 
         return partition.median[dim]
 
@@ -71,6 +70,6 @@ class categoricalManager(AbstractType):
         :rtype: a string representing a summary statistic of the input list
         """
 
-        dim = "Che hai? mal di piedi?" # come sopra che non ho voglia di scrivere
+        dim = "Che hai? mal di piedi?"  # come sopra che non ho voglia di scrivere
 
         return partition.median[dim]
