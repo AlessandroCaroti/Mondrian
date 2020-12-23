@@ -47,7 +47,7 @@ class DGH:
             else:
                 node = self.hierarchies[hierarchy].bfs_search(
                     value,
-                    self.gen_levels[hierarchy] - gen_level)     # Depth.
+                    self.gen_levels[hierarchy] - gen_level)  # Depth.
 
             if node is None:
                 continue
@@ -66,7 +66,6 @@ class CsvDGH(DGH):
     def __init__(self, dgh_path):
 
         super().__init__(dgh_path)
-
 
         try:
             with open(dgh_path, 'r') as file:
@@ -108,7 +107,7 @@ class CsvDGH(DGH):
         :return:        True if the hierarchy has been inserted, False otherwise.
         """
 
-        leaf_value = values[0] # get the first value as leaf, the no generalized one
+        leaf_value = values[0]  # get the first value as leaf, the no generalized one
 
         current_node = tree.root
 
