@@ -61,7 +61,7 @@ class DGH:
         raise KeyError(value)
 
 
-class CsvDGH(_DGH):
+class CsvDGH(DGH):
 
     def __init__(self, dgh_path):
 
