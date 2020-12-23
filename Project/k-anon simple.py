@@ -13,7 +13,6 @@ from typesManager.numericManager import NumericManager
 
 initial_ranges = {}
 dim_type = {"B-day": "date"}
-num_partition = 0
 partition_size = {i: 0 for i in range(1, 13)}
 
 
@@ -62,7 +61,6 @@ def compute_phi(partition):
     summary = []
     global partition_size
     partition_size[len(partition)] += 1
-    num_partition += 1
 
     for dim in partition.columns:
         if is_numeric_dtype(partition[dim]):
