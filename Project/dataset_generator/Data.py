@@ -37,12 +37,12 @@ class Data(object):
         """
 
         if self.columns_type[dim] == Data.NUMERICAL:
-            return numericManager.compute_width(self.dataFrame[dim])
+            return NumericManager.compute_width(self.dataFrame[dim])
 
         if self.columns_type[dim] == Data.CATEGORICAL:
             return categoricalManager.compute_width(self.dataFrame[dim])
 
         if self.columns_type[dim] == Data.DATE:
-            return dateManager.compute_width(self.dataFrame[dim])
+            return DateManager.compute_width(self.dataFrame[dim])
 
         raise Exception("column type not valid! Only NUMERICAl, CATEGORICAL and DATE are supported.")
