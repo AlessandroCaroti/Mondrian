@@ -196,7 +196,7 @@ def debug():
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
     print(partition_size)
-    print("_________________________________________________________")
+    print("__________________________________________________________")
     print(df_anonymize)
 
 
