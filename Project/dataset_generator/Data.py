@@ -1,7 +1,7 @@
 from typesManager.categoricalManager import categoricalManager
 from typesManager.dateManager import DateManager
 from typesManager.numericManager import NumericManager
-from DGH.dgh import DGH
+from DGH.dgh import CsvDGH
 
 import pandas as pd
 import os
@@ -10,7 +10,7 @@ import os
 class Data(object):
     NUMERICAL, DATE, CATEGORICAL = list(range(3))  # type of data
 
-    def __init__(self, data, columns_type):  # data is a path or Dataframe??? da decidere--> PATH MEGLIO
+    def __init__(self, data, columns_type):
 
         self.data_folder = "Dataset"  # folder containing the csv file
         self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
@@ -24,9 +24,8 @@ class Data(object):
                            self.dataFrame.columns}  # width of all the columns of the original table
 
         # dgh for each CATEGORICAL column: assuming that the filename is equal to the column name
-        self.dgh_list = dict([(dim, DGH(os.path.join(self.hierarchy_folder, dim + ".csv"))) if self.columns_type[
-                                                                                                   dim] == Data.CATEGORICAL else (
-            dim, None)
+        self.dgh_list = dict([(dim, CsvDGH(os.path.join(self.hierarchy_folder, dim + ".csv")))
+                              if self.columns_type[dim] == Data.CATEGORICAL else (dim, None)
                               for dim in self.dataFrame.columns])
 
     def compute_width_dim(self, dim):
