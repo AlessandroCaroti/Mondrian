@@ -18,9 +18,8 @@ partition_size = {i: 0 for i in range(1, 13)}
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
 
     if is_numeric_dtype(values):  # range width = max - min
-        max_r = max(values)
-        min_r = min(values)
-        width = max_r - min_r
+        list_np = values.to_numpy()
+        width = NumericManager.compute_width(list_np)
 
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = values.tolist()
@@ -93,6 +92,7 @@ def compute_phi(partition):
 
 
 def find_median(partition, dim, k):
+
     if is_numeric_dtype(partition[dim]):
         list_np = partition[dim].to_numpy()
         return NumericManager.median(list_np, k)
