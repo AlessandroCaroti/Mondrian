@@ -15,17 +15,7 @@ class CategoricalManager(AbstractType):
         return partition.width[dim]  # width as number of distinct values in the partition
 
     @staticmethod
-    def split(partition_to_split, dim, MedianNode):
-        """
-        Given an element and a list of element of the same type, split the list in 2 part
-        -left_part = np.where(list_to_split <= split_val)
-        -right_part = np.where(list_to_split > split_val)
-
-        :param strict: True -> strict partitioning, False -> relax partitioning
-        :param list_to_split: list of elements to split
-        :param MedianNode: Node of the tree used to divide the list given
-        :rtype: [partition1,..., partitionN] list of Partition
-        """
+    def split(partition_to_split, dim, median_node):
 
         data = partition_to_split.data
         median_list = partition_to_split.median
@@ -33,7 +23,7 @@ class CategoricalManager(AbstractType):
 
         new_partition_list = []  # list of the new partitions
 
-        for value, child in MedianNode.children.items():
+        for value, child in median_node.children.items():
             new_median_list = median_list.copy()
             new_width_list = width_list.copy()
 
@@ -54,27 +44,13 @@ class CategoricalManager(AbstractType):
 
     @staticmethod
     def median(partition, dim):
-        """
-        Compute the median along the input given.
-
-        :param k:
-        :param partition: Partition object
-        :rtype: the median of the input
-        """
 
         return partition.median[dim]
 
     @staticmethod
     def summary_statistic(partition, dim):
-        """
-        Return summary statistic along the input given.
-
-        :param el_list: Partition object
-        :rtype: a string representing a summary statistic of the input list
-        """
 
         return partition.median[dim]
-
 
 
 def test():
@@ -92,7 +68,8 @@ def test():
 
     bday_p = Partition(ages, {0:len(root.leaf)}, {0:root})
     median = CategoricalManager.median(bday_p, 0)
-    [l, r] = CategoricalManager.split(bday_p, 0, median) # I know there are two partitions because of the generalization (it's a particular case)
+    [l, r] = CategoricalManager.split(bday_p, 0, median) # I know there are two partitions because of the generalization
+                                                         # (it's a particular case)
 
     print("MEDIAN:", median.data)
     print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0).data)
