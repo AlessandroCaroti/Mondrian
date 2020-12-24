@@ -1,6 +1,6 @@
 import csv
 from io import StringIO
-from tree import Node, Tree
+from Project.DGH.tree import Node, Tree
 
 
 class DGH:
@@ -128,6 +128,9 @@ class CsvDGH(DGH):
                     current_node.add_leaf(leaf_value)
 
                     current_node = current_node.children[v]
+
+                # add leaf also to the Leaf itself
+                current_node.add_leaf(leaf_value)
                 return True
 
         return False

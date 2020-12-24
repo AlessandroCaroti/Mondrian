@@ -1,65 +1,82 @@
 from pandas.core.dtypes.common import is_numeric_dtype
 
-from typesManager.abstractType import AbstractType
+from Project.Partition.partition import Partition
+from Project.typesManager.abstractType import AbstractType
+
 import numpy as np
+import pandas as pd
 
 
 class NumericManager(AbstractType):
 
     @staticmethod
-    def compute_width(el_list):
-        if not isinstance(el_list, np.ndarray):
-            raise TypeError("list_to_split must be a np_array")
+    def compute_width(partition, dim):
 
-        max_r = max(el_list)
-        min_r = min(el_list)
+        if not isinstance(partition, Partition):
+            raise TypeError("partition must be a Partition")
+
+        max_r = max(partition.data[dim])
+        min_r = min(partition.data[dim])
+
         return max_r - min_r
 
     @staticmethod
-    def split(list_to_split, split_val, strict: bool = bool):
-        """
-        Given an element and a list of element of the same type, split the list in 2 part
-        -left_part = np.where(list_to_split <= split_val)
-        -right_part = np.where(list_to_split > split_val)
+    def split(partition_to_split, dim, split_val):
 
-        :param strict: True -> strict partitioning, False -> relax partitioning
-        :param list_to_split: list of elements to split
-        :param split_val: value used to divide the list given
-        :rtype: (left_part, right_part) 2 list with the position
-        """
-        if not isinstance(list_to_split, np.ndarray):
-            raise TypeError("list_to_split must be a np_array")
+        if not isinstance(partition_to_split, Partition):
+            raise TypeError("partition_to_split must be a Partition")
 
-        left_idx, right_idx, center_idx = [], [], []
+        data = partition_to_split.data
 
-        for idx, el in enumerate(list_to_split):
-            if el > split_val:
-                left_idx.append(idx)
-            elif el < split_val:
-                right_idx.append(idx)
-            else:
-                center_idx.append(idx)
+        left = data[ data[dim] < split_val]
 
-        return left_idx, right_idx, center_idx
+        right = data[ data[dim] > split_val]
+        center = data[ data[dim] == split_val]
+
+        mid = len(center.index) // 2
+
+        # balanced partitions
+        if len(center[: mid + 1].index) > 0:
+            left = pd.concat([left, center[:mid + 1]])
+
+        if len(center[mid + 1 : ].index) > 0:
+            right = pd.concat([right, center[mid + 1 :]])
+
+        # create the new partition
+        left_p = Partition(left)
+        right_p = Partition(right)
+
+        left_width = partition_to_split.width.copy()
+        left_median = partition_to_split.median.copy()
+        # update width and median
+        left_width[dim] = NumericManager.compute_width(left_p, dim)
+        left_median[dim] = NumericManager.median(left_p, dim)
+        # assign to partition
+        left_p.width = left_width
+        left_p.median = left_median
+
+        right_width = partition_to_split.width.copy()
+        right_median = partition_to_split.median.copy()
+        # update width and median
+        right_width[dim] = NumericManager.compute_width(right_p, dim)
+        right_median[dim] = NumericManager.median(right_p, dim)
+        # assign to partition
+        right_p.width = right_width
+        right_p.median = right_median
+
+        return [left_p, right_p]
 
     @staticmethod
-    def median(el_list, k: int):
-        """
-        Compute the median along the input given.
+    def median(partition, dim ):
 
-        :param k:
-        :param el_list: Input list
-        :rtype: the median of the input
-        """
-        if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
-            raise TypeError("list_to_split must be a np_array")
 
-        val_list, frequency = np.unique(el_list, return_counts=True)
-        middle = len(el_list) // 2
+        if not isinstance(partition, Partition) :
+            raise TypeError("partition must be a Partition")
 
-        # Stop to split the partition todo rimmuovere i commenti
-        # if middle < k or len(val_list) <= 1:
-        #    return None
+        data = partition.data
+        val_list, frequency = np.unique(data[dim], return_counts=True)
+        middle = len(data) // 2
+
 
         acc = 0
         split_index = 0
@@ -72,20 +89,50 @@ class NumericManager(AbstractType):
         return val_list[split_index]
 
     @staticmethod
-    def summary_statistic(el_list):
-        """
-        Return summary statistic along the input given.
+    def summary_statistic(partition, dim):
 
-        :param el_list: Input list
-        :rtype: a string representing a summary statistic of the input list
-        """
-        if not isinstance(el_list, np.ndarray):
-            raise TypeError("list_to_split must be a np_array")
-        if len(el_list) == 1:
-            return el_list[0]
-        _max, _min = np.max(el_list), np.min(el_list)
+        if not isinstance(partition, Partition):
+            raise TypeError("partition must be a Partition")
+
+        data = partition.data[dim]
+
+        if len(data) == 1:
+            return data[0]
+
+        _max, _min = np.max(data), np.min(data)
 
         return "[" + str(_min) + " - " + str(_max) + "]"
 
+def test():
+    n_sample = 20
+    np.random.seed(42)
+    ages = np.random.randint(0, 120, (n_sample,))
+    ages = pd.DataFrame(ages)
+    print(ages)
+
+    bday_p = Partition(ages,{},{})
+    median = NumericManager.median(bday_p, 0)
+    l, r = NumericManager.split(bday_p, 0, median)
+
+    print("MEDIAN:", median)
+    print("RANGE:", NumericManager.summary_statistic(bday_p, 0))
+
+    print("LEFT_PART:")
+    print(l.data)
+    print("Width :", l.width)
+    print("Median :", l.median)
+
+    print()
+    print("RIGHT_PART:")
+    print(r.data)
+    print("Width :", r.width)
+    print("Median :", r.median)
+
+    print()
+
+    print("DIFFERENCE:", NumericManager.compute_width(bday_p, 0))
+    pass
 
 
+if __name__ == "__main__":
+    test()

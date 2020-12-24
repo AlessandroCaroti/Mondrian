@@ -1,21 +1,21 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
+import pandas as pd
 
-from Partition.partition import Partition
-from typesManager.abstractType import AbstractType
+from Project.DGH.dgh import CsvDGH
+from Project.Partition.partition import Partition
+from Project.typesManager.abstractType import AbstractType
 
-
-class categoricalManager(AbstractType):
+class CategoricalManager(AbstractType):
 
     @staticmethod
-    def compute_width(partition):
-        dim = "ellap ehc"  # anche qui dim come parametro...
+    def compute_width(partition, dim):
 
         return partition.width[dim]  # width as number of distinct values in the partition
 
     @staticmethod
-    def split(partition_to_split, MedianNode, strict: bool = bool):
+    def split(partition_to_split, dim, MedianNode):
         """
         Given an element and a list of element of the same type, split the list in 2 part
         -left_part = np.where(list_to_split <= split_val)
@@ -26,9 +26,6 @@ class categoricalManager(AbstractType):
         :param MedianNode: Node of the tree used to divide the list given
         :rtype: [partition1,..., partitionN] list of Partition
         """
-
-        dim = "Odissea nello strazzio"  # la dimensione dovrà essere un parametro della funzione, un po' di cose da
-        # cambiare in abstractType
 
         data = partition_to_split.data
         median_list = partition_to_split.median
@@ -43,12 +40,20 @@ class categoricalManager(AbstractType):
             new_median_list[dim] = child  # update the median for the dim as the child Node, which is root of a subtree
             new_width_list[dim] = len(child.leaf)
 
-            new_partition_list.append(Partition(data[data[dim] in child.leaf], new_width_list, new_median_list))
+            list_idx = [] # list of indexes
+
+            for i, d in enumerate(data[dim]):
+                if str(d) in child.leaf:
+                    list_idx.append(i) # if the element is in the set, then the tuple is added to the partition
+
+            # create the new partition
+            p = Partition(data.iloc[list_idx], new_width_list, new_median_list)
+            new_partition_list.append(p)
 
         return new_partition_list
 
     @staticmethod
-    def median(partition, k: int):
+    def median(partition, dim):
         """
         Compute the median along the input given.
 
@@ -57,12 +62,10 @@ class categoricalManager(AbstractType):
         :rtype: the median of the input
         """
 
-        dim = "Se non vieni sei un tacchino"  # anche qua la dimensione dovrà essere messa come parametro
-
         return partition.median[dim]
 
     @staticmethod
-    def summary_statistic(partition):
+    def summary_statistic(partition, dim):
         """
         Return summary statistic along the input given.
 
@@ -70,6 +73,46 @@ class categoricalManager(AbstractType):
         :rtype: a string representing a summary statistic of the input list
         """
 
-        dim = "Che hai? mal di piedi?"  # come sopra che non ho voglia di scrivere
-
         return partition.median[dim]
+
+
+
+def test():
+
+    dgh = CsvDGH("test.csv")
+    root = dgh.hierarchies["0-7"].root
+
+    dgh.hierarchies["0-7"].print_leaf()
+
+    n_sample = 20
+    np.random.seed(42)
+    ages = np.random.randint(0, 8, (n_sample,))
+    ages = pd.DataFrame(ages)
+    #print(ages)
+
+    bday_p = Partition(ages, {0:len(root.leaf)}, {0:root})
+    median = CategoricalManager.median(bday_p, 0)
+    [l, r] = CategoricalManager.split(bday_p, 0, median) # I know there are two partitions because of the generalization (it's a particular case)
+
+    print("MEDIAN:", median.data)
+    print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0).data)
+
+    print("LEFT_PART:")
+    print(l.data)
+    print("Width :", l.width)
+    print("Median :", l.median)
+
+    print()
+    print("RIGHT_PART:")
+    print(r.data)
+    print("Width :", r.width)
+    print("Median :", r.median)
+
+    print()
+
+    print("WIDTH:", CategoricalManager.compute_width(bday_p, 0))
+    pass
+
+
+if __name__ == "__main__":
+    test()

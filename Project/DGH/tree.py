@@ -8,12 +8,13 @@ class Node:
         self.data = data
         self.parent = None
         self.children = dict()
+
         """
         Dictionary whose values are the node children and whose keys are the corresponding nodes 
         data.
         """
 
-        self.leaf = set()
+        self.leaf = set() # they are strings
         '''
         List whose values are the values of the leaf Nodes in the subtree of the current Node (as the current node is a root)
         '''

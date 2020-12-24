@@ -6,17 +6,16 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-from typesManager.dateManager import DateManager
-from dataset_generator.database_generator import random_Bday
-from typesManager.numericManager import NumericManager
-
-
 initial_ranges = {}
+
+from typesManager.dateManager import DateManager
+
 dim_type = {"B-day": "date"}
 partition_size = {i: 0 for i in range(1, 13)}
 
 
 def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
+
     if is_numeric_dtype(values):  # range width = max - min
         list_np = values.to_numpy()
         width = NumericManager.compute_width(list_np)
@@ -37,20 +36,32 @@ def compute_normalized_width(values, dim):
     return width / initial_ranges[dim]  # normalized with statistic of the original dimension
 
 
-def chose_dimension(dimensions, partition):
-    """
+def chose_dimension(dimensions, partition, k):
+    '''
     :param dimensions: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut
-    """
+    '''
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
+    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim), find_median(partition, dim, k)],
                     dimensions)  # get list of all width and median
 
-    width_list = list(width_map)  # convert to list
-    width_list.sort(key=lambda x: x[1], reverse=True)
+    width_filtered = filter(lambda tuple: allowable_cut(partition, tuple[0], tuple[2], k),
+                            width_map)  # filter out the dimensions which don't allow cut
 
-    return width_list[0][0]  # name of the column with max width
+    width_list = list(width_filtered)  # convert to list
+
+    if len(width_list) == 0:  # no columns allow cut
+        return None
+
+    _max = -1
+    best_col = ''
+    for row in width_list:
+        if row[1] > _max:
+            _max = row[1]
+            best_col = row[0]
+
+    return best_col  # name of the column with max width
 
 
 def merge_dictionary(dict1, dict2):
@@ -59,7 +70,7 @@ def merge_dictionary(dict1, dict2):
 
 def compute_phi(partition):
     summary = []
-    global partition_size
+    global partition_size, num_partition
     partition_size[len(partition)] += 1
 
     for dim in partition.columns:
@@ -116,23 +127,26 @@ def split_partition(partition, dim, split_val):
     return left_p, right_p
 
 
-def anonymize(partition, k):
-    columns = partition.columns.tolist()
+def allowable_cut(partition, dim, split_val, k):
+    lhs, rhs = split_partition(partition, dim, split_val)
 
-    while columns and len(partition) >= k * 2:
-        dim = chose_dimension(columns, partition)  # chooses the dimension with the widest normalized range
-        median = find_median(partition, dim, k)  # compute the frequency set and find the median
-        lhs, rhs = split_partition(partition, dim, median)  #
+    return len(lhs) >= k and len(rhs) >= k  # strict and relaxed version
 
-        # check if, for the current dim, lhs and rhs satisfy k-anonymity
-        if len(lhs) < k or len(rhs) < k:
-            columns.remove(dim)
-            continue
 
-        return merge_dictionary(anonymize(lhs, k),
-                                anonymize(rhs, k))
+def anonymize(partition, columns, step, k):
+    dim = chose_dimension(columns, partition, k)
 
-    return compute_phi(partition)  # return phi: partition -> summary
+    # If not allowed multidimensional cut for partition
+    if dim is None:
+        return compute_phi(partition)  # return phi: partition -> summary
+
+    median = find_median(partition, dim, k)
+    lhs, rhs = split_partition(partition, dim, median)
+
+    phi_list = merge_dictionary(anonymize(lhs, columns, step + 1, k),
+                                anonymize(rhs, columns, step + 1, k))
+
+    return phi_list
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -149,6 +163,9 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     # Drop anonymize columns
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
+
+
+from dataset_generator.database_generator import random_Bday
 
 
 def toy_dataset():
