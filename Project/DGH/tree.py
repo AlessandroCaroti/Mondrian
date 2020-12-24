@@ -13,7 +13,7 @@ class Node:
         data.
         """
 
-        self.leaf = list()
+        self.leaf = set()
         '''
         List whose values are the values of the leaf Nodes in the subtree of the current Node (as the current node is a root)
         '''
@@ -25,8 +25,7 @@ class Node:
 
     def add_leaf(self, leaf):
 
-        if leaf not in self.leaf:
-            self.leaf.append(leaf)
+        self.leaf.add(leaf)
 
 
 class Tree:
@@ -126,5 +125,5 @@ class Tree:
                     continue
                 queue.put((child, level + 1))
 
-            print("level: " + level + " (" + node.leaf + ")")
+            print("level: " + str(level) + " ({})".format(node.leaf))
             visited.add(node)

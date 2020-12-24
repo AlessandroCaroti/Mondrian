@@ -1,0 +1,32 @@
+headache,head,physical,disease
+accessory pancreas,pancreas disorder,physical,disease
+cancer colon,cancer,physical,disease
+influenza,virus,physical,disease
+leukemia,cancer,physical,disease
+gonorrhea,STI,physical,disease
+agitation,psychological,psycho,disease
+pressure chest,pressure,physical,disease
+head lice,head,physical,disease
+polio,infection,physical,disease
+vomiting,stomach,physical,disease
+hypokinesia,muscular,physical,disease
+intoxication,stomach,physical,disease
+angina pectoris,chest,physical,disease
+pertussis,bacterium,physical,disease
+hallucinations auditory,psychiatric,psycho,disease
+dyspnea,pulmonary,physical,disease
+genital candidiasis,STI,physical,disease
+hyponatremia,blood values,physical,disease
+myalgia,muscular,physical,disease
+hyperkalemia,blood values,physical,disease
+laryngotracheal angioma,cancer,physical,disease
+pruritus,skin,physical,disease
+acne,skin,physical,disease
+ascites,abdomen,physical,disease
+ocular albinism,ocular,physical,disease
+shortness of breath,pulmonary,physical,disease
+intellectual disability,psychological,psycho,disease
+depression,psychiatric,psycho,disease
+anxiety disorders,psychiatric,psycho,disease
+eating disorder,psychiatric,psycho,disease
+autism spectrum disorder,psychological,psycho,disease

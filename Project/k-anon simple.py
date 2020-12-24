@@ -6,9 +6,10 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
+from typesManager.dateManager import DateManager
 from dataset_generator.database_generator import random_Bday
-from typesManager.dateManager import DataManager
 from typesManager.numericManager import NumericManager
+
 
 initial_ranges = {}
 dim_type = {"B-day": "date"}
@@ -22,7 +23,7 @@ def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoric
 
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = values.tolist()
-        width = DataManager.compute_width(date_list)
+        width = DateManager.compute_width(date_list)
 
     else:
         raise Exception("WITH")  # TODO: manage categorical data
@@ -67,7 +68,7 @@ def compute_phi(partition):
             col_summary = NumericManager.summary_statistic(list_np)
         elif dim in dim_type and dim_type[dim] == 'date':
             date_list = partition[dim].tolist()
-            col_summary = DataManager.summary_statistic(date_list)
+            col_summary = DateManager.summary_statistic(date_list)
         else:
             raise Exception("MEDIAN")  # TODO: manage categorical data
         summary.append(col_summary)
@@ -85,7 +86,7 @@ def find_median(partition, dim, k):
 
     if dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
-        return DataManager.median(date_list, k)
+        return DateManager.median(date_list, k)
 
     raise Exception("MEDIAN")  # TODO: manage categorical data
 
@@ -99,7 +100,7 @@ def split_partition(partition, dim, split_val):
     elif dim in dim_type and dim_type[dim] == 'date':
         date_list = partition[dim].tolist()
 
-        left_idx, right_idx, center_idx = DataManager.split(date_list, split_val)
+        left_idx, right_idx, center_idx = DateManager.split(date_list, split_val)
 
     else:  # TODO: manage categorical data
         raise Exception("SPLIT_CATEGORICAL")
@@ -195,7 +196,7 @@ def debug():
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
     print(partition_size)
-    print("_________________________________________________________")
+    print("__________________________________________________________")
     print(df_anonymize)
 
 

@@ -11,12 +11,12 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 21
+n_entry = 100000
 
 # path & filename variable
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
-disease_path = os.path.join(dataset_folder, "disease.csv")
+disease_path = os.path.join(dataset_folder, "disease_small.csv")
 
 mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
@@ -36,8 +36,11 @@ def random_age():
 
 def random_zipcode():
     zipcode = ''
-    for _ in range(5):
-        zipcode += str(random.randint(0, 9))
+    for i in range(5):
+        if i == 2 and zipcode[:2] == "00":
+            zipcode += str(random.randint(1, 9))
+        else:
+            zipcode += str(random.randint(0, 9))
     return zipcode
 
 
@@ -100,7 +103,7 @@ if __name__ == "__main__":
     # Name, Gender dataset
     df_name = pd.read_csv(name_path, header=0, names=['Name', 'Gender'])
     df_name.replace({'Gender': gender_map}, inplace=True)
-
+    random.seed(25)
     # Dataset with a list of disease
     df_disease = pd.read_csv(disease_path)
 

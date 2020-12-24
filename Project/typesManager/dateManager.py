@@ -6,17 +6,17 @@ from dataset_generator.database_generator import random_Bday
 from typesManager.abstractType import AbstractType
 
 
-class DataManager(AbstractType):
+class DateManager(AbstractType):
     data_format = "%d-%m-%Y"
     _max = datetime.strptime("01/01/1000", "%d/%m/%Y")
     _min = datetime.strptime("30/12/3000", "%d/%m/%Y")
 
     @staticmethod
     def max_min(el_list):
-        _max = DataManager._max
-        _min = DataManager._min
+        _max = DateManager._max
+        _min = DateManager._min
 
-        obj_list = [datetime.strptime(el, DataManager.data_format) for el in el_list]
+        obj_list = [datetime.strptime(el, DateManager.data_format) for el in el_list]
         for data_obj in obj_list:
             if data_obj > _max:
                 _max = data_obj
@@ -32,7 +32,7 @@ class DataManager(AbstractType):
         if len(el_list) == 1:
             return 0
 
-        _max, _min = DataManager.max_min(el_list)
+        _max, _min = DateManager.max_min(el_list)
 
         return int((_max - _min).total_seconds())
 
@@ -42,8 +42,8 @@ class DataManager(AbstractType):
             raise TypeError("list_to_split must be a list or a np_array")
 
         left_idx, right_idx, center_idx = [], [], []
-        split_val = datetime.strptime(split_val, DataManager.data_format)
-        obj_list = [datetime.strptime(el, DataManager.data_format) for el in list_to_split]
+        split_val = datetime.strptime(split_val, DateManager.data_format)
+        obj_list = [datetime.strptime(el, DateManager.data_format) for el in list_to_split]
 
         for idx, date in enumerate(obj_list):
             if date > split_val:
@@ -60,7 +60,7 @@ class DataManager(AbstractType):
         if not isinstance(el_list, list) and not isinstance(el_list, np.ndarray):
             raise TypeError("el_list must be a list or a np_array")
 
-        obj_array = np.array([datetime.strptime(el, DataManager.data_format) for el in el_list])
+        obj_array = np.array([datetime.strptime(el, DateManager.data_format) for el in el_list])
 
         val_list, frequency = np.unique(obj_array, return_counts=True)
         middle = len(el_list) // 2
@@ -73,7 +73,7 @@ class DataManager(AbstractType):
                 split_index = idx
                 break
 
-        split_val = val_list[split_index].strftime(DataManager.data_format)
+        split_val = val_list[split_index].strftime(DateManager.data_format)
         return split_val
 
     @staticmethod
@@ -83,12 +83,12 @@ class DataManager(AbstractType):
         if len(el_list) == 1:
             return el_list[0]
 
-        _max, _min = DataManager.max_min(el_list)
+        _max, _min = DateManager.max_min(el_list)
 
         return "[" + \
-               _min.strftime(DataManager.data_format) + \
+               _min.strftime(DateManager.data_format) + \
                " - " + \
-               _max.strftime(DataManager.data_format) + "]"
+               _max.strftime(DateManager.data_format) + "]"
 
 
 def test():
@@ -98,11 +98,11 @@ def test():
     b_day = [random_Bday(age) for age in ages]
     print(b_day)
 
-    median = DataManager.median(b_day, 1)
-    l, r, c = DataManager.split(b_day, median)
+    median = DateManager.median(b_day, 1)
+    l, r, c = DateManager.split(b_day, median)
 
     print("MEDIAN:", median)
-    print("RANGE:", DataManager.summary_statistic(b_day))
+    print("RANGE:", DateManager.summary_statistic(b_day))
 
     print("LEFT_PART:")
     for index in l:
@@ -113,7 +113,7 @@ def test():
         print("", b_day[index], end=",")
     print()
 
-    print("DIFFERENCE:", DataManager.compute_width(b_day))
+    print("DIFFERENCE:", DateManager.compute_width(b_day))
     pass
 
 
