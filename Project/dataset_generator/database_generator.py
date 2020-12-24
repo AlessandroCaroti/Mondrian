@@ -16,7 +16,7 @@ n_entry = 100000
 # path & filename variable
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
-disease_path = os.path.join(dataset_folder, "disease.csv")
+disease_path = os.path.join(dataset_folder, "disease_small.csv")
 
 mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
