@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
+from pathlib import Path
 from dataset_generator.database_generator import *
 
 """
@@ -8,9 +9,13 @@ from dataset_generator.database_generator import *
 """
 
 
-def zipcode_generalization(data_path):
-    csv = pd.read_csv(data_path, converters={'Zipcode': lambda x: str(x)})
-    zip_gen = csv["Zipcode"]
+def zipcode_generalization(relative_csv_path):
+    path = Path(__file__)
+    cur_work = path.parent.parent
+    csv_path = os.path.join(cur_work, relative_csv_path)
+
+    csv = pd.read_csv(csv_path, converters={'Zipcode': lambda x: str(x)})
+    zip_gen = csv["Zipcode"].sort_values(axis=0)
     zip_generalizations = pd.DataFrame()
     zip_generalizations[0] = zip_gen
 
@@ -25,12 +30,11 @@ def zipcode_generalization(data_path):
         zip_generalizations[i] = new_col
 
     zip_generalizations.to_csv(os.path.join("Generalization", "zipcode_generalization.csv"), header=False, index=False)
-    print(zip_generalizations.sort_values(by=1))
+    print(zip_generalizations)
 
 
-def blood_groups_generalization(data_path):
-    csv = pd.read_csv(data_path, converters={'Zipcode': lambda x: str(x)})
-    blood_groups = csv["Blood type"]
+def blood_groups_generalization():
+    blood_groups = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-']
     blood_generalizations = pd.DataFrame()
     blood_generalizations[0] = blood_groups
 
@@ -59,11 +63,9 @@ def date_Generalization():
 
 
 if __name__ == "__main__":
-    # df = pd.read_csv("C:\\Users\\simoc\\MondrianMultidimentional_K-Anonymity\\"
-    #                "Project\\dataset_generator\\data\\mainDB_21.csv")
-    # print(df)
-    # df["Zipcode"].tolist()
-    # list_str = [str(x) for x in df["Zipcode"].tolist()]
-    path = "C:\\Users\\simoc\\MondrianMultidimentional_K-Anonymity\\Project\\dataset_generator\\data\\mainDB_21.csv"
-    zipcode_generalization(path)
-    blood_groups_generalization(path)
+    csv_relative_path = r"dataset_generator/data/mainDB_100000.csv"
+    zipcode_generalization(csv_relative_path)
+    # uncomment to generate blood  groups
+    # blood_groups_generalization()
+    s = "01234"
+    print(s[:2])
