@@ -5,7 +5,7 @@ class AbstractType(ABC):
 
     @staticmethod
     @abstractmethod
-    def compute_width(partition, dim):
+    def width(partition, dim):
         '''
         :param partition: partition to compute the width
         :return: width wrt the

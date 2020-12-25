@@ -10,13 +10,18 @@ import pandas as pd
 class NumericManager(AbstractType):
 
     @staticmethod
-    def compute_width(partition, dim):
+    def width(partition, dim):
 
         if not isinstance(partition, Partition):
             raise TypeError("partition must be a Partition")
 
-        max_r = max(partition.data[dim])
-        min_r = min(partition.data[dim])
+        data = partition.data[dim]
+
+        if len(data) == 0:
+            return 0
+
+        max_r = max(data)
+        min_r = min(data)
 
         return max_r - min_r
 
@@ -49,7 +54,7 @@ class NumericManager(AbstractType):
         left_width = partition_to_split.width.copy()
         left_median = partition_to_split.median.copy()
         # update width and median
-        left_width[dim] = NumericManager.compute_width(left_p, dim)
+        left_width[dim] = NumericManager.width(left_p, dim)
         left_median[dim] = NumericManager.median(left_p, dim)
         # assign to partition
         left_p.width = left_width
@@ -58,7 +63,7 @@ class NumericManager(AbstractType):
         right_width = partition_to_split.width.copy()
         right_median = partition_to_split.median.copy()
         # update width and median
-        right_width[dim] = NumericManager.compute_width(right_p, dim)
+        right_width[dim] = NumericManager.width(right_p, dim)
         right_median[dim] = NumericManager.median(right_p, dim)
         # assign to partition
         right_p.width = right_width
@@ -74,6 +79,10 @@ class NumericManager(AbstractType):
             raise TypeError("partition must be a Partition")
 
         data = partition.data
+
+        if len(data.index) == 0:
+            return 0
+
         val_list, frequency = np.unique(data[dim], return_counts=True)
         middle = len(data) // 2
 
@@ -130,7 +139,7 @@ def test():
 
     print()
 
-    print("DIFFERENCE:", NumericManager.compute_width(bday_p, 0))
+    print("DIFFERENCE:", NumericManager.width(bday_p, 0))
     pass
 
 

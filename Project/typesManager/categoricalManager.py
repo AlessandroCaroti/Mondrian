@@ -10,7 +10,7 @@ from Project.typesManager.abstractType import AbstractType
 class CategoricalManager(AbstractType):
 
     @staticmethod
-    def compute_width(partition, dim):
+    def width(partition, dim):
 
         return partition.width[dim]  # width as number of distinct values in the partition
 
@@ -87,7 +87,7 @@ def test():
 
     print()
 
-    print("WIDTH:", CategoricalManager.compute_width(bday_p, 0))
+    print("WIDTH:", CategoricalManager.width(bday_p, 0))
     pass
 
 

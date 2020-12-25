@@ -30,13 +30,13 @@ class DateManager(AbstractType):
         return _max, _min
 
     @staticmethod
-    def compute_width(partition, dim):
+    def width(partition, dim):
         if not isinstance(partition, Partition):
             raise TypeError("partition must be a partition")
 
         data = partition.data[dim]
 
-        if len(data) == 1:
+        if len(data) == 1 or len(data) == 0:
             return 0
 
         _max, _min = DateManager.max_min(partition, dim)
@@ -82,7 +82,7 @@ class DateManager(AbstractType):
         left_width = partition_to_split.width.copy()
         left_median = partition_to_split.median.copy()
         # update width and median
-        left_width[dim] = DateManager.compute_width(left_p, dim)
+        left_width[dim] = DateManager.width(left_p, dim)
         left_median[dim] = DateManager.median(left_p, dim)
         # assign to partition
         left_p.width = left_width
@@ -91,7 +91,7 @@ class DateManager(AbstractType):
         right_width = partition_to_split.width.copy()
         right_median = partition_to_split.median.copy()
         # update width and median
-        right_width[dim] = DateManager.compute_width(right_p, dim)
+        right_width[dim] = DateManager.width(right_p, dim)
         right_median[dim] = DateManager.median(right_p, dim)
         # assign to partition
         right_p.width = right_width
@@ -164,7 +164,7 @@ def test():
 
     print()
 
-    print("DIFFERENCE:", DateManager.compute_width(bday_p, 0))
+    print("DIFFERENCE:", DateManager.width(bday_p, 0))
     pass
 
 

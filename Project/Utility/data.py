@@ -1,6 +1,7 @@
 from Project.typesManager.categoricalManager import CategoricalManager
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
+from Project.Partition.partition import Partition
 from Project.DGH.dgh import CsvDGH
 
 import pandas as pd
@@ -34,27 +35,57 @@ class Data(object):
             if Data.is_qi(type):
                 col_to_anonymize.append(col)
 
-        self.data_to_anonymize = self.dataFrame[col_to_anonymize]
-
         # width of all the QI of the original table
-        self.width_list = {dim: self.compute_width_dim(dim) for dim in
-                           self.data_to_anonymize.columns}
+        self.width_list = {dim: self.init_width_dim(dim) for dim in col_to_anonymize}
 
-    def compute_width_dim(self,dim):
+        # median of all the QI of the original table
+        self.median_list = {dim: self.init_median_dim(dim) for dim in col_to_anonymize}
+
+        # create a Partition with the table to anonymize
+        self.data_to_anonymize = Partition(self.dataFrame[col_to_anonymize], self.width_list, self.median_list)
+
+        self.data_anonymized = None
+    def init_width_dim(self,dim):
 
         """
+        Initialize the width given a dim
         :param dim: name of the column to compute the width
         :return the width according to the type of data
         """
 
-        if self.columns_type[dim] == Data.NUMERICAL:
-            return NumericManager.compute_width(self.dataFrame[dim], dim)
-
         if self.columns_type[dim] == Data.CATEGORICAL:
-            return CategoricalManager.compute_width(self.dataFrame[dim], dim)
+            key, tree = self.dgh_list[dim].hierarchies.items()
+            return key # the initial median is the root Node of the DGH
 
         if self.columns_type[dim] == Data.DATE:
-            return DateManager.compute_width(self.dataFrame[dim], dim)
+            p = Partition(self.dataFrame)
+            return DateManager.width(p, dim)
+
+        if self.columns_type[dim] == Data.NUMERICAL:
+            p = Partition(self.dataFrame)
+            return NumericManager.width(p, dim)
+
+        raise Exception("column type not valid! Only NUMERICAl, CATEGORICAL and DATE are supported.")
+
+    def init_median_dim(self,dim):
+
+        """
+        Initialize the median given a dim
+        :param dim: name of the column to compute the width
+        :return the width according to the type of data
+        """
+
+        if self.columns_type[dim] == Data.CATEGORICAL:
+            key, tree = self.dgh_list[dim].hierarchies.items()
+            return tree.root # the initial median is the root Node of the DGH
+
+        if self.columns_type[dim] == Data.DATE:
+            p = Partition(self.dataFrame)
+            return DateManager.median(p, dim)
+
+        if self.columns_type[dim] == Data.NUMERICAL:
+            p = Partition(self.dataFrame)
+            return NumericManager.median(p, dim)
 
         raise Exception("column type not valid! Only NUMERICAl, CATEGORICAL and DATE are supported.")
 
