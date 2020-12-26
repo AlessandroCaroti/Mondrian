@@ -1,6 +1,6 @@
 import csv
 from io import StringIO
-from tree import Node, Tree
+from Project.DGH.tree import Node, Tree
 
 
 class DGH:
@@ -15,13 +15,13 @@ class DGH:
         :raises IOError:            If the file cannot be read.
         """
 
-        self.hierarchies = dict()
+        self.hierarchy = None
         """
         Dictionary where the values are trees and the keys are the values of the corresponding 
         roots. The dictionary must have only one value, so there must be only one tree
         """
 
-        self.gen_levels = dict()
+        self.gen_level = None
         """
         Dictionary whose keys are the hierarchies root values and whose values are the hierarchies 
         depths (number of generalization levels).
@@ -38,27 +38,17 @@ class DGH:
         :raises KeyError:   If the value is not part of the domain.
         """
 
-        # Search across all hierarchies (slow if there are a lot of hierarchies):
-        for hierarchy in self.hierarchies:
+        # Try to find the node:
+        if gen_level is None:
+            node = self.hierarchy.bfs_search(value)
+        else:
+            node = self.hierarchy.bfs_search(value, self.gen_level - gen_level)  # Depth.
 
-            # Try to find the node:
-            if gen_level is None:
-                node = self.hierarchies[hierarchy].bfs_search(value)
-            else:
-                node = self.hierarchies[hierarchy].bfs_search(
-                    value,
-                    self.gen_levels[hierarchy] - gen_level)  # Depth.
-
-            if node is None:
-                continue
-            elif node.parent is None:
-                # The value is a hierarchy root:
-                return None
-            else:
-                return node.parent.data
-
-        # The value is not found:
-        raise KeyError(value)
+        if node.parent is None:
+            # The value is a hierarchy root:
+            return None
+        else:
+            return node.parent.data
 
 
 class CsvDGH(DGH):
@@ -79,17 +69,17 @@ class CsvDGH(DGH):
                     values = next(csv_reader)
 
                     # If it doesn't exist a hierarchy with this root, add if only it's the first:
-                    if values[-1] not in self.hierarchies and i == 0:
-                        self.hierarchies[values[-1]] = Tree(Node(values[-1]))
+                    if i == 0:
+                        self.hierarchy = Tree(Node(values[-1]))
                         # Add the number of generalization levels:
-                        self.gen_levels[values[-1]] = len(values) - 1
+                        self.gen_level = len(values) - 1
 
                     # Only one tree, so if the value is not in the hierarchy it's ignored (unless it's the first)
-                    if values[-1] not in self.hierarchies:
+                    if values[-1] == self.hierarchy:
                         continue
 
                     # Populate hierarchy with the other values:
-                    self._insert_hierarchy(values[:-1], self.hierarchies[values[-1]])
+                    self._insert_hierarchy(values[:-1], self.hierarchy)
 
         except FileNotFoundError:
             raise
@@ -128,6 +118,9 @@ class CsvDGH(DGH):
                     current_node.add_leaf(leaf_value)
 
                     current_node = current_node.children[v]
+
+                # add leaf also to the Leaf itself
+                current_node.add_leaf(leaf_value)
                 return True
 
         return False

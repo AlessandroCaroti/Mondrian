@@ -6,139 +6,144 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-from typesManager.dateManager import DateManager
-from dataset_generator.database_generator import random_Bday
-from typesManager.numericManager import NumericManager
+from Project.Utility.data import Data
+from Project.typesManager.dateManager import DateManager
+from Project.typesManager.numericManager import NumericManager
+from Project.typesManager.categoricalManager import CategoricalManager
 
 
-initial_ranges = {}
+data = None # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
-partition_size = {i: 0 for i in range(1, 13)}
+partition_size = {i: 0 for i in range(1, 100)}
+
+K = 1
 
 
-def compute_width(values, dim):  # dim dovrebbe servire per le colonne categoriche
-    if is_numeric_dtype(values):  # range width = max - min
-        list_np = values.to_numpy()
-        width = NumericManager.compute_width(list_np)
+def compute_normalized_width(partition, dim, norm_factor):
+    width = partition.width[dim]
 
-    elif dim in dim_type and dim_type[dim] == 'date':
-        date_list = values.tolist()
-        width = DateManager.compute_width(date_list)
-
-    else:
-        raise Exception("WITH")  # TODO: manage categorical data
-
-    return width
+    return width / norm_factor  # normalized with statistic of the original dimension
 
 
-def compute_normalized_width(values, dim):
-    width = compute_width(values, dim)
-
-    return width / initial_ranges[dim]  # normalized with statistic of the original dimension
-
-
-def chose_dimension(dimensions, partition):
-    """
+def chose_dimension(partition, columns):
+    '''
     :param dimensions: list of columns
     :param partition: partition to split
-    :return: the dimension with max width and which allow cut
-    """
+    :return: the dimension with max width and which allow cut, and the partitions list
+    '''
+    global data
 
-    width_map = map(lambda dim: [dim, compute_normalized_width(partition[dim], dim)],
-                    dimensions)  # get list of all width and median
+    # remove not necessary dimensions
+    filtered_dim = filter(lambda item: item[0] in columns, data.width_list.items())
+    # compute normalized width
+    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])] , filtered_dim)
+
 
     width_list = list(width_map)  # convert to list
+
+    if len(width_list) == 0:  # no columns allow cut
+        return None
+
     width_list.sort(key=lambda x: x[1], reverse=True)
 
     return width_list[0][0]  # name of the column with max width
 
 
-def merge_dictionary(dict1, dict2):
-    return {**dict1, **dict2}
+def merge_dictionary(dict_list):
+
+    merged_dict = {}
+    for d in dict_list:
+        merged_dict = {**merged_dict, **d}
+
+    return merged_dict
 
 
 def compute_phi(partition):
     summary = []
-    global partition_size
-    partition_size[len(partition)] += 1
+    global partition_size, num_partition, data
+    partition_size[len(partition.data.index)] += 1
 
-    for dim in partition.columns:
-        if is_numeric_dtype(partition[dim]):
-            list_np = partition[dim].to_numpy()
-            col_summary = NumericManager.summary_statistic(list_np)
-        elif dim in dim_type and dim_type[dim] == 'date':
-            date_list = partition[dim].tolist()
-            col_summary = DateManager.summary_statistic(date_list)
-        else:
-            raise Exception("MEDIAN")  # TODO: manage categorical data
+    col_summary = None
+    for dim in partition.data.columns:
+        if data.columns_type[dim] == Data.NUMERICAL:
+            col_summary = NumericManager.summary_statistic(partition, dim)
+
+        if data.columns_type[dim] == Data.DATE:
+            col_summary = DateManager.summary_statistic(partition, dim)
+
+        if data.columns_type[dim] == Data.CATEGORICAL:
+            col_summary = CategoricalManager.summary_statistic(partition, dim)
+
         summary.append(col_summary)
 
     # assign the summary created to each row present in the current partition
-    phi = {idx: summary for idx in partition.index}
+    phi = {idx: summary for idx in partition.data.index}
     return phi
 
 
-def find_median(partition, dim, k):
+def find_median(partition, dim):
+    global data
 
-    if is_numeric_dtype(partition[dim]):
-        list_np = partition[dim].to_numpy()
-        return NumericManager.median(list_np, k)
+    if data.columns_type[dim] == Data.NUMERICAL:
+        return NumericManager.median(partition, dim)
 
-    if dim in dim_type and dim_type[dim] == 'date':
-        date_list = partition[dim].tolist()
-        return DateManager.median(date_list, k)
+    if data.columns_type[dim] == Data.DATE:
+        return DateManager.median(partition, dim)
 
-    raise Exception("MEDIAN")  # TODO: manage categorical data
+    if data.columns_type[dim] == Data.CATEGORICAL:
+        return CategoricalManager.median(partition, dim)
 
 
 def split_partition(partition, dim, split_val):
-    if isinstance(split_val, Number):
-        list_np = partition[dim].to_numpy()
+    global data
 
-        left_idx, right_idx, center_idx = NumericManager.split(list_np, split_val)
+    if data.columns_type[dim] == Data.NUMERICAL:
+        left, right = NumericManager.split(partition, dim, split_val)
+        return [left, right]
 
-    elif dim in dim_type and dim_type[dim] == 'date':
-        date_list = partition[dim].tolist()
+    if data.columns_type[dim] == Data.DATE:
+        left, right = DateManager.split(partition, dim, split_val)
+        return [left, right]
 
-        left_idx, right_idx, center_idx = DateManager.split(date_list, split_val)
-
-    else:  # TODO: manage categorical data
-        raise Exception("SPLIT_CATEGORICAL")
-
-    mid = len(center_idx) // 2
-    left_p, right_p, center = partition.iloc[left_idx], partition.iloc[right_idx], partition.iloc[center_idx]
-
-    if len(center_idx[:mid + 1]) > 0:
-        left_p = pd.concat([left_p, center[:mid + 1]])
-
-    if len(center_idx[mid + 1:]) > 0:
-        right_p = pd.concat([right_p, center[mid + 1:]])
-    return left_p, right_p
+    if data.columns_type[dim] == Data.CATEGORICAL:
+        partition_list = CategoricalManager.split(partition, dim, split_val)
+        return partition_list
 
 
-def anonymize(partition, k):
-    columns = partition.columns.tolist()
+def allowable_cut(partition_list):
+    global K
 
-    while columns and len(partition) >= k * 2:
-        dim = chose_dimension(columns, partition)  # chooses the dimension with the widest normalized range
-        median = find_median(partition, dim, k)  # compute the frequency set and find the median
-        lhs, rhs = split_partition(partition, dim, median)  #
+    if len(partition_list) <= 1:
+        return False
 
-        # check if, for the current dim, lhs and rhs satisfy k-anonymity
-        if len(lhs) < k or len(rhs) < k:
+    return np.all([ len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
+
+
+def anonymize(partition):
+    columns = partition.data.columns.tolist()
+
+    while columns:
+
+        dim = chose_dimension(partition, columns)
+        split_val = find_median(partition, dim)
+        partition_list = split_partition(partition, dim, split_val)
+
+        # If not allowed multidimensional cut for partition
+        if not allowable_cut(partition_list):
             columns.remove(dim)
             continue
 
-        return merge_dictionary(anonymize(lhs, k),
-                                anonymize(rhs, k))
+        return merge_dictionary([anonymize(p) for p in partition_list ])
 
-    return compute_phi(partition)  # return phi: partition -> summary
+
+    return compute_phi(partition) # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
     # Reorder the semi-identifiers anonymize
     dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
 
+    print(type(df))
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
     anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
@@ -150,6 +155,7 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
+from Project.dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
@@ -165,7 +171,7 @@ def toy_dataset():
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    # all_data = np.append(all_data, b_day, axis=1)
+    #all_data = np.append(all_data, b_day, axis=1)
     # col_list.append("B-day")
 
     df = pd.DataFrame(all_data, columns=col_list)
@@ -177,21 +183,24 @@ def toy_dataset():
 
 def debug():
     df, cols_to_anonymize = toy_dataset()
-    k = 3
+    global K, data
+    K = 3
 
-    # Create dictionary with Range statistic for each QI
-    global initial_ranges
-    initial_ranges = {col: compute_width(df[col], col) for col in cols_to_anonymize}
+    print(df)
+    # Create dictionary with Range statistic and Median for each QI
+    col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
+    data = Data(df, col_type)
 
     # ANONYMIZE SEMI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(df, k)
+    dict_phi = anonymize(data.data_to_anonymize)
     t1 = datetime.now()
 
-    df_anonymize = anonymization(df, cols_to_anonymize, dict_phi)
+    df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
     t2 = datetime.now()
 
-    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), k))
+    data.data_anonymized = df_anonymize
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(df), len(cols_to_anonymize), K))
     print("-Partition created:", sum(partition_size.values()))
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
@@ -199,6 +208,13 @@ def debug():
     print("__________________________________________________________")
     print(df_anonymize)
 
+    """
+        for col in df_anonymize.columns:
+        print("{}: ".format(col))
+        print(np.unique(df_anonymize[col], return_counts=True))
+        print("__________________________________________________________")
+
+    """
 
 if __name__ == "__main__":
     debug()
