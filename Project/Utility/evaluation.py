@@ -32,7 +32,7 @@ def c_dm(e_c):
 
 
 def c_avg(e_c, anon_table, k):
-    return len(anon_table) / (len(e_c) * k)
+    return round( len(anon_table) / (len(e_c) * k),3)
 
 
 #def k_tuning()

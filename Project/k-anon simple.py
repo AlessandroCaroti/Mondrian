@@ -168,7 +168,7 @@ from Project.dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10
+    n_sample = 10000
     random.seed(43)
     n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
@@ -223,9 +223,16 @@ def debug():
 
     print("\n\nEquivalence Classes:\n\n", equivalence_classes)
 
-    print("\n\ndiscernibility penalty: ", c_dm(equivalence_classes))
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
 
-    print("The normalized average: ", c_avg(equivalence_classes,df_anonymize, K))
+    print("CONDITION: Cdm >= k * total_records: ")
+    print(str(c_dm(equivalence_classes)), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(c_dm(equivalence_classes) >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    print( str( c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
+           str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
     """
         for col in df_anonymize.columns:
         print("{}: ".format(col))
