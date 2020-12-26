@@ -10,9 +10,9 @@ from Project.Utility.data import Data
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
-from Project.Utility.evaluation import *
 
-data = None  # Class containing data to anonymize and global ranges and medians
+
+data = None # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
 partition_size = {i: 0 for i in range(1, 100)}
 
@@ -33,21 +33,12 @@ def chose_dimension(partition, columns):
     '''
     global data
 
-    # print(len(partition.data.index))
-
     # remove not necessary dimensions
     filtered_dim = filter(lambda item: item[0] in columns, data.width_list.items())
-    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], filtered_dim)
+    # compute normalized width
+    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])] , filtered_dim)
 
-    '''
-    width_list = []
 
-    for dim, width in :
-        
-        if dim not in columns:
-            continue
-        width_list.append([dim, compute_normalized_width(partition, dim, width)])
-    '''
     width_list = list(width_map)  # convert to list
 
     if len(width_list) == 0:  # no columns allow cut
@@ -59,6 +50,7 @@ def chose_dimension(partition, columns):
 
 
 def merge_dictionary(dict_list):
+
     merged_dict = {}
     for d in dict_list:
         merged_dict = {**merged_dict, **d}
@@ -124,13 +116,13 @@ def allowable_cut(partition_list):
     if len(partition_list) <= 1:
         return False
 
-    return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
+    return np.all([ len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
 def anonymize(partition):
     columns = partition.data.columns.tolist()
 
-    while len(columns) > 0:
+    while columns:
 
         dim = chose_dimension(partition, columns)
         split_val = find_median(partition, dim)
@@ -141,9 +133,10 @@ def anonymize(partition):
             columns.remove(dim)
             continue
 
-        return merge_dictionary([anonymize(p) for p in partition_list])
+        return merge_dictionary([anonymize(p) for p in partition_list ])
 
-    return compute_phi(partition)  # return phi: partition -> summary
+
+    return compute_phi(partition) # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -162,26 +155,23 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
-
 from Project.dataset_generator.database_generator import random_Bday
-
 
 def toy_dataset():
     # GENERATE A TOY DATASET
     n_sample = 10000
-    random.seed(43)
     n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
 
     # Create a toy dataset
     random.seed(42)
-    data = random.randint(0, 7, (n_sample, n_cols)).astype(int)
+    data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    # all_data = np.append(all_data, b_day, axis=1)
+    #all_data = np.append(all_data, b_day, axis=1)
     # col_list.append("B-day")
 
     df = pd.DataFrame(all_data, columns=col_list)
@@ -236,12 +226,10 @@ def debug():
     """
         for col in df_anonymize.columns:
         print("{}: ".format(col))
-        print("{}: ".format(col))
         print(np.unique(df_anonymize[col], return_counts=True))
         print("__________________________________________________________")
 
     """
-
 
 if __name__ == "__main__":
     debug()

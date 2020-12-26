@@ -59,9 +59,9 @@ class CategoricalManager(AbstractType):
 
 def prova():
     dgh = CsvDGH("test.csv")
-    root = dgh.hierarchies["0-7"].root
+    root = dgh.hierarchy.root
 
-    dgh.hierarchies["0-7"].print_leaf()
+    dgh.hierarchy.print_leaf()
 
     n_sample = 20
     np.random.seed(42)

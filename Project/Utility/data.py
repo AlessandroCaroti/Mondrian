@@ -54,7 +54,7 @@ class Data(object):
         """
 
         if self.columns_type[dim] == Data.CATEGORICAL:
-            tree = next(iter(self.dgh_list[dim].hierarchies.values())) # first element of the dictionary
+            tree = self.dgh_list[dim].hierarchy # first element of the dictionary
             return len(tree.root.leaf) # the initial width is the root Node of the DGH
 
         if self.columns_type[dim] == Data.DATE:
@@ -76,7 +76,7 @@ class Data(object):
         """
 
         if self.columns_type[dim] == Data.CATEGORICAL:
-            item = next(iter(self.dgh_list[dim].hierarchies.values()))
+            item = self.dgh_list[dim].hierarchy
             return item.root # the initial median is the root Node of the DGH
 
         if self.columns_type[dim] == Data.DATE:
