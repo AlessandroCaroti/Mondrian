@@ -10,6 +10,7 @@ from Project.Utility.data import Data
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
+from Project.Utility.evaluation import *
 
 
 data = None # Class containing data to anonymize and global ranges and medians
