@@ -23,6 +23,10 @@ class CategoricalManager(AbstractType):
 
         new_partition_list = []  # list of the new partitions
 
+        # if there is no child the partition cannot be divided
+        if len(median_node.children) == 0:
+            return [partition_to_split]
+
         for value, child in median_node.children.items():
             new_median_list = median_list.copy()
             new_width_list = width_list.copy()
@@ -49,11 +53,10 @@ class CategoricalManager(AbstractType):
 
     @staticmethod
     def summary_statistic(partition, dim):
+        return partition.median[dim].data
 
-        return partition.median[dim]
 
-
-def test():
+def prova():
 
     dgh = CsvDGH("test.csv")
     root = dgh.hierarchies["0-7"].root
@@ -72,7 +75,7 @@ def test():
                                                          # (it's a particular case)
 
     print("MEDIAN:", median.data)
-    print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0).data)
+    print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0))
 
     print("LEFT_PART:")
     print(l.data)
@@ -92,4 +95,4 @@ def test():
 
 
 if __name__ == "__main__":
-    test()
+    prova()

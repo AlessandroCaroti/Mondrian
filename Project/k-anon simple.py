@@ -14,7 +14,7 @@ from Project.typesManager.categoricalManager import CategoricalManager
 
 data = None # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
-partition_size = {i: 0 for i in range(1, 13)}
+partition_size = {i: 0 for i in range(1, 100)}
 
 K = 1
 
@@ -25,7 +25,7 @@ def compute_normalized_width(partition, dim, norm_factor):
     return width / norm_factor  # normalized with statistic of the original dimension
 
 
-def chose_dimension(partition):
+def chose_dimension(partition, columns):
     '''
     :param dimensions: list of columns
     :param partition: partition to split
@@ -35,30 +35,27 @@ def chose_dimension(partition):
 
     #print(len(partition.data.index))
 
-    # get list of all normalized width
-    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], data.width_list.items())
+    # remove not necessary dimensions
+    filtered_dim = filter(lambda item: item[0] in columns, data.width_list.items())
+    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])] , filtered_dim)
 
-    split_list = map(lambda tuple:[tuple[0], tuple[1], split_partition(partition, tuple[0], partition.median[tuple[0]])]
-                                                    , width_map) # dim and width mainteined, split partitions added
+    '''
+    width_list = []
 
-    width_filtered = filter(lambda tuple: allowable_cut(tuple[2]),
-                            split_list)  # filter out the dimensions which don't allow cut
-
-    width_list = list(width_filtered)  # convert to list
+    for dim, width in :
+        
+        if dim not in columns:
+            continue
+        width_list.append([dim, compute_normalized_width(partition, dim, width)])
+    '''
+    width_list = list(width_map)  # convert to list
 
     if len(width_list) == 0:  # no columns allow cut
-        return None, None
+        return None
 
-    _max = -1
-    best_col = ''
-    best_split = []
-    for row in width_list:
-        if row[1] > _max:
-            _max = row[1]
-            best_col = row[0]
-            best_split = row[2]
+    width_list.sort(key=lambda x: x[1], reverse=True)
 
-    return best_col, best_split  # name of the column with max width and list of partitions
+    return width_list[0][0]  # name of the column with max width
 
 
 def merge_dictionary(dict_list):
@@ -73,7 +70,7 @@ def merge_dictionary(dict_list):
 def compute_phi(partition):
     summary = []
     global partition_size, num_partition, data
-    #partition_size[len(partition.data.index)] += 1
+    partition_size[len(partition.data.index)] += 1
 
     col_summary = None
     for dim in partition.data.columns:
@@ -84,7 +81,7 @@ def compute_phi(partition):
             col_summary = DateManager.summary_statistic(partition, dim)
 
         if data.columns_type[dim] == Data.CATEGORICAL:
-            col_summary = DateManager.summary_statistic(partition, dim)
+            col_summary = CategoricalManager.summary_statistic(partition, dim)
 
         summary.append(col_summary)
 
@@ -97,16 +94,13 @@ def find_median(partition, dim):
     global data
 
     if data.columns_type[dim] == Data.NUMERICAL:
-        left, right = NumericManager.median(partition, dim)
-        return [left, right]
+        return NumericManager.median(partition, dim)
 
     if data.columns_type[dim] == Data.DATE:
-        left, right = DateManager.median(partition, dim)
-        return [left, right]
+        return DateManager.median(partition, dim)
 
     if data.columns_type[dim] == Data.CATEGORICAL:
-        partition_list = DateManager.median(partition, dim)
-        return partition_list
+        return CategoricalManager.median(partition, dim)
 
 
 def split_partition(partition, dim, split_val):
@@ -121,25 +115,37 @@ def split_partition(partition, dim, split_val):
         return [left, right]
 
     if data.columns_type[dim] == Data.CATEGORICAL:
-        partition_list = DateManager.split(partition, dim, split_val)
+        partition_list = CategoricalManager.split(partition, dim, split_val)
         return partition_list
 
 
 def allowable_cut(partition_list):
     global K
+
+    if len(partition_list) <= 1:
+        return False
+
     return np.all([ len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
 def anonymize(partition):
-    dim, list_partitions = chose_dimension(partition)
+    columns = partition.data.columns.tolist()
 
-    # If not allowed multidimensional cut for partition
-    if dim is None:
-        return compute_phi(partition)  # return phi: partition -> summary
+    while len(columns) > 0:
 
-    phi_list = merge_dictionary([anonymize(p) for p in list_partitions ])
+        dim = chose_dimension(partition, columns)
+        split_val = find_median(partition, dim)
+        partition_list = split_partition(partition, dim, split_val)
 
-    return phi_list
+        # If not allowed multidimensional cut for partition
+        if not allowable_cut(partition_list):
+            columns.remove(dim)
+            continue
+
+        return merge_dictionary([anonymize(p) for p in partition_list ])
+
+
+    return compute_phi(partition) # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -169,7 +175,7 @@ def toy_dataset():
 
     # Create a toy dataset
     random.seed(42)
-    data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
+    data = random.randint(0, 7, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
     # Add date to the data
@@ -186,12 +192,11 @@ def toy_dataset():
 
 def debug():
     df, cols_to_anonymize = toy_dataset()
-    global K
+    global K, data
     K = 3
 
     print(df)
     # Create dictionary with Range statistic and Median for each QI
-    global data
     col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
     data = Data(df, col_type)
 
