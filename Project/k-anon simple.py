@@ -10,6 +10,7 @@ from Project.Utility.data import Data
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
+from Project.Utility.evaluation import *
 
 
 data = None # Class containing data to anonymize and global ranges and medians
@@ -208,6 +209,21 @@ def debug():
     print("__________________________________________________________")
     print(df_anonymize)
 
+    column_list = ['dim0_anon', 'dim1_anon', 'dim2_anon']
+    equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
+
+    print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
+
+    print("CONDITION: Cdm >= k * total_records: ")
+    print(str(c_dm(equivalence_classes)), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(c_dm(equivalence_classes) >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    print( str( c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
+           str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
     """
         for col in df_anonymize.columns:
         print("{}: ".format(col))
