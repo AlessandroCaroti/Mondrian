@@ -166,7 +166,7 @@ def toy_dataset():
 
     # Create a toy dataset
     random.seed(42)
-    data = random.randint(0, 7, (n_sample, n_cols)).astype(int)
+    data = random.randint(0, 50, (n_sample, n_cols)).astype(int)
     all_data = np.append(all_data, data, axis=1)
 
     # Add date to the data
