@@ -7,6 +7,7 @@ from Project.DGH.dgh import CsvDGH
 from Project.Partition.partition import Partition
 from Project.typesManager.abstractType import AbstractType
 
+
 class CategoricalManager(AbstractType):
 
     @staticmethod
@@ -34,11 +35,11 @@ class CategoricalManager(AbstractType):
             new_median_list[dim] = child  # update the median for the dim as the child Node, which is root of a subtree
             new_width_list[dim] = len(child.leaf)
 
-            list_idx = [] # list of indexes
+            list_idx = []  # list of indexes
 
             for i, d in enumerate(data[dim]):
                 if str(d) in child.leaf:
-                    list_idx.append(i) # if the element is in the set, then the tuple is added to the partition
+                    list_idx.append(i)  # if the element is in the set, then the tuple is added to the partition
 
             # create the new partition
             p = Partition(data.iloc[list_idx], new_width_list, new_median_list)
@@ -57,7 +58,6 @@ class CategoricalManager(AbstractType):
 
 
 def prova():
-
     dgh = CsvDGH("test.csv")
     root = dgh.hierarchies["0-7"].root
 
@@ -67,12 +67,12 @@ def prova():
     np.random.seed(42)
     ages = np.random.randint(0, 8, (n_sample,))
     ages = pd.DataFrame(ages)
-    #print(ages)
 
-    bday_p = Partition(ages, {0:len(root.leaf)}, {0:root})
+    bday_p = Partition(ages, {0: len(root.leaf)}, {0: root})
     median = CategoricalManager.median(bday_p, 0)
-    [l, r] = CategoricalManager.split(bday_p, 0, median) # I know there are two partitions because of the generalization
-                                                         # (it's a particular case)
+    [l, r] = CategoricalManager.split(bday_p, 0,
+                                      median)  # I know there are two partitions because of the generalization
+    # (it's a particular case)
 
     print("MEDIAN:", median.data)
     print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0))

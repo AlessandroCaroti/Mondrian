@@ -4,13 +4,20 @@ ref: https://www.mdpi.com/2079-9292/9/5/716/html
 """
 
 
+# A group of records that are indistinguishable from each other is
+# often referred to as an equivalence class.
+
+def get_equivalence_classes(anon_dataset, columns_list):
+    return anon_dataset.groupby(by=columns_list).size().reset_index(name='counts')
+
+
 def c_dm(e_c):
-    # Discernibility Penalty
+    # Discernibly Penalty
     # assignment of penalty (cost) to each tuple in the generalized data set.
     # sum of  size( equivalence classes )^2
     tot_penalty = 0
-    for E in e_c:
-        tot_penalty += len(E) ** 2
+    for e in e_c['counts']:
+        tot_penalty += e ** 2
     return tot_penalty
 
 
@@ -24,6 +31,8 @@ def c_dm(e_c):
 """
 
 
-# TODO: eventualmente da cambiare
 def c_avg(e_c, anon_table, k):
     return len(anon_table) / (len(e_c) * k)
+
+
+#def k_tuning()
