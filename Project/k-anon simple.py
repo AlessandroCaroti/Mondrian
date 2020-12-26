@@ -33,21 +33,12 @@ def chose_dimension(partition, columns):
     '''
     global data
 
-    #print(len(partition.data.index))
-
     # remove not necessary dimensions
     filtered_dim = filter(lambda item: item[0] in columns, data.width_list.items())
+    # compute normalized width
     width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])] , filtered_dim)
 
-    '''
-    width_list = []
 
-    for dim, width in :
-        
-        if dim not in columns:
-            continue
-        width_list.append([dim, compute_normalized_width(partition, dim, width)])
-    '''
     width_list = list(width_map)  # convert to list
 
     if len(width_list) == 0:  # no columns allow cut
@@ -131,7 +122,7 @@ def allowable_cut(partition_list):
 def anonymize(partition):
     columns = partition.data.columns.tolist()
 
-    while len(columns) > 0:
+    while columns:
 
         dim = chose_dimension(partition, columns)
         split_val = find_median(partition, dim)

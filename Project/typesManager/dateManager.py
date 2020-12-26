@@ -129,8 +129,8 @@ class DateManager(AbstractType):
 
         data = partition.data[dim]
 
-        if len(data) == 1:
-            return data[0]
+        if len(np.unique(data)) == 1:
+            return data.iloc[0]
 
         _max, _min = DateManager.max_min(partition, dim)
 
