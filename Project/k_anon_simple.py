@@ -11,9 +11,9 @@ from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
 from Project.Utility.evaluation import *
+import matplotlib.pyplot as plt
 
-
-data = None # Class containing data to anonymize and global ranges and medians
+data = None  # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
 partition_size = {i: 0 for i in range(1, 100)}
 
@@ -37,8 +37,7 @@ def chose_dimension(partition, columns):
     # remove not necessary dimensions
     filtered_dim = filter(lambda item: item[0] in columns, data.width_list.items())
     # compute normalized width
-    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])] , filtered_dim)
-
+    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], filtered_dim)
 
     width_list = list(width_map)  # convert to list
 
@@ -51,7 +50,6 @@ def chose_dimension(partition, columns):
 
 
 def merge_dictionary(dict_list):
-
     merged_dict = {}
     for d in dict_list:
         merged_dict = {**merged_dict, **d}
@@ -117,7 +115,7 @@ def allowable_cut(partition_list):
     if len(partition_list) <= 1:
         return False
 
-    return np.all([ len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
+    return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
 def anonymize(partition):
@@ -134,10 +132,9 @@ def anonymize(partition):
             columns.remove(dim)
             continue
 
-        return merge_dictionary([anonymize(p) for p in partition_list ])
+        return merge_dictionary([anonymize(p) for p in partition_list])
 
-
-    return compute_phi(partition) # return phi: partition -> summary
+    return compute_phi(partition)  # return phi: partition -> summary
 
 
 def anonymization(df, columns_to_anonymize, anon_dict):
@@ -156,7 +153,9 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     final_db = df_merged.drop(columns_to_anonymize, axis=1)
     return final_db
 
+
 from Project.dataset_generator.database_generator import random_Bday
+
 
 def toy_dataset():
     # GENERATE A TOY DATASET
@@ -172,7 +171,7 @@ def toy_dataset():
 
     # Add date to the data
     b_day = np.array([random_Bday(age) for age in np.random.randint(0, 120, (n_sample,))]).reshape((n_sample, 1))
-    #all_data = np.append(all_data, b_day, axis=1)
+    # all_data = np.append(all_data, b_day, axis=1)
     # col_list.append("B-day")
 
     df = pd.DataFrame(all_data, columns=col_list)
@@ -216,14 +215,14 @@ def debug():
 
     print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
 
-    print("CONDITION: Cdm >= k * total_records: ")
+    print("CONDITION: C_dm >= k * total_records: ")
     print(str(c_dm(equivalence_classes)), ">=", str(K), "*", str(len(df_anonymize)), ": "
           , str(c_dm(equivalence_classes) >= (K * len(df_anonymize))))
 
     print("CONDITION: C_avg >= 1: ")
 
-    print( str( c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
-           str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
+    print(str(c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
+          str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
     """
         for col in df_anonymize.columns:
         print("{}: ".format(col))
@@ -232,5 +231,57 @@ def debug():
 
     """
 
+
+def algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list):
+    global K, data
+    data = Data(df, col_type)
+    cdm_results = []
+    cavg_results = []
+    t0 = datetime.now()
+    for k in k_list:
+        K = k
+        print("\n\nK=", K, "\n\n")
+        dict_phi = anonymize(data.data_to_anonymize)
+        df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
+        data.data_anonymized = df_anonymize
+        equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
+        print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+        cdm_results.append(c_dm(equivalence_classes))
+        cavg_results.append(c_avg(equivalence_classes, df_anonymize, K))
+    t1 = datetime.now()
+    print("\n\nExecution Time: ", t1 - t0, "\n\n")
+    return cdm_results, cavg_results
+
+
+def plot_evaluations():
+    df, cols_to_anonymize = toy_dataset()
+
+    k_list = range(1, 11)
+    col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
+    column_list = ['dim0_anon', 'dim1_anon', 'dim2_anon']
+    cdm_list, cavg_list = algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list)
+
+    print("cdm: ", cdm_list)
+    print("cavg: ", cavg_list)
+
+    plt.figure(figsize=(15, 12))
+    plt.subplot(2, 1, 1)
+    plt.plot(k_list, cdm_list)
+    plt.title("Discernability Penalty Metric", fontsize=15)
+    plt.xlabel("K",fontsize=15)
+    plt.ylabel("$C_{dm}$",fontsize=15)
+    plt.grid()
+
+    plt.subplot(2, 1, 2)
+    plt.plot(k_list, cavg_list)
+    plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)
+    plt.xlabel("K",fontsize=15)
+    plt.ylabel("$C_{avg}$",fontsize=15)
+    plt.grid()
+
+    plt.show()
+
+
 if __name__ == "__main__":
-    debug()
+    # debug()
+    plot_evaluations()

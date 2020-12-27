@@ -1,3 +1,7 @@
+from Project.k_anon_simple import anonymize, anonymization
+from datetime import datetime
+from Project.Utility.data import Data
+
 """
 @param e_c: group-bys on quasi-identifier (equivalence classes)
 ref: https://www.mdpi.com/2079-9292/9/5/716/html
@@ -32,7 +36,6 @@ def c_dm(e_c):
 
 
 def c_avg(e_c, anon_table, k):
-    return round( len(anon_table) / (len(e_c) * k),3)
+    return round(len(anon_table) / (len(e_c) * k), 3)
 
 
-#def k_tuning()
