@@ -21,7 +21,6 @@ class Data(object):
 
         # data can be either a DataFrame or a file name
         self.dataFrame = data if isinstance(data, pd.DataFrame) else pd.read_csv(os.path.join(self.data_folder, data))
-        print("AAAAAAAA: \n", self.data_folder,"BBBBBBB\n")
 
         # dgh for each CATEGORICAL column: assuming that the filename is equal to the column name
         dgh_list = []

@@ -23,7 +23,7 @@ mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
-quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-day', 'Height (cm)', 'Weight (Kg)', 'Blood type']
+quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)', 'Blood type']
 explicit_identifiers = ['Name']
 sensitive_data = ['Disease', 'Start Therapy', 'End Therapy']
 
@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age','Zipcode','B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
+    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
                    'Blood type',
                    'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
