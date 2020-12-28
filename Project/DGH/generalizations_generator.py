@@ -56,6 +56,8 @@ def blood_groups_generalization():
                                  index=False)
     print(blood_generalizations.sort_values(1))
 
+def city_generalization():
+    pass
 
 if __name__ == "__main__":
     csv_relative_path = r"dataset_generator/data/mainDB_100000.csv"

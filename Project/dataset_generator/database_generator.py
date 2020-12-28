@@ -17,6 +17,7 @@ n_entry = 10
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease_small.csv")
+geography_path = os.path.join(dataset_folder, "geography_dataset.csv")
 
 mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
@@ -96,21 +97,20 @@ def random_weight():
     return round(np.random.normal(80, 15, 1)[0], 1)
 
 
-def pick_zipcode_cities_from_csv(path):
+def pick_geography_from_csv(path):
     dataframe = pd.read_csv(path, converters={'zip': lambda x: str(x)})
-    zipcode = dataframe['zip']
-    cities = dataframe['city']
     new_dataset = pd.DataFrame()
 
-    new_dataset['Zipcode'] = zipcode
-    new_dataset['B_City'] = cities
-    new_dataset.to_csv(os.path.join(dataset_folder, "cities_zipcode.csv"), index=False)
-
+    new_dataset['Zipcode'] = dataframe['zip']
+    new_dataset['B_City'] = dataframe['city']
+    new_dataset['County-FIPS'] = dataframe["county_name"]
+    new_dataset['state_name'] = dataframe["state_name"]
+    new_dataset.to_csv(os.path.join(dataset_folder, "geography_dataset.csv"), index=False)
 
 
 if __name__ == "__main__":
 
-    pick_zipcode_cities_from_csv("data/uszips.csv")
+    # pick_geography_from_csv("data/original_geography_dataset.csv")
 
     # array to store all the data
     data = []
@@ -121,6 +121,7 @@ if __name__ == "__main__":
     random.seed(25)
     # Dataset with a list of disease
     df_disease = pd.read_csv(disease_path)
+    df_geo = pd.read_csv(geography_path, converters={'Zipcode': lambda x: str(x)})
 
     for i in range(n_entry):
         new_entry = []
@@ -135,8 +136,12 @@ if __name__ == "__main__":
         # Age
         new_entry.append(random_age())
 
-        # ZipCode
-        new_entry.append(random_zipcode())
+        # ZipCode and cities
+        # new_entry.append(random_zipcode())
+        k = random.randrange(0, df_geo.shape[0])
+        row = df_geo.loc[k, :]
+        new_entry.append(row.Zipcode)
+        new_entry.append(row.B_City)
 
         # B-day
         new_entry.append(random_Bday(new_entry[2]))
@@ -162,7 +167,8 @@ if __name__ == "__main__":
 
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Start Therapy', 'End Therapy', 'Blood type',
+    column_name = ['Name', 'Gender', 'Age','Zipcode','B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
+                   'Blood type',
                    'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
 
