@@ -10,7 +10,8 @@ import os
 
 class Data(object):
     EI, SD, NUMERICAL, DATE, CATEGORICAL = list(range(5))  # type of data: Explicit Identifiers, Sensitive data and
-                                                            # Quasi-Identifiers: can be NUMBER, CATEGORICAL or DATE
+
+    # Quasi-Identifiers: can be NUMBER, CATEGORICAL or DATE
 
     def __init__(self, data, columns_type):
 
@@ -20,6 +21,7 @@ class Data(object):
 
         # data can be either a DataFrame or a file name
         self.dataFrame = data if isinstance(data, pd.DataFrame) else pd.read_csv(os.path.join(self.data_folder, data))
+        print("AAAAAAAA: \n", self.data_folder,"BBBBBBB\n")
 
         # dgh for each CATEGORICAL column: assuming that the filename is equal to the column name
         dgh_list = []
@@ -45,7 +47,8 @@ class Data(object):
         self.data_to_anonymize = Partition(self.dataFrame[col_to_anonymize], self.width_list, self.median_list)
 
         self.data_anonymized = None
-    def init_width_dim(self,dim):
+
+    def init_width_dim(self, dim):
 
         """
         Initialize the width given a dim
@@ -54,8 +57,8 @@ class Data(object):
         """
 
         if self.columns_type[dim] == Data.CATEGORICAL:
-            tree = self.dgh_list[dim].hierarchy # first element of the dictionary
-            return len(tree.root.leaf) # the initial width is the root Node of the DGH
+            tree = self.dgh_list[dim].hierarchy  # first element of the dictionary
+            return len(tree.root.leaf)  # the initial width is the root Node of the DGH
 
         if self.columns_type[dim] == Data.DATE:
             p = Partition(self.dataFrame)
@@ -67,7 +70,7 @@ class Data(object):
 
         raise Exception("column type not valid! Only NUMERICAl, CATEGORICAL and DATE are supported.")
 
-    def init_median_dim(self,dim):
+    def init_median_dim(self, dim):
 
         """
         Initialize the median given a dim
@@ -77,7 +80,7 @@ class Data(object):
 
         if self.columns_type[dim] == Data.CATEGORICAL:
             item = self.dgh_list[dim].hierarchy
-            return item.root # the initial median is the root Node of the DGH
+            return item.root  # the initial median is the root Node of the DGH
 
         if self.columns_type[dim] == Data.DATE:
             p = Partition(self.dataFrame)
