@@ -184,7 +184,10 @@ def toy_dataset():
 def debug_dataset():
     global K, data
     dataset = pd.read_csv("dataset_generator/data/mainDB_10000.csv")
-    col_type = {"Name": Data.EI, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
+    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
+                "B-City": Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE, 'End Therapy': Data.DATE,
+                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)':Data.NUMERICAL }
+
     print(list(dataset.columns))
 
 
