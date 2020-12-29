@@ -75,67 +75,48 @@ def city_generalization(relative_csv_path):
     path = Path(__file__)
     cur_work = path.parent.parent
     csv_path = os.path.join(cur_work, relative_csv_path)
-    csv = pd.read_csv(csv_path, converters={'Zipcode': lambda x: str(x)})
+    csv = pd.read_csv(csv_path, converters={'zip': lambda x: str(x)})
 
     timezones = csv['timezone']
     continent = list(map(lambda x: x.split('/')[0], timezones))
+    timezones = list(map(lambda x: x.split('/')[1], timezones))
 
-    Latitude = csv['lat'].tolist()
-    Longitude = csv['lng'].tolist()
+    # Latitude = csv['lat'].tolist()
+    # Longitude = csv['lng'].tolist()
+    # zipcode = csv['zip'].tolist()
 
     geolocator = Nominatim(user_agent="application")
     # aux_val = [(lat, lng) for lat, lng in zip(Latitude, Longitude)]  # [geolocator for _ in range(len(csv))])]
     # with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
     #    countries = list(pool.map(op, aux_val))
-
-    backup = pd.DataFrame()
-    backup['countries'] = [0,0]
-    backup.to_csv(os.path.join("Generalization", "backup_countries.csv"))
+    """
     t1 = datetime.now()
     countries = []
     i = 0
     for lat, lng in zip(Latitude, Longitude):
         print(i, '/', len(csv))
         country = geolocator.reverse(str(lat) + "," + str(lng)).raw['address']['country']
+        # country = geolocator.geocode(str(zip)).address.split(',')[-1]
         countries.append(country)
-        if i % 20 == 0:
-            backup.drop(labels=['countries'])
+        if i % 100 == 0:
+            backup = pd.DataFrame()
             backup['countries'] = countries
-            backup.to_csv(os.path.join("Generalization", "backup_countries.csv"))
+            backup.to_csv(os.path.join("Generalization/backup", "backup_countries.csv_it_{}".format(i)))
 
         i += 1
-
     print(countries)
-
+    """
     new_dataframe = pd.DataFrame()
-
-    for idx, col in zip(range(4), [csv['city'], csv['county_name'], csv['state_name'], continent]):
-        new_dataframe[idx] = col
+    cols = ['City', 'County', 'State', 'Timezone', 'Continent']
+    for col, data_col in zip(cols, [csv['city'], csv['county_name'], csv['state_name'], timezones, continent]):
+        new_dataframe[col] = data_col
 
     print(new_dataframe)
-    new_dataframe.to_csv(os.path.join("Generalization", "city_generalization.csv"), header=False,
-                         index=False)
-    t2 = datetime.now()
-
-    print("\n\nEXECUTION TIME: ", t2 - t1)
+    new_dataframe.to_csv(os.path.join("Generalization", "city_generalization.csv"), header=False, index=False)
 
 
 # REMOVED: RHODE ISLAND
 if __name__ == "__main__":
     csv_relative_path = r"dataset_generator/data/original_geography_dataset.csv"
-    # zipcode_generalization(csv_relative_path)
-    # uncomment to generate blood  groups
-    # blood_groups_generalization()
-    #city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
-    # es = pc.country_alpha2_to_continent_code('RI')
-    # es = pc.convert_continent_code_to_continent_name(es)
-    # es2 = pc.country_name_to_country_alpha2("Rhode Island")
-    # initialize Nominatim API
-    import pgeocode
 
-    #nomi = pgeocode.Nominatim('US')
-    #print(nomi.query_postal_code("01074"))
-    from pyzipcode import ZipCodeDatabase
-
-   # geolocator = Nominatim(user_agent="geoapiExercises")
-    #location = geolocator.geocode("00601")
+    # city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
