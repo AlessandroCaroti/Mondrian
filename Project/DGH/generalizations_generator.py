@@ -65,7 +65,6 @@ def blood_groups_generalization():
 
 
 def op(tupl):
-    print('AAA')
     return reverse_geocoder.search(tupl[0], tupl[1])[0]['cc']
     # return tupl[2].reverse(str(tupl[0]) + "," + str(tupl[1])).raw['address']['country']
 
@@ -112,11 +111,13 @@ def city_generalization(relative_csv_path):
         new_dataframe[col] = data_col
 
     print(new_dataframe)
-    new_dataframe.to_csv(os.path.join("Generalization", "city_generalization.csv"), header=False, index=False)
+    new_dataframe.to_csv(os.path.join("Generalization", "city_generalization.csv"), header=True, index=False)
 
 
 # REMOVED: RHODE ISLAND
 if __name__ == "__main__":
     csv_relative_path = r"dataset_generator/data/original_geography_dataset.csv"
 
-    # city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
+    #blood_groups_generalization()
+    #zipcode_generalization(csv_relative_path)
+    #city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
