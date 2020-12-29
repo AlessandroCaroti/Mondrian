@@ -98,7 +98,7 @@ def city_generalization(relative_csv_path):
         print(i, '/', len(csv))
         country = geolocator.reverse(str(lat) + "," + str(lng)).raw['address']['country']
         countries.append(country)
-        if i == 20 or i == 40:
+        if i % 20 == 0:
             backup.drop(labels=['countries'])
             backup['countries'] = countries
             backup.to_csv(os.path.join("Generalization", "backup_countries.csv"))
@@ -126,8 +126,16 @@ if __name__ == "__main__":
     # zipcode_generalization(csv_relative_path)
     # uncomment to generate blood  groups
     # blood_groups_generalization()
-    city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
+    #city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
     # es = pc.country_alpha2_to_continent_code('RI')
     # es = pc.convert_continent_code_to_continent_name(es)
     # es2 = pc.country_name_to_country_alpha2("Rhode Island")
     # initialize Nominatim API
+    import pgeocode
+
+    #nomi = pgeocode.Nominatim('US')
+    #print(nomi.query_postal_code("01074"))
+    from pyzipcode import ZipCodeDatabase
+
+   # geolocator = Nominatim(user_agent="geoapiExercises")
+    #location = geolocator.geocode("00601")
