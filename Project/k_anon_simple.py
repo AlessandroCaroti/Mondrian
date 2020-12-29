@@ -141,7 +141,6 @@ def anonymization(df, columns_to_anonymize, anon_dict):
     # Reorder the semi-identifiers anonymize
     dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
 
-    print(type(df))
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
     anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
@@ -159,7 +158,7 @@ from Project.dataset_generator.database_generator import random_Bday
 
 def toy_dataset():
     # GENERATE A TOY DATASET
-    n_sample = 10000
+    n_sample = 10
     n_cols = 3
     col_list = ["dim" + str(i) for i in range(n_cols)]
     all_data = np.empty((n_sample, 0), dtype=np.object)
@@ -268,15 +267,15 @@ def plot_evaluations():
     plt.subplot(2, 1, 1)
     plt.plot(k_list, cdm_list)
     plt.title("Discernability Penalty Metric", fontsize=15)
-    plt.xlabel("K",fontsize=15)
-    plt.ylabel("$C_{dm}$",fontsize=15)
+    plt.xlabel("K", fontsize=15)
+    plt.ylabel("$C_{dm}$", fontsize=15)
     plt.grid()
 
     plt.subplot(2, 1, 2)
     plt.plot(k_list, cavg_list)
     plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)
-    plt.xlabel("K",fontsize=15)
-    plt.ylabel("$C_{avg}$",fontsize=15)
+    plt.xlabel("K", fontsize=15)
+    plt.ylabel("$C_{avg}$", fontsize=15)
     plt.grid()
 
     plt.show()

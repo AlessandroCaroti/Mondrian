@@ -11,23 +11,24 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 100000
+n_entry = 10
 
 # path & filename variable
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease_small.csv")
+geography_path = os.path.join(dataset_folder, "geography_dataset.csv")
 
 mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
-semi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-day', 'Height (cm)', 'Weight (Kg)']
-identifiers = ['Name']
-sensible_data = ['Disease', 'Blood type']
+quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)', 'Blood type']
+explicit_identifiers = ['Name']
+sensitive_data = ['Disease', 'Start Therapy', 'End Therapy']
 
-mainTable_indices = semi_identifiers + sensible_data
-externalTable_indices = identifiers + semi_identifiers
+mainTable_indices = quasi_identifiers + sensitive_data
+externalTable_indices = explicit_identifiers + quasi_identifiers
 
 
 def random_age():
@@ -96,7 +97,21 @@ def random_weight():
     return round(np.random.normal(80, 15, 1)[0], 1)
 
 
+def pick_geography_from_csv(path):
+    dataframe = pd.read_csv(path, converters={'zip': lambda x: str(x)})
+    new_dataset = pd.DataFrame()
+
+    new_dataset['Zipcode'] = dataframe['zip']
+    new_dataset['B_City'] = dataframe['city']
+    new_dataset['County-FIPS'] = dataframe["county_name"]
+    new_dataset['state_name'] = dataframe["state_name"]
+    new_dataset.to_csv(os.path.join(dataset_folder, "geography_dataset.csv"), index=False)
+
+
 if __name__ == "__main__":
+
+    # pick_geography_from_csv("data/original_geography_dataset.csv")
+
     # array to store all the data
     data = []
 
@@ -106,6 +121,7 @@ if __name__ == "__main__":
     random.seed(25)
     # Dataset with a list of disease
     df_disease = pd.read_csv(disease_path)
+    df_geo = pd.read_csv(geography_path, converters={'Zipcode': lambda x: str(x)})
 
     for i in range(n_entry):
         new_entry = []
@@ -120,13 +136,15 @@ if __name__ == "__main__":
         # Age
         new_entry.append(random_age())
 
-        # ZipCode
-        new_entry.append(random_zipcode())
+        # ZipCode and cities
+        # new_entry.append(random_zipcode())
+        k = random.randrange(0, df_geo.shape[0])
+        row = df_geo.loc[k, :]
+        new_entry.append(row.Zipcode)
+        new_entry.append(row.B_City)
 
         # B-day
         new_entry.append(random_Bday(new_entry[2]))
-
-        # City_birth TODO: to implement if we want it
 
         # Disease
         k = random.randrange(0, df_disease.shape[0])
@@ -149,7 +167,8 @@ if __name__ == "__main__":
 
         data.append(new_entry)
 
-    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-day', 'Disease', 'Start Therapy', 'End Therapy', 'Blood type',
+    column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
+                   'Blood type',
                    'Weight (Kg)', 'Height (cm)']
     df = pd.DataFrame(data, columns=column_name)
 
@@ -157,11 +176,6 @@ if __name__ == "__main__":
     df = df.convert_dtypes()
 
     print(df)
-
-    # TODO: split all data into 2 dataset:
-    #       -one with the sensible data and some Quasi-Identifier attribute (the Main_DataBase)
-    #       -one that contain external information that can be joined with the previous
-    #        dataset to re-identify individual records (the external_DataBase)
 
     main_df = df[mainTable_indices]
     main_df.to_csv(os.path.join(dataset_folder, mainDB_filename))
