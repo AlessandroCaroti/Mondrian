@@ -1,6 +1,7 @@
 from datetime import datetime
 from numbers import Number
 
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from numpy import random
@@ -27,11 +28,11 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 
 def chose_dimension(partition, columns):
-    '''
-    :param dimensions: list of columns
+    """
+    :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
-    '''
+    """
     global data
 
     # remove not necessary dimensions
@@ -180,6 +181,13 @@ def toy_dataset():
     return df, col_list
 
 
+def debug_dataset():
+    global K, data
+    dataset = pd.read_csv("dataset_generator/data/mainDB_10000.csv")
+    col_type = {"Name": Data.EI, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
+    print(list(dataset.columns))
+
+
 def debug():
     df, cols_to_anonymize = toy_dataset()
     global K, data
@@ -283,4 +291,5 @@ def plot_evaluations():
 
 if __name__ == "__main__":
     # debug()
-    plot_evaluations()
+    # plot_evaluations()
+    debug_dataset()

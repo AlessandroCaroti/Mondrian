@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 10
+n_entry = 100000
 
 # path & filename variable
 dataset_folder = "data"
@@ -168,8 +168,8 @@ if __name__ == "__main__":
         data.append(new_entry)
 
     column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
-                   'Blood type',
-                   'Weight (Kg)', 'Height (cm)']
+                   'Blood type', 'Weight (Kg)', 'Height (cm)']
+
     df = pd.DataFrame(data, columns=column_name)
 
     df = df.infer_objects()
@@ -177,5 +177,5 @@ if __name__ == "__main__":
 
     print(df)
 
-    main_df = df[mainTable_indices]
-    main_df.to_csv(os.path.join(dataset_folder, mainDB_filename))
+    #main_df = df[mainTable_indices]
+    df.to_csv(os.path.join(dataset_folder, mainDB_filename))
