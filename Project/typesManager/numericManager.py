@@ -33,10 +33,10 @@ class NumericManager(AbstractType):
 
         data = partition_to_split.data
 
-        left = data[ data[dim] < split_val]
+        left = data[data[dim] < split_val]
 
-        right = data[ data[dim] > split_val]
-        center = data[ data[dim] == split_val]
+        right = data[data[dim] > split_val]
+        center = data[data[dim] == split_val]
 
         mid = len(center.index) // 2
 
@@ -44,8 +44,8 @@ class NumericManager(AbstractType):
         if len(center[: mid + 1].index) > 0:
             left = pd.concat([left, center[:mid + 1]])
 
-        if len(center[mid + 1 : ].index) > 0:
-            right = pd.concat([right, center[mid + 1 :]])
+        if len(center[mid + 1:].index) > 0:
+            right = pd.concat([right, center[mid + 1:]])
 
         # create the new partition
         left_p = Partition(left)
@@ -72,10 +72,9 @@ class NumericManager(AbstractType):
         return [left_p, right_p]
 
     @staticmethod
-    def median(partition, dim ):
+    def median(partition, dim):
 
-
-        if not isinstance(partition, Partition) :
+        if not isinstance(partition, Partition):
             raise TypeError("partition must be a Partition")
 
         data = partition.data
@@ -85,7 +84,6 @@ class NumericManager(AbstractType):
 
         val_list, frequency = np.unique(data[dim], return_counts=True)
         middle = len(data) // 2
-
 
         acc = 0
         split_index = 0
@@ -105,12 +103,13 @@ class NumericManager(AbstractType):
 
         data = partition.data[dim]
 
-        if len(np.unique(data)) == 1 :
+        if len(np.unique(data)) == 1:
             return data.iloc[0]
 
         _max, _min = np.max(data), np.min(data)
 
         return "[" + str(_min) + " - " + str(_max) + "]"
+
 
 def test():
     n_sample = 20
@@ -119,7 +118,7 @@ def test():
     ages = pd.DataFrame(ages)
     print(ages)
 
-    bday_p = Partition(ages,{},{})
+    bday_p = Partition(ages, {}, {})
     median = NumericManager.median(bday_p, 0)
     l, r = NumericManager.split(bday_p, 0, median)
 

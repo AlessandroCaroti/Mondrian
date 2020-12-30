@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 10
+n_entry = 500000
 
 # path & filename variable
 dataset_folder = "data"
@@ -23,9 +23,10 @@ mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
-quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)', 'Blood type']
+quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)',
+                     'Blood type', 'Start ', 'Therapy', 'End Therapy']
 explicit_identifiers = ['Name']
-sensitive_data = ['Disease', 'Start Therapy', 'End Therapy']
+sensitive_data = ['Disease']
 
 mainTable_indices = quasi_identifiers + sensitive_data
 externalTable_indices = explicit_identifiers + quasi_identifiers
@@ -71,9 +72,11 @@ def random_therapy_day():
     if end_month > 12 and end_year == start_year:
         end_month = end_month - 12
         end_year += 1
+    elif end_month > 12:
+        end_month = end_month - 12
     end_day = rand_day(end_month)
 
-    start_date = "{:02d}-{:02d}-{} ".format(start_day, start_month, start_year)
+    start_date = "{:02d}-{:02d}-{}".format(start_day, start_month, start_year)
     end_date = "{:02d}-{:02d}-{}".format(end_day, end_month, end_year)
 
     return start_date, end_date
@@ -168,8 +171,8 @@ if __name__ == "__main__":
         data.append(new_entry)
 
     column_name = ['Name', 'Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Disease', 'Start Therapy', 'End Therapy',
-                   'Blood type',
-                   'Weight (Kg)', 'Height (cm)']
+                   'Blood type', 'Weight (Kg)', 'Height (cm)']
+
     df = pd.DataFrame(data, columns=column_name)
 
     df = df.infer_objects()
@@ -177,5 +180,5 @@ if __name__ == "__main__":
 
     print(df)
 
-    main_df = df[mainTable_indices]
-    main_df.to_csv(os.path.join(dataset_folder, mainDB_filename))
+    # main_df = df[mainTable_indices]
+    df.to_csv(os.path.join(dataset_folder, mainDB_filename))

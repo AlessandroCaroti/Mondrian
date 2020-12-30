@@ -1,6 +1,8 @@
+import os
 from datetime import datetime
 from numbers import Number
 
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from numpy import random
@@ -27,11 +29,11 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 
 def chose_dimension(partition, columns):
-    '''
-    :param dimensions: list of columns
+    """
+    :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
-    '''
+    """
     global data
 
     # remove not necessary dimensions
@@ -137,12 +139,13 @@ def anonymize(partition):
     return compute_phi(partition)  # return phi: partition -> summary
 
 
-def anonymization(df, columns_to_anonymize, anon_dict):
+def anonymization(df, anon_dict):
     # Reorder the semi-identifiers anonymize
     dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
-
+    columns_to_anonymize = list(df.columns)
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
+
     anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
 
     # Concatenate the 2 DF
@@ -180,6 +183,71 @@ def toy_dataset():
     return df, col_list
 
 
+def debug_dataset():
+    global K, data
+    K = 3
+    dataset_name = "mainDB_500000.csv"
+    dataset_folder = "dataset_generator/data"
+    n_sample_filename = dataset_name.split("_")[1].split(".")[0]
+
+    dataset = pd.read_csv(os.path.join(dataset_folder, dataset_name))
+    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
+                "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
+                'End Therapy': Data.DATE,
+                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)': Data.NUMERICAL}
+    data = Data(dataset, col_type)
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
+    t0 = datetime.now()
+    dict_phi = anonymize(data.data_to_anonymize)
+    t1 = datetime.now()
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    t2 = datetime.now()
+
+    data.data_anonymized = df_anonymize
+    len_dataset = len(dataset)
+    n_dim = len(list(data.data_to_anonymize.data))
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
+    total_partition = sum(partition_size.values())
+    print("-Partition created:", total_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
+    print(partition_size)
+    print("__________________________________________________________")
+    print(df_anonymize)
+
+    df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_DB_" + n_sample_filename + ".cvs"))
+
+    equivalence_classes = get_equivalence_classes(df_anonymize, list(list(data.data_anonymized)))
+
+    equivalence_classes.to_csv(os.path.join("results", "Equivalence_Classes_DB_" + n_sample_filename + ".cvs"))
+    print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
+
+    print("CONDITION: C_dm >= k * total_records: ")
+
+    cdm = c_dm(equivalence_classes)
+    print(str(cdm), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(cdm >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    cavg = c_avg(equivalence_classes, df_anonymize, K)
+    print(str(cavg), ">= 1: ",
+          str(cavg >= 1))
+
+    # SAVE ALL STATISTICS IN THE FOLDER RESULTS
+    f = open("results/statistics_result_DB_"+n_sample_filename+".txt", "w")
+    f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
+    f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
+    f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
+    f.write("\nPartition created: {}\n".format(total_partition))
+    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.close()
+
+
 def debug():
     df, cols_to_anonymize = toy_dataset()
     global K, data
@@ -190,12 +258,12 @@ def debug():
     col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
     data = Data(df, col_type)
 
-    # ANONYMIZE SEMI-IDENTIFIERS DATA
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
     dict_phi = anonymize(data.data_to_anonymize)
     t1 = datetime.now()
 
-    df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
@@ -231,7 +299,7 @@ def debug():
     """
 
 
-def algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list):
+def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
     global K, data
     data = Data(df, col_type)
     cdm_results = []
@@ -241,7 +309,7 @@ def algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_li
         K = k
         print("\n\nK=", K, "\n\n")
         dict_phi = anonymize(data.data_to_anonymize)
-        df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
+        df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
         data.data_anonymized = df_anonymize
         equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
         print("\n\nEquivalence Classes:\n\n", equivalence_classes)
@@ -258,7 +326,7 @@ def plot_evaluations():
     k_list = range(1, 11)
     col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
     column_list = ['dim0_anon', 'dim1_anon', 'dim2_anon']
-    cdm_list, cavg_list = algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list)
+    cdm_list, cavg_list = algorithm_evaluation_on_k(df, col_type, k_list, column_list)
 
     print("cdm: ", cdm_list)
     print("cavg: ", cavg_list)
@@ -283,4 +351,5 @@ def plot_evaluations():
 
 if __name__ == "__main__":
     # debug()
-    plot_evaluations()
+    # plot_evaluations()
+    debug_dataset()

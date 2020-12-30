@@ -17,6 +17,7 @@ class Data(object):
 
         self.columns_type = columns_type  # dictionary column_name : type_of_data
         self.data_folder = "Dataset"  # folder containing the csv file
+        # self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
         self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
 
         # data can be either a DataFrame or a file name
@@ -24,7 +25,7 @@ class Data(object):
 
         # dgh for each CATEGORICAL column: assuming that the filename is equal to the column name
         dgh_list = []
-        for dim in self.dataFrame.columns:
+        for dim in self.dataFrame.columns[1:]:
             if self.columns_type[dim] == Data.CATEGORICAL:
                 dgh_list.append((dim, CsvDGH(os.path.join(self.hierarchy_folder, dim + ".csv"))))
 
@@ -93,8 +94,8 @@ class Data(object):
 
     @staticmethod
     def is_qi(type):
-        '''
+        """
         Given a type return if it's a QI
-        '''
+        """
 
         return not (type == Data.EI or type == Data.SD)
