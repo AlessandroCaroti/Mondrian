@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from numbers import Number
 
@@ -185,8 +186,11 @@ def toy_dataset():
 def debug_dataset():
     global K, data
     K = 3
+    dataset_name = "mainDB_500000.csv"
+    dataset_folder = "dataset_generator/data"
+    n_sample_filename = dataset_name.split("_")[1].split(".")[0]
 
-    dataset = pd.read_csv("dataset_generator/data/mainDB_100000.csv")
+    dataset = pd.read_csv(os.path.join(dataset_folder, dataset_name))
     col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
                 "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
                 'End Therapy': Data.DATE,
@@ -200,28 +204,48 @@ def debug_dataset():
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
-    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(dataset), len(list(data.data_to_anonymize.data)), K))
-    print("-Partition created:", sum(partition_size.values()))
+    len_dataset = len(dataset)
+    n_dim = len(list(data.data_to_anonymize.data))
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
+    total_partition = sum(partition_size.values())
+    print("-Partition created:", total_partition)
     print("-Total time:      ", t2 - t0)
     print("-Compute phi time:", t1 - t0)
     print(partition_size)
     print("__________________________________________________________")
     print(df_anonymize)
 
+    df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_DB_" + n_sample_filename + ".cvs"))
+
     equivalence_classes = get_equivalence_classes(df_anonymize, list(list(data.data_anonymized)))
 
+    equivalence_classes.to_csv(os.path.join("results", "Equivalence_Classes_DB_" + n_sample_filename + ".cvs"))
     print("\n\nEquivalence Classes:\n\n", equivalence_classes)
 
     print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
 
     print("CONDITION: C_dm >= k * total_records: ")
-    print(str(c_dm(equivalence_classes)), ">=", str(K), "*", str(len(df_anonymize)), ": "
-          , str(c_dm(equivalence_classes) >= (K * len(df_anonymize))))
+
+    cdm = c_dm(equivalence_classes)
+    print(str(cdm), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(cdm >= (K * len(df_anonymize))))
 
     print("CONDITION: C_avg >= 1: ")
 
-    print(str(c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
-          str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
+    cavg = c_avg(equivalence_classes, df_anonymize, K)
+    print(str(cavg), ">= 1: ",
+          str(cavg >= 1))
+
+    # SAVE ALL STATISTICS IN THE FOLDER RESULTS
+    f = open("results/statistics_result_DB_"+n_sample_filename+".txt", "w")
+    f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
+    f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
+    f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
+    f.write("\nPartition created: {}\n".format(total_partition))
+    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.close()
 
 
 def debug():

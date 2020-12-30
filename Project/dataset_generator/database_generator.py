@@ -11,7 +11,7 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 1000
+n_entry = 500000
 
 # path & filename variable
 dataset_folder = "data"
