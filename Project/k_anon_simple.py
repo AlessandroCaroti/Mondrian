@@ -138,12 +138,13 @@ def anonymize(partition):
     return compute_phi(partition)  # return phi: partition -> summary
 
 
-def anonymization(df, columns_to_anonymize, anon_dict):
+def anonymization(df, anon_dict):
     # Reorder the semi-identifiers anonymize
     dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
-
+    columns_to_anonymize = list(df.columns)
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
+
     anon_df = pd.DataFrame.from_dict(dict_phi, orient='index', columns=cols_anonymize)
 
     # Concatenate the 2 DF
@@ -183,12 +184,44 @@ def toy_dataset():
 
 def debug_dataset():
     global K, data
-    dataset = pd.read_csv("dataset_generator/data/mainDB_10000.csv")
-    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
-                "B-City": Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE, 'End Therapy': Data.DATE,
-                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)':Data.NUMERICAL }
+    K = 3
 
-    print(list(dataset.columns))
+    dataset = pd.read_csv("dataset_generator/data/mainDB_100000.csv")
+    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
+                "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
+                'End Therapy': Data.DATE,
+                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)': Data.NUMERICAL}
+    data = Data(dataset, col_type)
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
+    t0 = datetime.now()
+    dict_phi = anonymize(data.data_to_anonymize)
+    t1 = datetime.now()
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    t2 = datetime.now()
+
+    data.data_anonymized = df_anonymize
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len(dataset), len(list(data.data_to_anonymize.data)), K))
+    print("-Partition created:", sum(partition_size.values()))
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
+    print(partition_size)
+    print("__________________________________________________________")
+    print(df_anonymize)
+
+    equivalence_classes = get_equivalence_classes(df_anonymize, list(list(data.data_anonymized)))
+
+    print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
+
+    print("CONDITION: C_dm >= k * total_records: ")
+    print(str(c_dm(equivalence_classes)), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(c_dm(equivalence_classes) >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    print(str(c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
+          str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
 
 
 def debug():
@@ -201,12 +234,12 @@ def debug():
     col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
     data = Data(df, col_type)
 
-    # ANONYMIZE SEMI-IDENTIFIERS DATA
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
     dict_phi = anonymize(data.data_to_anonymize)
     t1 = datetime.now()
 
-    df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
@@ -242,7 +275,7 @@ def debug():
     """
 
 
-def algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list):
+def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
     global K, data
     data = Data(df, col_type)
     cdm_results = []
@@ -252,7 +285,7 @@ def algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_li
         K = k
         print("\n\nK=", K, "\n\n")
         dict_phi = anonymize(data.data_to_anonymize)
-        df_anonymize = anonymization(data.data_to_anonymize.data, cols_to_anonymize, dict_phi)
+        df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
         data.data_anonymized = df_anonymize
         equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
         print("\n\nEquivalence Classes:\n\n", equivalence_classes)
@@ -269,7 +302,7 @@ def plot_evaluations():
     k_list = range(1, 11)
     col_type = {"dim0": Data.NUMERICAL, "dim1": Data.NUMERICAL, "dim2": Data.NUMERICAL}
     column_list = ['dim0_anon', 'dim1_anon', 'dim2_anon']
-    cdm_list, cavg_list = algorithm_evaluation_on_k(df, col_type, cols_to_anonymize, k_list, column_list)
+    cdm_list, cavg_list = algorithm_evaluation_on_k(df, col_type, k_list, column_list)
 
     print("cdm: ", cdm_list)
     print("cavg: ", cavg_list)

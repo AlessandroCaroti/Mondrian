@@ -36,7 +36,7 @@ def zipcode_generalization(relative_csv_path):
             new_col.append(zip_anon)
         zip_generalizations[i] = new_col
 
-    zip_generalizations.to_csv(os.path.join("Generalization", "zipcode_generalization.csv"), header=False, index=False)
+    zip_generalizations.to_csv(os.path.join("Generalization", "Zipcode.csv"), header=False, index=False)
     print(zip_generalizations)
 
 
@@ -59,7 +59,7 @@ def blood_groups_generalization():
             new_col.append(group_anon)
         blood_generalizations[i] = new_col
 
-    blood_generalizations.to_csv(os.path.join("Generalization", "BloodGroups_generalization.csv"), header=False,
+    blood_generalizations.to_csv(os.path.join("Generalization", "Blood type.csv"), header=False,
                                  index=False)
     print(blood_generalizations.sort_values(1))
 
@@ -111,7 +111,7 @@ def city_generalization(relative_csv_path):
         new_dataframe[col] = data_col
 
     print(new_dataframe)
-    new_dataframe.to_csv(os.path.join("Generalization", "city_generalization.csv"), header=True, index=False)
+    new_dataframe.to_csv(os.path.join("Generalization", "B-City.csv"), header=True, index=False)
 
 
 # REMOVED: RHODE ISLAND

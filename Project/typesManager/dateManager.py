@@ -7,6 +7,7 @@ from Project.dataset_generator.database_generator import random_Bday
 from Project.typesManager.abstractType import AbstractType
 from Project.Partition.partition import Partition
 
+
 class DateManager(AbstractType):
     data_format = "%d-%m-%Y"
     _max = datetime.strptime("01/01/1000", "%d/%m/%Y")
@@ -53,7 +54,8 @@ class DateManager(AbstractType):
 
         left_idx, right_idx, center_idx = [], [], []
         split_val = datetime.strptime(split_val, DateManager.data_format)
-        obj_list = [datetime.strptime(d, DateManager.data_format) for d in data[dim]] # convert every row of the DataFrame
+        obj_list = [datetime.strptime(d, DateManager.data_format) for d in
+                    data[dim]]  # convert every row of the DataFrame
 
         # iterate on dim values
         for idx, date in enumerate(obj_list):
@@ -72,13 +74,14 @@ class DateManager(AbstractType):
         if len(center[: mid + 1].index) > 0:
             left = pd.concat([left, center[:mid + 1]])
 
-        if len(center[mid + 1 : ].index) > 0:
-            right = pd.concat([right, center[mid + 1 :]])
+        if len(center[mid + 1:].index) > 0:
+            right = pd.concat([right, center[mid + 1:]])
 
         # create the new partition
         left_p = Partition(left)
         right_p = Partition(right)
-
+        # print("LEFT: ", len(left_p.data))
+        # print("RIGHT: ", len(right_p.data))
         left_width = partition_to_split.width.copy()
         left_median = partition_to_split.median.copy()
         # update width and median
@@ -101,7 +104,7 @@ class DateManager(AbstractType):
 
     @staticmethod
     def median(partition, dim):
-        if not isinstance(partition, Partition) :
+        if not isinstance(partition, Partition):
             raise TypeError("partition must be a Partition")
 
         data = partition.data[dim]
@@ -111,6 +114,8 @@ class DateManager(AbstractType):
         val_list, frequency = np.unique(obj_array, return_counts=True)
         middle = len(data) // 2
 
+        if len(val_list) == 0:
+            return None
         acc = 0
         split_index = 0
         for idx, val in enumerate(val_list):
@@ -119,12 +124,14 @@ class DateManager(AbstractType):
                 split_index = idx
                 break
 
+        # print("Index: ", split_index)
+        # print("Val_list_Size: ", len(val_list))
         split_val = val_list[split_index].strftime(DateManager.data_format)
         return split_val
 
     @staticmethod
     def summary_statistic(partition, dim) -> str:
-        if not isinstance(partition, Partition) :
+        if not isinstance(partition, Partition):
             raise TypeError("partition must be a Partition")
 
         data = partition.data[dim]
@@ -147,7 +154,7 @@ def test():
     b_day = pd.DataFrame([random_Bday(age) for age in ages])
     print(b_day)
 
-    bday_p = Partition(b_day,{},{})
+    bday_p = Partition(b_day, {}, {})
     median = DateManager.median(bday_p, 0)
     l, r = DateManager.split(bday_p, 0, median)
 
