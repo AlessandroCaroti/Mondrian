@@ -1,6 +1,6 @@
 import csv
 from io import StringIO
-from Project.DGH.tree import Node, Tree
+from DGH.tree import Node, Tree
 
 
 class DGH:

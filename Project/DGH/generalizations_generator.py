@@ -116,8 +116,8 @@ def city_generalization(relative_csv_path):
 
 # REMOVED: RHODE ISLAND
 if __name__ == "__main__":
-    csv_relative_path = r"dataset_generator/data/original_geography_dataset.csv"
+    csv_relative_path = r"dataset_generator/data/geography_small.csv"
 
     #blood_groups_generalization()
-    #zipcode_generalization(csv_relative_path)
-    #city_generalization(r"dataset_generator/data/original_geography_dataset.csv")
+    zipcode_generalization(csv_relative_path)
+    city_generalization(r"dataset_generator/data/geography_small.csv")

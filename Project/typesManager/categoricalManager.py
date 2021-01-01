@@ -3,9 +3,9 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
-from Project.DGH.dgh import CsvDGH
-from Project.Partition.partition import Partition
-from Project.typesManager.abstractType import AbstractType
+from DGH.dgh import CsvDGH
+from Partition.partition import Partition
+from typesManager.abstractType import AbstractType
 
 
 class CategoricalManager(AbstractType):

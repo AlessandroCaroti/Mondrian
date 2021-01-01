@@ -3,9 +3,9 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from Project.dataset_generator.database_generator import random_Bday
-from Project.typesManager.abstractType import AbstractType
-from Project.Partition.partition import Partition
+from dataset_generator.database_generator import random_Bday
+from typesManager.abstractType import AbstractType
+from Partition.partition import Partition
 
 
 class DateManager(AbstractType):
@@ -116,6 +116,7 @@ class DateManager(AbstractType):
 
         if len(val_list) == 0:
             return None
+
         acc = 0
         split_index = 0
         for idx, val in enumerate(val_list):

@@ -1,7 +1,6 @@
-from pandas.core.dtypes.common import is_numeric_dtype
 
-from Project.Partition.partition import Partition
-from Project.typesManager.abstractType import AbstractType
+from Partition.partition import Partition
+from typesManager.abstractType import AbstractType
 
 import numpy as np
 import pandas as pd

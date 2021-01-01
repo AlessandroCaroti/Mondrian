@@ -1,19 +1,15 @@
 import os
-from datetime import datetime
-from numbers import Number
-
-from pathlib import Path
 import numpy as np
 import pandas as pd
 from numpy import random
-from pandas.api.types import is_numeric_dtype
+import matplotlib.pyplot as plt
 
 from Project.Utility.data import Data
+from Project.Utility.evaluation import *
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
-from Project.Utility.evaluation import *
-import matplotlib.pyplot as plt
+
 
 data = None  # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
@@ -185,8 +181,8 @@ def toy_dataset():
 
 def debug_dataset():
     global K, data
-    K = 3
-    dataset_name = "mainDB_500000.csv"
+    K = 10
+    dataset_name = "mainDB_100000.csv"
     dataset_folder = "dataset_generator/data"
     n_sample_filename = dataset_name.split("_")[1].split(".")[0]
 
@@ -251,7 +247,7 @@ def debug_dataset():
 def debug():
     df, cols_to_anonymize = toy_dataset()
     global K, data
-    K = 3
+    K = 20
 
     print(df)
     # Create dictionary with Range statistic and Median for each QI
@@ -290,13 +286,6 @@ def debug():
 
     print(str(c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
           str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
-    """
-        for col in df_anonymize.columns:
-        print("{}: ".format(col))
-        print(np.unique(df_anonymize[col], return_counts=True))
-        print("__________________________________________________________")
-
-    """
 
 
 def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
