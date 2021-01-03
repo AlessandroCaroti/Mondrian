@@ -194,14 +194,14 @@ def debug_dataset():
     data = Data(dataset, col_type)
     # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(data.data_to_anonymize)
+    dict_phi = anonymize(data.partition_to_anonymize)
     t1 = datetime.now()
-    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
     len_dataset = len(dataset)
-    n_dim = len(list(data.data_to_anonymize.data))
+    n_dim = len(list(data.partition_to_anonymize.data))
     print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
     total_partition = sum(partition_size.values())
     print("-Partition created:", total_partition)
@@ -256,10 +256,10 @@ def debug():
 
     # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(data.data_to_anonymize)
+    dict_phi = anonymize(data.partition_to_anonymize)
     t1 = datetime.now()
 
-    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
@@ -297,8 +297,8 @@ def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
     for k in k_list:
         K = k
         print("\n\nK=", K, "\n\n")
-        dict_phi = anonymize(data.data_to_anonymize)
-        df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+        dict_phi = anonymize(data.partition_to_anonymize)
+        df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
         data.data_anonymized = df_anonymize
         equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
         print("\n\nEquivalence Classes:\n\n", equivalence_classes)

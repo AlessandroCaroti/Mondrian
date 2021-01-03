@@ -1,6 +1,5 @@
-
 from Utility.utility import *
-from Utility.data import Data
+import Utility.data as data
 from mandorian import main
 
 if __name__ == "__main__":
@@ -13,6 +12,8 @@ if __name__ == "__main__":
     print_args(args)
 
     # Load the database to anonymize
-    data = Data(args.dataset_name, args.columns_type, args.result_name)
+    print("LOAD DATASET")
+    data = data.Data(args.dataset_name, args.columns_type, args.result_name)
 
+    # execute Mondrian
     main(args, data)

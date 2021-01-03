@@ -5,7 +5,7 @@ import numpy as np
 
 from dataset_generator.database_generator import random_Bday
 from typesManager.abstractType import AbstractType
-from Partition.partition import Partition
+import Utility.partition as pa
 
 
 class DateManager(AbstractType):
@@ -32,8 +32,6 @@ class DateManager(AbstractType):
 
     @staticmethod
     def width(partition, dim):
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a partition")
 
         data = partition.data[dim]
 
@@ -46,9 +44,6 @@ class DateManager(AbstractType):
 
     @staticmethod
     def split(partition_to_split, dim, split_val: str):
-
-        if not isinstance(partition_to_split, Partition):
-            raise TypeError("partition must be a partition")
 
         data = partition_to_split.data
 
@@ -78,10 +73,9 @@ class DateManager(AbstractType):
             right = pd.concat([right, center[mid + 1:]])
 
         # create the new partition
-        left_p = Partition(left)
-        right_p = Partition(right)
-        # print("LEFT: ", len(left_p.data))
-        # print("RIGHT: ", len(right_p.data))
+        left_p = pa.Partition(left, partition_to_split.col_type)
+        right_p = pa.Partition(right, partition_to_split.col_type)
+
         left_width = partition_to_split.width.copy()
         left_median = partition_to_split.median.copy()
         # update width and median
@@ -104,8 +98,6 @@ class DateManager(AbstractType):
 
     @staticmethod
     def median(partition, dim):
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a Partition")
 
         data = partition.data[dim]
 
@@ -125,15 +117,11 @@ class DateManager(AbstractType):
                 split_index = idx
                 break
 
-        # print("Index: ", split_index)
-        # print("Val_list_Size: ", len(val_list))
         split_val = val_list[split_index].strftime(DateManager.data_format)
         return split_val
 
     @staticmethod
     def summary_statistic(partition, dim) -> str:
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a Partition")
 
         data = partition.data[dim]
 
@@ -155,7 +143,7 @@ def test():
     b_day = pd.DataFrame([random_Bday(age) for age in ages])
     print(b_day)
 
-    bday_p = Partition(b_day, {}, {})
+    bday_p = pa.Partition(b_day, {}, {})
     median = DateManager.median(bday_p, 0)
     l, r = DateManager.split(bday_p, 0, median)
 

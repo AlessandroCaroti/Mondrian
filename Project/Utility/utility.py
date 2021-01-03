@@ -13,11 +13,11 @@ def get_parser():
 
     parser.add_argument("-K", help="parameter K", type=int, default=10)
     parser.add_argument("-result_name", help="name of the file will contain the resulting data", default="anonymized.csv")
+
+    # if False the result may contains columns with max generalizations (in particular CATEGORICAL)
+    parser.add_argument("-use_all_col", help="if True it guarantees that each column is used at least once to split", default=False)
     parser.add_argument("-save_statistics", help="whether to save time execution and equivalence classes", type=bool, default=True)
     parser.add_argument("-show_statistics", help="whether to print time execution and equivalence classes", type=bool, default=True)
-
-    # improvements
-    #parser.add_argument("-all_parallel_cut", help="assuming axis-parallel binary cuts: if False the time execution can be affected, but can produce better results if there are CATEGORICAL columns", type=bool, default=True)
 
     return parser
 
@@ -31,7 +31,6 @@ def print_args(args):
     print("k: {}".format(args.K))
     print("Original data: {}".format(args.dataset_name))
     print("Result data: {}".format(args.result_name))
-    #print("All parallel cut: {}".format(str(all_parallel_cut)))
 
     print("===================")
     print()
