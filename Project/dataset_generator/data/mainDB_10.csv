@@ -1,11 +1,11 @@
 ,Name,Gender,Age,Zipcode,B-City,B-day,Disease,Start Therapy,End Therapy,Blood type,Weight (Kg),Height (cm)
-0,Syed,Male,19,43719,Bethesda,28-02-2001,myalgia,21-09-2019,16-07-2020,A+,82.5,183
-1,Roger,Male,50,08006,Barnegat Light,10-01-1970,intellectual disability,04-11-2015,19-01-2017,O+,88.6,178
-2,Bessie,Male,91,39730,Aberdeen,17-01-1929,hyperkalemia,27-10-2016,30-11-2018,A-,82.2,185
-3,Ada,Male,88,68001,Abie,17-06-1932,eating disorder,17-04-2018,04-01-2019,B-,60.5,174
-4,Suellen,Female,104,20851,Rockville,20-09-1916,pruritus,14-02-2018,12-03-2020,O-,72.5,152
-5,Christy,Male,104,32680,Old Town,20-03-1916,anxiety disorders,03-08-2017,03-07-2018,O+,88.1,198
-6,Luc,Male,90,15410,Adah,17-08-1930,head lice,24-05-2017,29-08-2019,B+,79.7,160
-7,Merton,Male,87,35046,Clanton,03-04-1933,pertussis,25-03-2016,14-11-2017,O+,80.1,178
-8,Lethia,Female,75,83327,Fairfield,26-08-1945,autism spectrum disorder,20-06-2015,17-02-2017,O+,76.0,153
-9,Lyndia,Female,79,84721,Cedar City,02-01-1941,autism spectrum disorder,10-04-2016,06-02-2018,AB-,94.6,163
+0,Ulysses,Male,54,33099,Vivaro,15-03-1967,acne,22-10-2020,23-05-2021,O+,67.9,196
+1,Ireland,Female,30,51010,Santa Lucia Uzzanese,20-03-1991,autism spectrum disorder,20-09-2016,01-10-2016,B+,91.4,176
+2,Jinnie,Female,73,95014,San Giovanni,20-07-1948,intellectual disability,13-07-2017,06-11-2019,A-,76.8,168
+3,Horatio,Male,31,43040,Corniana,13-11-1990,polio,04-08-2020,06-12-2021,A+,80.5,177
+4,Zillah,Female,81,48018,Cosina,25-02-1940,ascites,20-08-2016,17-07-2017,O+,60.2,162
+5,Patricia,Male,91,24060,Bossico,13-04-1930,leukemia,02-08-2019,19-10-2019,A-,66.8,188
+6,Wm,Male,41,82016,Montesarchio,27-06-1980,vomiting,10-03-2016,09-06-2017,O+,83.2,180
+7,Urban,Male,84,47100,San Lorenzo In Noceto,28-06-1937,influenza,04-09-2020,28-02-2021,A+,86.1,187
+8,Marita,Female,76,28046,Ghevio,11-10-1945,depression,06-01-2020,05-05-2021,A+,84.9,154
+9,Isadore,Male,58,89133,Cataforio,29-10-1963,genital candidiasis,12-09-2019,24-04-2021,O+,85.8,186
