@@ -17,7 +17,9 @@ n_entry = 100000
 dataset_folder = "data"
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease_small.csv")
-geography_path = os.path.join(dataset_folder, "geography_dataset.csv")
+
+city_path = os.path.join(dataset_folder, "city_birth_generalization.csv")
+zip_path = os.path.join(dataset_folder, "zip_code_generalization.csv")
 
 mainDB_filename = 'mainDB_' + str(n_entry) + '.csv'
 externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
@@ -25,6 +27,7 @@ externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 # variable that specify the column of the main dataset and an external one public that can be used for a join
 quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)',
                      'Blood type', 'Start ', 'Therapy', 'End Therapy']
+
 explicit_identifiers = ['Name']
 sensitive_data = ['Disease']
 
@@ -121,17 +124,17 @@ if __name__ == "__main__":
     # Name, Gender dataset
     df_name = pd.read_csv(name_path, header=0, names=['Name', 'Gender'])
     df_name.replace({'Gender': gender_map}, inplace=True)
-    random.seed(25)
+    random.seed(43)
     # Dataset with a list of disease
     df_disease = pd.read_csv(disease_path)
-    df_geo = pd.read_csv(geography_path, converters={'Zipcode': lambda x: str(x)})
-
+    df_city = pd.read_csv(city_path, header=0, names=['city', 'county', 'region', 'country'])
+    df_zip = pd.read_csv(zip_path, header=0, names=['zip_0', 'zip_1', 'zip_2', 'zip_3', 'zip_4','zip_5'])
     for i in range(n_entry):
         new_entry = []
 
         # Name & Gender
         k = random.randrange(0, df_name.shape[0])
-        pp = df_name.loc[k, :]
+        pp = df_name.loc[k]
 
         new_entry.append(pp.Name)
         new_entry.append(pp.Gender)
@@ -141,17 +144,19 @@ if __name__ == "__main__":
 
         # ZipCode and cities
         # new_entry.append(random_zipcode())
-        k = random.randrange(0, df_geo.shape[0])
-        row = df_geo.loc[k, :]
-        new_entry.append(row.Zipcode)
-        new_entry.append(row.B_City)
+        k = random.randrange(0, df_city.shape[0])
+
+        row_city = df_city.loc[k]
+        row_zip = df_zip.loc[k]
+        new_entry.append(row_zip.zip_0)
+        new_entry.append(row_city.city)
 
         # B-day
         new_entry.append(random_Bday(new_entry[2]))
 
         # Disease
         k = random.randrange(0, df_disease.shape[0])
-        disease = df_disease.loc[k, :]
+        disease = df_disease.loc[k]
         new_entry.append(disease.Name)
 
         # Therapy day (start - end)
