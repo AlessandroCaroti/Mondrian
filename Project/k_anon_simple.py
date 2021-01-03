@@ -186,7 +186,7 @@ def toy_dataset():
 def debug_dataset():
     global K, data
     K = 3
-    dataset_name = "mainDB_100000.csv"
+    dataset_name = "mainDB_100.csv"
     dataset_folder = "dataset_generator/data"
     n_sample_filename = dataset_name.split("_")[1].split(".")[0]
 
@@ -214,6 +214,9 @@ def debug_dataset():
     print(partition_size)
     print("__________________________________________________________")
     print(df_anonymize)
+
+    if not os.path.isdir("results"):
+        os.mkdir("results")
 
     df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_DB_" + n_sample_filename + ".cvs"))
 
