@@ -186,7 +186,7 @@ def toy_dataset():
 def debug_dataset():
     global K, data
     K = 3
-    dataset_name = "mainDB_500000.csv"
+    dataset_name = "mainDB_100000.csv"
     dataset_folder = "dataset_generator/data"
     n_sample_filename = dataset_name.split("_")[1].split(".")[0]
 
@@ -240,7 +240,7 @@ def debug_dataset():
     f = open("results/statistics_result_DB_"+n_sample_filename+".txt", "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
-    f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
+    f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
     f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
     f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
     f.write("\nPartition created: {}\n".format(total_partition))
