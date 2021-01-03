@@ -75,7 +75,8 @@ class Data(object):
 
         if self.dim_QI[dim] == Type.CATEGORICAL.value:
             item = self.dgh_list[dim].hierarchy
-            return item.root.find_minimal_root(np.unique(self.dataFrame[dim]))  # the initial median is the root Node of the DGH
+
+            return item.root.find_minimal_node(np.unique(self.dataFrame[dim]))  # the initial median is the root Node of the DGH
 
         return Partition(self.dataFrame, self.dim_QI).find_median(dim)
 
@@ -120,6 +121,9 @@ class Data(object):
             Exception("Dataset not anonymized yet!")
 
         df_merged = pd.concat([self.data_anonymized, self.data_SD], axis=1, sort=False)
-        df_merged.to_csv(os.path.join(self.data_folder, self.result_folder, self.result_name))
+        df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name))
 
 
+    def get_path_results(self):
+
+        return os.path.join(self.data_folder, self.result_folder)

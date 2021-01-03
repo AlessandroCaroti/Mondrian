@@ -53,10 +53,8 @@ class CategoricalManager(AbstractType):
         # update the median for the dim as the minimal Node representing the partition
         unique = np.unique(partition.data[dim])
         node = partition.median[dim]
-        minimal = node.find_minimal_root(unique)
+        minimal = node.find_minimal_node(unique)
 
-        #print(unique)
-        #print(minimal.data)
         return minimal
 
     @staticmethod

@@ -29,7 +29,7 @@ class Node:
 
         self.leaf.add(leaf)
 
-    def find_minimal_root(self, list_leaf):
+    def find_minimal_node(self, list_leaf):
         """
         :param list_leaf: list of leaf values
         :return: The minimal Node representing the leaf values
@@ -40,9 +40,7 @@ class Node:
 
             # the first child representing all the children is not necessarily the minimal
             if np.all([ leaf in child.leaf for leaf in list_leaf]):
-                return child.find_minimal_root(list_leaf)
-
-
+                return child.find_minimal_node(list_leaf)
 
         # if no child represents all the values then the parent is returned
         return self
