@@ -18,7 +18,7 @@ class Data(object):
         self.columns_type = columns_type  # dictionary column_name : type_of_data
         self.data_folder = "Dataset"  # folder containing the csv file
         # self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
-        self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
+        self.hierarchy_folder = "Hierarchies/real" #"Hierarchies"  # folder containing the csv files of the dgh
 
         # data can be either a DataFrame or a file name
         self.dataFrame = data if isinstance(data, pd.DataFrame) else pd.read_csv(os.path.join(self.data_folder, data))
