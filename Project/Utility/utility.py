@@ -15,8 +15,7 @@ def get_parser():
     parser.add_argument("-result_name", help="name of the file will contain the resulting data", default="anonymized.csv")
 
     # if False the result may contains columns with max generalizations (in particular CATEGORICAL)
-    #parser.add_argument("-use_all_col", help="if True it guarantees that each column is used at least once to split", default=False)
-    parser.add_argument("-save_statistics", help="whether to save time execution and equivalence classes", type=bool, default=True)
+    parser.add_argument("-save_info", help="whether to save time execution and equivalence classes", type=bool, default=True)
 
     return parser
 
@@ -30,6 +29,7 @@ def print_args(args):
     print("k: {}".format(args.K))
     print("Original data: {}".format(args.dataset_name))
     print("Result data: {}".format(args.result_name))
+    print("Save info: {}".format(args.save_info))
 
     print("===================")
     print()

@@ -18,7 +18,7 @@ def update_stats(partitions):
     return partitions
 
 def compute_normalized_width(partition, dim, norm_factor):
-    width = partition.width[dim]
+    width = partition.get_width(dim)
 
     return width / norm_factor  # normalized with statistic of the original dimension
 
@@ -28,14 +28,14 @@ def chose_dimension(partition, columns, first = False):
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
     """
-    global DATA, NOT_USED_COLUMNS
+    global DATA
 
     # remove not necessary dimensions
     filtered_dim = filter(lambda item: item[0] in columns, DATA.width_list.items())
 
     if first:
         # the first time the function is called it makes no sense normalize
-        width_map = map(lambda item: [item[0], partition.width[item[0]]], filtered_dim)
+        width_map = map(lambda item: [item[0], partition.get_width(item[0])], filtered_dim)
     else:
         # compute normalized width
         width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], filtered_dim)
@@ -84,16 +84,15 @@ def allowable_cut(partition_list):
     return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
-def anonymize(partition, update = True, first = False):
+def anonymize(partition, first = False):
 
-    global NOT_USED_COLUMNS
 
     columns = partition.data.columns.tolist()
 
     while columns:
 
         dim = chose_dimension(partition, columns, first)
-        split_val = partition.find_median(dim)
+        split_val = partition.get_median(dim)
         partition_list = partition.split_partition(dim, split_val)
 
         # If not allowed multidimensional cut for partition
@@ -102,10 +101,9 @@ def anonymize(partition, update = True, first = False):
             continue
 
         # the median and width can change after cut so recompute it...
-        if update:
-            partition_list = update_stats(partition_list)
+        partition_list = update_stats(partition_list)
 
-        return merge_dictionary([anonymize(p, update, False) for p in partition_list])
+        return merge_dictionary([anonymize(p, False) for p in partition_list])
 
     return compute_phi(partition)  # return phi: partition -> summary
 
@@ -139,7 +137,7 @@ def main(args, data):
     t0 = datetime.now()
 
     # ANONYMIZE QUASI-IDENTIFIERS: find phi function
-    dict_phi = anonymize(data.partition_to_anonymize, True, True)
+    dict_phi = anonymize(data.partition_to_anonymize, False)
 
     t1 = datetime.now()
 
@@ -158,7 +156,7 @@ def main(args, data):
     print("Total time:      ", t2 - t0)
     #print("-Compute phi time:", t1 - t0)
 
-    if args.save_statistics:
+    if args.save_info:
 
         columns = df_anonymize.columns.tolist()
         equivalence_classes = get_equivalence_classes(df_anonymize, columns)

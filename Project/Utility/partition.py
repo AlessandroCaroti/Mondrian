@@ -73,3 +73,9 @@ class Partition():
 
         # update median in dict
         self.median[dim] = median
+
+    def get_width(self, dim):
+        return self.width[dim]
+
+    def get_median(self, dim):
+        return self.median[dim]
