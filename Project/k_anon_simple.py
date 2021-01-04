@@ -217,13 +217,13 @@ def debug_real_dataset():
     print(df_anonymize)
 
     if not os.path.isdir("results/real"):
-        os.mkdir("results/real")
+        os.makedirs("results/real")
 
-    df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_real.csv "))
+    df_anonymize.to_csv(os.path.join("results", "real", "Anonymized_Dataset_real_K"+str(K)+".csv "))
 
-    equivalence_classes = get_equivalence_classes(df_anonymize, list(list(data.data_anonymized)))
+    equivalence_classes = get_equivalence_classes(df_anonymize, list(data.data_anonymized))
 
-    equivalence_classes.to_csv(os.path.join("results", "Equivalence_Classes_real.cvs"))
+    equivalence_classes.to_csv(os.path.join("results", "real", "Equivalence_Classes_real_K"+str(K)+".csv"))
     print("\n\nEquivalence Classes:\n\n", equivalence_classes)
 
     print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
@@ -236,13 +236,12 @@ def debug_real_dataset():
 
     print("CONDITION: C_avg >= 1: ")
 
-
     cavg = c_avg(equivalence_classes, df_anonymize, K)
     print(str(cavg), ">= 1: ",
           str(cavg >= 1))
 
     # SAVE ALL STATISTICS IN THE FOLDER RESULTS
-    f = open("results/real/statistics_result_real.txt", "w")
+    f = open("results/real/statistics_result_real_K"+str(K)+".txt", "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
     f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
