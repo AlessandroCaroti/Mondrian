@@ -27,3 +27,4 @@ if __name__ == "__main__":
                        "native-country"]
     """uncomment to use"""
     # extract_unique_categorical(categorical_col,adult_csv)
+    adult_csv.drop(columns=['final-weight', 'education-num']).to_csv("adult_final.csv", index=False, header=True)
