@@ -236,6 +236,7 @@ def debug_real_dataset():
 
     print("CONDITION: C_avg >= 1: ")
 
+
     cavg = c_avg(equivalence_classes, df_anonymize, K)
     print(str(cavg), ">= 1: ",
           str(cavg >= 1))
