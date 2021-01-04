@@ -25,6 +25,9 @@ python3 anonymizer.py -dataset_name=mainDB_1000000.csv -K=100 -result_name=anony
 ```
 
 ### Requirements
+```
+pip3 install -r requirements.txt
+```
 
 - numpy==1.18.5
 - pandas==1.1.2
