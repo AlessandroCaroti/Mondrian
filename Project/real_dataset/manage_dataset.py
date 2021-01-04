@@ -14,7 +14,7 @@ def remove_missing_data(pd_csv):
 
 def extract_unique_categorical(categorical_cols, df):
     for cat in categorical_cols:
-        path = os.path.join("generalizzation", cat + ".csv")
+        path = os.path.join("generalization", cat + ".csv")
         pd.DataFrame(df[cat].unique()).to_csv(path, index=False, header=False)
 
 
