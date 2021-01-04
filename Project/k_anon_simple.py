@@ -183,6 +183,75 @@ def toy_dataset():
     return df, col_list
 
 
+def debug_real_dataset():
+    global K, data
+    K = 3
+
+    dataset_folder = "real_dataset/adult_final.csv"
+
+    dataset = pd.read_csv(os.path.join(dataset_folder))
+    cols = {'age': Data.NUMERICAL, 'workclass': Data.CATEGORICAL, 'education': Data.CATEGORICAL,
+            'martial-status': Data.CATEGORICAL, 'occupation': Data.CATEGORICAL, 'relationship': Data.CATEGORICAL,
+            'race': Data.CATEGORICAL, 'sex': Data.CATEGORICAL, 'captital-gain': Data.NUMERICAL,
+            'capital-loss': Data.NUMERICAL, 'native-country': Data.CATEGORICAL, 'hours-per-week': Data.NUMERICAL,
+            'annual-gain': Data.SD}
+
+    data = Data(dataset, cols)
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
+    t0 = datetime.now()
+    dict_phi = anonymize(data.data_to_anonymize)
+    t1 = datetime.now()
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    t2 = datetime.now()
+
+    data.data_anonymized = df_anonymize
+    len_dataset = len(dataset)
+    n_dim = len(list(data.data_to_anonymize.data))
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
+    total_partition = sum(partition_size.values())
+    print("-Partition created:", total_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
+    print(partition_size)
+    print("__________________________________________________________")
+    print(df_anonymize)
+
+    if not os.path.isdir("results/real"):
+        os.mkdir("results/real")
+
+    df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_real.csv "))
+
+    equivalence_classes = get_equivalence_classes(df_anonymize, list(list(data.data_anonymized)))
+
+    equivalence_classes.to_csv(os.path.join("results", "Equivalence_Classes_real.cvs"))
+    print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
+
+    print("CONDITION: C_dm >= k * total_records: ")
+
+    cdm = c_dm(equivalence_classes)
+    print(str(cdm), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(cdm >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    cavg = c_avg(equivalence_classes, df_anonymize, K)
+    print(str(cavg), ">= 1: ",
+          str(cavg >= 1))
+
+    # SAVE ALL STATISTICS IN THE FOLDER RESULTS
+    f = open("results/real/statistics_result_real.txt", "w")
+    f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
+    f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
+    f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
+    f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
+    f.write("\nPartition created: {}\n".format(total_partition))
+    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.close()
+
+
 def debug_dataset():
     global K, data
     K = 3
@@ -195,6 +264,7 @@ def debug_dataset():
                 "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
                 'End Therapy': Data.DATE,
                 'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)': Data.NUMERICAL}
+
     data = Data(dataset, col_type)
     # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
@@ -240,7 +310,7 @@ def debug_dataset():
           str(cavg >= 1))
 
     # SAVE ALL STATISTICS IN THE FOLDER RESULTS
-    f = open("results/statistics_result_DB_"+n_sample_filename+".txt", "w")
+    f = open("results/statistics_result_DB_" + n_sample_filename + ".txt", "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
     f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
@@ -355,4 +425,5 @@ def plot_evaluations():
 if __name__ == "__main__":
     # debug()
     # plot_evaluations()
-    debug_dataset()
+    # debug_dataset()
+    debug_real_dataset()
