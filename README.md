@@ -1,5 +1,7 @@
 # Mondrian K-Anonymity
 
+This implementation supports numeric, date and categorical attributes: each categorical attribute must have its own _generalization hierarchies_.
+
 ### Usage 
 
 There must be a folder containing the .csv file with the data to anonymize and the .csv file which specifies the type for each attribute.
