@@ -1,6 +1,4 @@
-from Project.k_anon_simple import anonymize, anonymization
-from datetime import datetime
-from Project.Utility.data import Data
+import os
 
 """
 @param e_c: group-bys on quasi-identifier (equivalence classes)
@@ -34,8 +32,22 @@ def c_dm(e_c):
 @param k: param k of k-anonymity
 """
 
-
 def c_avg(e_c, anon_table, k):
     return round(len(anon_table) / (len(e_c) * k), 3)
+
+def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
+
+    f = open(os.path.join(path, "statistics_result.txt"), "w")
+    f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
+    f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
+    f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
+    f.write("\nPartition created: {}\n".format(n_partitions))
+    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(n_tuple, n_dim, K))
+    f.close()
+
+
+
 
 

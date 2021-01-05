@@ -1,7 +1,6 @@
-from pandas.core.dtypes.common import is_numeric_dtype
 
-from Project.Partition.partition import Partition
-from Project.typesManager.abstractType import AbstractType
+import Utility.partition as pa
+from typesManager.abstractType import AbstractType
 
 import numpy as np
 import pandas as pd
@@ -11,9 +10,6 @@ class NumericManager(AbstractType):
 
     @staticmethod
     def width(partition, dim):
-
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a Partition")
 
         data = partition.data[dim]
 
@@ -27,9 +23,6 @@ class NumericManager(AbstractType):
 
     @staticmethod
     def split(partition_to_split, dim, split_val):
-
-        if not isinstance(partition_to_split, Partition):
-            raise TypeError("partition_to_split must be a Partition")
 
         data = partition_to_split.data
 
@@ -48,8 +41,8 @@ class NumericManager(AbstractType):
             right = pd.concat([right, center[mid + 1:]])
 
         # create the new partition
-        left_p = Partition(left)
-        right_p = Partition(right)
+        left_p = pa.Partition(left, partition_to_split.col_type)
+        right_p = pa.Partition(right, partition_to_split.col_type)
 
         left_width = partition_to_split.width.copy()
         left_median = partition_to_split.median.copy()
@@ -74,9 +67,6 @@ class NumericManager(AbstractType):
     @staticmethod
     def median(partition, dim):
 
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a Partition")
-
         data = partition.data
 
         if len(data.index) == 0:
@@ -98,9 +88,6 @@ class NumericManager(AbstractType):
     @staticmethod
     def summary_statistic(partition, dim):
 
-        if not isinstance(partition, Partition):
-            raise TypeError("partition must be a Partition")
-
         data = partition.data[dim]
 
         if len(np.unique(data)) == 1:
@@ -118,7 +105,7 @@ def test():
     ages = pd.DataFrame(ages)
     print(ages)
 
-    bday_p = Partition(ages, {}, {})
+    bday_p = pa.Partition(ages, {}, {})
     median = NumericManager.median(bday_p, 0)
     l, r = NumericManager.split(bday_p, 0, median)
 

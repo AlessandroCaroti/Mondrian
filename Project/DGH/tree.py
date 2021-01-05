@@ -1,3 +1,4 @@
+import numpy as np
 from queue import Queue
 
 
@@ -16,7 +17,7 @@ class Node:
 
         self.leaf = set() # they are strings
         '''
-        List whose values are the values of the leaf Nodes in the subtree of the current Node (as the current node is a root)
+        Set whose values are the values of the leaf Nodes in the subtree of the current Node (as the current node is a root)
         '''
 
     def add_child(self, child):
@@ -28,6 +29,21 @@ class Node:
 
         self.leaf.add(leaf)
 
+    def find_minimal_node(self, list_leaf):
+        """
+        :param list_leaf: list of leaf values
+        :return: The minimal Node representing the leaf values
+        """
+        # assuming that self node represent all leaf in list_leaf
+
+        for child in self.children.values():
+
+            # the first child representing all the children is not necessarily the minimal
+            if np.all([ leaf in child.leaf for leaf in list_leaf]):
+                return child.find_minimal_node(list_leaf)
+
+        # if no child represents all the values then the parent is returned
+        return self
 
 class Tree:
 

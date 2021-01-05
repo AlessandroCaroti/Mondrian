@@ -1,0 +1,13 @@
+Column_name,Type
+Name,EI
+Gender,CATEGORICAL
+Age,NUMERICAL
+Zipcode,CATEGORICAL
+B-City,CATEGORICAL
+B-day,DATE
+Disease,SD
+Start Therapy,DATE
+End Therapy,DATE
+Blood type,CATEGORICAL
+Weight (Kg),NUMERICAL
+Height (cm),NUMERICAL

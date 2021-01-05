@@ -1,0 +1,101 @@
+,Name,Gender,Age,Zipcode,B-City,B-day,Disease,Start Therapy,End Therapy,Blood type,Weight (Kg),Height (cm)
+0,Ulysses,Male,54,33099,Vivaro,15-02-1967,acne,22-01-2019,23-04-2020,A+,94.4,195
+1,Ireland,Female,30,51010,Santa Lucia Uzzanese,20-03-1991,autism spectrum disorder,20-11-2020,01-12-2021,O+,125.3,162
+2,Jinnie,Female,73,95014,San Giovanni,20-01-1948,intellectual disability,13-07-2019,06-10-2019,B+,86.6,176
+3,Horatio,Male,31,43040,Corniana,13-10-1990,polio,04-11-2016,06-02-2018,O+,81.4,173
+4,Zillah,Female,81,48018,Cosina,25-05-1940,ascites,20-04-2019,17-10-2019,O+,100.5,152
+5,Patricia,Male,91,24060,Bossico,13-05-1930,leukemia,02-02-2020,19-07-2020,A+,110.2,163
+6,Wm,Male,41,82016,Montesarchio,27-11-1980,vomiting,10-07-2017,09-08-2017,O+,80.8,193
+7,Urban,Male,84,47100,San Lorenzo In Noceto,28-04-1937,influenza,04-06-2017,28-02-2018,A-,91.4,176
+8,Marita,Female,76,28046,Ghevio,11-09-1945,depression,06-09-2017,05-12-2018,A+,64.2,168
+9,Isadore,Male,58,89133,Cataforio,29-10-1963,genital candidiasis,12-02-2018,24-08-2018,A+,66.5,198
+10,Gorden,Male,104,81058,Vairano Patenora,18-02-1917,pressure chest,10-05-2018,16-02-2019,O-,98.1,191
+11,Kianna,Female,64,58051,Magliano In Toscana,02-11-1957,eating disorder,14-06-2016,20-10-2017,O+,88.9,168
+12,Destini,Female,28,70129,Ceglie Del Campo,05-02-1993,gonorrhea,28-08-2016,22-07-2017,B+,90.3,184
+13,Ariane,Female,37,15070,Cassinelle,04-06-1984,intellectual disability,15-06-2019,19-01-2020,O+,51.9,155
+14,Ward,Male,36,67030,Corfinio,04-11-1985,pressure chest,05-02-2017,24-10-2018,O+,64.9,193
+15,Christopher,Male,61,29020,Settima,23-03-1960,autism spectrum disorder,09-02-2016,30-06-2017,O+,65.2,176
+16,Kelsi,Female,76,10060,Viotto,28-03-1945,ascites,03-09-2017,23-11-2017,A+,89.8,182
+17,Porter,Male,29,26028,Sesto Cremonese,28-11-1992,ocular albinism,07-09-2016,22-12-2016,O-,50.7,162
+18,Trilby,Female,69,2020,Turania,20-02-1952,shortness of breath,30-01-2020,26-02-2022,A+,89.8,168
+19,Germaine,Male,68,10124,Torino,02-09-1953,hypokinesia,18-09-2016,06-08-2017,O+,65.5,182
+20,Alivia,Female,42,89816,San Cono,22-02-1979,pertussis,10-03-2020,08-10-2020,B+,90.1,168
+21,Lukas,Male,42,20856,Correzzana,13-06-1979,ascites,08-11-2020,02-05-2022,A+,55.2,189
+22,Mame,Female,82,82011,Forchia,04-05-1939,accessory pancreas,01-07-2016,18-08-2016,O+,89.1,155
+23,Shirlie,Female,83,6056,Villa San Faustino,28-04-1938,pressure chest,19-02-2018,12-05-2019,A+,111.5,178
+24,Dewayne,Male,46,48100,Camerlona,15-11-1975,ocular albinism,05-09-2020,08-12-2022,O+,95.9,194
+25,Earl,Male,31,20024,Garbagnate Milanese,04-11-1990,shortness of breath,07-11-2017,13-12-2017,A+,82.3,161
+26,Myra,Female,31,65020,Bolognano,06-05-1990,ascites,04-10-2016,11-11-2018,A+,76.2,159
+27,Vinson,Male,51,31050,Monastier Di Treviso,05-08-1970,polio,23-01-2020,08-06-2022,O+,97.0,179
+28,Liston,Male,48,89016,Drosi,03-11-1973,genital candidiasis,16-08-2019,23-02-2021,A+,61.0,169
+29,Sherrill,Male,100,80040,Caravita,16-11-1921,laryngotracheal angioma,05-01-2019,11-03-2021,A+,95.4,198
+30,Lannie,Male,19,26040,Cella Dati,16-01-2002,polio,10-05-2020,19-11-2020,A+,87.3,192
+31,Dawna,Female,74,86081,Villa Canale,24-06-1947,eating disorder,15-11-2016,10-02-2017,A+,71.6,157
+32,Sable,Female,88,38026,Fucine,28-09-1933,intellectual disability,24-06-2018,14-08-2019,AB-,82.8,152
+33,Katharyn,Female,91,81058,Patenora,07-07-1930,polio,20-11-2018,24-03-2019,A+,84.6,159
+34,Nathaniel,Male,100,41013,Piumazzo,26-09-1921,gonorrhea,25-02-2016,29-01-2017,A+,99.3,180
+35,Debora,Female,47,25039,Travagliato,07-01-1974,influenza,09-07-2016,06-09-2017,A+,97.6,172
+36,Helma,Female,77,52022,Meleto,10-02-1944,leukemia,11-06-2019,15-05-2021,A+,96.7,173
+37,Letitia,Female,52,6019,Umbertide,05-08-1969,pressure chest,26-07-2017,11-05-2018,A+,100.8,180
+38,Kyler,Male,60,73026,San Foca,04-02-1961,ascites,23-10-2017,15-04-2019,AB+,91.4,160
+39,Corbin,Male,57,23868,Valmadrera,08-05-1964,anxiety disorders,06-11-2019,12-12-2019,O+,76.1,176
+40,Rhett,Male,73,23020,Montagna In Valtellina,27-04-1948,hyponatremia,17-09-2019,21-07-2020,A+,81.9,179
+41,Vern,Male,41,15030,Villanova Monferrato,29-06-1980,head lice,26-06-2020,05-09-2021,O+,72.6,199
+42,Westley,Male,35,24030,Paladina,23-02-1986,intoxication,09-04-2017,29-12-2019,O+,92.6,193
+43,Reta,Female,67,45038,Raccano,06-10-1954,dyspnea,27-04-2020,29-07-2021,O+,99.2,173
+44,Ishmael,Male,83,71100,Segezia,05-07-1938,agitation,27-07-2018,14-05-2019,A+,79.1,164
+45,Darron,Male,82,3044,Sprumaro,04-05-1939,polio,19-05-2017,23-02-2018,A+,55.3,162
+46,Juliana,Female,68,89817,Potenzoni,13-05-1953,depression,21-07-2019,15-06-2020,B+,108.4,171
+47,Opha,Female,78,30034,Borbiago,21-04-1943,agitation,01-07-2018,22-08-2019,A+,59.4,172
+48,Maranda,Female,80,39050,Petersberg,27-05-1941,leukemia,10-02-2019,04-03-2020,A+,75.7,150
+49,Jaye,Female,44,56021,San Casciano,23-08-1977,gonorrhea,22-09-2020,22-02-2021,O+,77.7,161
+50,Caro,Female,72,39046,St. Jakob,05-10-1949,hypokinesia,12-03-2019,01-10-2019,O+,53.8,176
+51,Parley,Male,51,28040,Borgo Ticino,30-11-1970,cancer colon,03-09-2018,29-05-2020,O+,93.8,190
+52,Ilma,Female,59,25017,Centenaro,01-11-1962,pruritus,07-02-2017,11-06-2018,B+,76.3,154
+53,Paris,Male,71,39020,Castelbello,02-02-1950,headache,21-05-2018,23-10-2018,B+,79.0,176
+54,Ashley,Male,46,44020,Masi Torello,30-05-1975,intoxication,20-01-2020,07-09-2020,B+,117.1,174
+55,Duard,Male,23,91022,Triscina,02-10-1998,pressure chest,04-09-2020,10-12-2022,O+,102.0,198
+56,Rudolph,Male,27,6041,Bugiano,22-06-1994,pertussis,09-03-2018,09-08-2019,A+,68.1,165
+57,Jamir,Male,95,25024,Porzano,26-11-1926,vomiting,21-09-2018,23-10-2018,B+,55.4,187
+58,Lamonte,Male,80,7021,Baia Sardinia,21-01-1941,shortness of breath,22-07-2017,11-02-2018,O-,75.8,182
+59,Eldora,Female,65,26010,Camisano,15-08-1956,intellectual disability,21-06-2017,27-10-2018,O+,93.2,175
+60,Electa,Female,20,35020,Conche,27-03-2001,polio,15-02-2019,02-04-2019,B-,88.0,181
+61,Delores,Female,40,41037,Mirandola,03-08-1981,depression,03-05-2020,15-02-2021,A-,112.7,181
+62,Hampton,Male,33,64045,San Gabriele Dell'Addolorata,21-06-1988,dyspnea,23-11-2020,21-07-2021,O+,85.3,186
+63,Alfreda,Female,85,96010,Palazzolo Acreide,08-06-1936,autism spectrum disorder,25-07-2018,01-04-2019,O+,89.7,151
+64,Marty,Male,58,73039,Sant'Eufemia,04-08-1963,ocular albinism,03-07-2016,05-10-2017,O+,72.0,167
+65,Milton,Male,84,80023,Pascarola,21-09-1937,pressure chest,28-11-2019,14-01-2021,A+,76.9,186
+66,Ward,Male,105,81010,Calvisi,07-09-1916,agitation,18-10-2017,18-11-2017,O+,93.4,166
+67,Lida,Female,83,85010,Gallicchio,12-07-1938,hyperkalemia,12-05-2018,10-11-2019,A+,78.0,157
+68,Migdalia,Female,72,30035,Scaltenigo,01-01-1949,depression,24-07-2016,24-11-2017,O-,98.8,161
+69,Orley,Male,21,66036,Orsogna,02-03-2000,accessory pancreas,14-01-2018,09-10-2018,A+,67.3,182
+70,Aurelio,Male,86,86077,Pozzilli,01-10-1935,pruritus,15-02-2016,10-06-2016,O+,66.9,197
+71,Emory,Male,33,91027,Nubia,10-11-1988,genital candidiasis,25-08-2019,11-02-2020,O+,74.3,175
+72,Ludwig,Male,63,89018,Pezzo Di Villa San Giovanni,26-02-1958,angina pectoris,18-04-2018,04-02-2020,A+,82.8,198
+73,Jayvion,Male,60,71010,Difensola,19-02-1961,depression,10-09-2019,30-08-2021,B+,103.4,189
+74,Thad,Male,81,70043,Sant'Antonio D'Ascula,17-04-1940,hypokinesia,29-04-2018,04-03-2019,O+,49.9,162
+75,Susanna,Female,72,58036,Torniella,16-04-1949,hypokinesia,08-01-2017,22-09-2018,O+,64.1,155
+76,Santina,Female,52,4100,Borgo Carso,16-11-1969,shortness of breath,04-01-2018,11-02-2018,O+,63.4,152
+77,Tye,Male,54,41015,Bagazzano,26-11-1967,depression,25-06-2019,18-01-2020,B+,92.4,188
+78,Alverta,Female,50,98152,Scala Ritiro,25-03-1971,ocular albinism,28-09-2019,02-02-2020,A+,102.6,175
+79,Wiley,Male,98,65020,Pietranico,06-08-1923,hyponatremia,07-04-2017,24-07-2019,A-,55.2,166
+80,Johathan,Male,97,12020,San Pietro Monterosso,05-02-1924,depression,30-06-2016,14-02-2017,A+,94.9,177
+81,Lempi,Female,18,75,Lanuvio,29-10-2003,hallucinations auditory,18-04-2020,11-01-2022,O+,80.6,182
+82,Andrea,Male,96,66020,San Giovanni Teatino,19-07-1925,hypokinesia,02-01-2019,10-12-2020,A+,72.2,166
+83,Lakeisha,Female,34,29028,Biana,15-04-1987,laryngotracheal angioma,09-06-2019,05-07-2021,O-,80.0,164
+84,Kathlene,Female,47,87020,Acquappesa,22-05-1974,gonorrhea,09-05-2020,09-10-2021,A+,82.0,172
+85,Moody,Male,91,55045,Crociale,17-02-1930,cancer colon,30-04-2020,06-10-2020,B-,73.3,170
+86,Chancy,Male,66,86088,San Pietro Avellana,18-05-1955,head lice,17-05-2019,27-09-2020,A+,70.1,172
+87,Karan,Female,64,81044,Tora E Piccilli,12-03-1957,depression,22-11-2017,12-10-2019,O+,68.3,177
+88,Dahlia,Female,28,39050,Deutschnofen,19-01-1993,leukemia,25-04-2016,04-09-2016,O-,58.5,161
+89,Ansel,Male,34,38017,Mezzolombardo,14-05-1987,hyponatremia,12-10-2016,09-01-2017,A+,108.5,175
+90,Wm,Male,68,33031,Variano,21-05-1953,anxiety disorders,20-09-2019,23-02-2021,O+,89.8,170
+91,Tasha,Female,93,28803,Premosello Chiovenda,11-03-1928,accessory pancreas,05-02-2016,27-09-2017,O+,105.1,179
+92,Desmond,Male,41,10040,Novaretto,03-11-1980,depression,23-06-2016,21-12-2016,B+,51.6,175
+93,Wesley,Male,66,10010,Fiorano Canavese,30-05-1955,hyponatremia,17-11-2019,06-05-2021,AB+,92.4,170
+94,Marty,Male,43,50066,Matassino,18-02-1978,ascites,29-09-2019,11-06-2021,A+,92.2,171
+95,Rhoda,Male,98,23010,Sirta,11-01-1923,pertussis,16-10-2019,29-01-2020,A+,86.8,198
+96,Butler,Male,54,12012,Boves,30-07-1967,pressure chest,29-09-2019,16-10-2020,O-,100.9,185
+97,Tanja,Female,59,43039,Bagni Di Tabiano,13-09-1962,cancer colon,01-04-2019,10-02-2021,O+,81.0,158
+98,Germaine,Male,45,63076,Monteprandone,01-05-1976,ascites,19-04-2020,28-09-2020,B+,92.6,163
+99,Walker,Male,91,13885,Vigellio,30-03-1930,influenza,02-04-2019,16-11-2019,A+,100.1,195
