@@ -8,6 +8,13 @@ K = 1  # parameter K
 N_PARTITIONS = 0
 
 
+def init(data=None, k=1, N_Partitions=0):
+    global DATA, K, N_PARTITIONS
+    DATA = data
+    K = k
+    N_PARTITIONS = N_Partitions
+
+
 # partition_size = {i: 0 for i in range(1, 100)}
 
 def update_stats(partitions):
