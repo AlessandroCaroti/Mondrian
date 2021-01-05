@@ -54,6 +54,8 @@ Each record has the following attributes:
 - Height (cm)
 - Disease: kind of disease affecting the person, attribute considered as **Sensitive data**
 
+The records are generated randomly by means of a function provided in the project.
+
 #### Real
 This is taken from [here](https://archive.ics.uci.edu/ml/datasets/adult). The records containing missing values are removed and we get rid of *education-num* and *final-weight* attributes.
 The *annual-gain* is treated as **Sensitive data**.
