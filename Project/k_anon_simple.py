@@ -8,11 +8,11 @@ import pandas as pd
 from numpy import random
 from pandas.api.types import is_numeric_dtype
 
-from Project.Utility.data import Data
-from Project.typesManager.dateManager import DateManager
-from Project.typesManager.numericManager import NumericManager
-from Project.typesManager.categoricalManager import CategoricalManager
-from Project.Utility.evaluation import *
+from Mondrian.Utility.data import Data
+from Mondrian.typesManager.dateManager import DateManager
+from Mondrian.typesManager.numericManager import NumericManager
+from Mondrian.typesManager.categoricalManager import CategoricalManager
+from Mondrian.Utility.evaluation import *
 import matplotlib.pyplot as plt
 
 data = None  # Class containing data to anonymize and global ranges and medians
@@ -156,7 +156,7 @@ def anonymization(df, anon_dict):
     return final_db
 
 
-from Project.dataset_generator.database_generator import random_Bday
+from Mondrian.dataset_generator.database_generator import random_Bday
 
 
 def toy_dataset():
