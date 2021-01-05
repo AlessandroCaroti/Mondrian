@@ -24,7 +24,7 @@ In this case _Mondrian_ is executed with all the default settings: synthetic dat
 
 Here a further example using the parameters
 ```
-python3 anonymizer.py -dataset_name=mainDB_1000000.csv -K=100 -result_name=anonymized_1000000.csv -save_info=False
+python3 anonymizer.py -folder_name=Dataset_synthetic -dataset_name=mainDB_500000.csv -K=100 -result_name=anonymized_500000.csv -save_info=False
 ```
 
 ### Requirements
@@ -53,6 +53,8 @@ Each record has the following attributes:
 - Weight (Kg)
 - Height (cm)
 - Disease: kind of disease affecting the person, attribute considered as **Sensitive data**
+
+The records are generated randomly by means of a function provided in the project.
 
 #### Real
 This is taken from [here](https://archive.ics.uci.edu/ml/datasets/adult). The records containing missing values are removed and we get rid of *education-num* and *final-weight* attributes.
