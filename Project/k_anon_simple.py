@@ -1,15 +1,19 @@
 import os
+from datetime import datetime
+from numbers import Number
+
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from numpy import random
-import matplotlib.pyplot as plt
+from pandas.api.types import is_numeric_dtype
 
 from Project.Utility.data import Data
-from Project.Utility.evaluation import *
 from Project.typesManager.dateManager import DateManager
 from Project.typesManager.numericManager import NumericManager
 from Project.typesManager.categoricalManager import CategoricalManager
-
+from Project.Utility.evaluation import *
+import matplotlib.pyplot as plt
 
 data = None  # Class containing data to anonymize and global ranges and medians
 dim_type = {"B-day": "date"}
@@ -179,29 +183,30 @@ def toy_dataset():
     return df, col_list
 
 
-def debug_dataset():
+def debug_real_dataset():
     global K, data
-    K = 10
-    dataset_name = "mainDB_100000.csv"
-    dataset_folder = "dataset_generator/data"
-    n_sample_filename = dataset_name.split("_")[1].split(".")[0]
+    K = 3
 
-    dataset = pd.read_csv(os.path.join(dataset_folder, dataset_name))
-    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
-                "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
-                'End Therapy': Data.DATE,
-                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)': Data.NUMERICAL}
-    data = Data(dataset, col_type)
+    dataset_folder = "real_dataset/adult_final.csv"
+
+    dataset = pd.read_csv(os.path.join(dataset_folder))
+    cols = {'age': Data.NUMERICAL, 'workclass': Data.CATEGORICAL, 'education': Data.CATEGORICAL,
+            'martial-status': Data.CATEGORICAL, 'occupation': Data.CATEGORICAL, 'relationship': Data.CATEGORICAL,
+            'race': Data.CATEGORICAL, 'sex': Data.CATEGORICAL, 'captital-gain': Data.NUMERICAL,
+            'capital-loss': Data.NUMERICAL, 'native-country': Data.CATEGORICAL, 'hours-per-week': Data.NUMERICAL,
+            'annual-gain': Data.SD}
+
+    data = Data(dataset, cols)
     # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(data.partition_to_anonymize)
+    dict_phi = anonymize(data.data_to_anonymize)
     t1 = datetime.now()
-    df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
     len_dataset = len(dataset)
-    n_dim = len(list(data.partition_to_anonymize.data))
+    n_dim = len(list(data.data_to_anonymize.data))
     print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
     total_partition = sum(partition_size.values())
     print("-Partition created:", total_partition)
@@ -210,6 +215,78 @@ def debug_dataset():
     print(partition_size)
     print("__________________________________________________________")
     print(df_anonymize)
+
+    if not os.path.isdir("results/real"):
+        os.makedirs("results/real")
+
+    df_anonymize.to_csv(os.path.join("results", "real", "Anonymized_Dataset_real_K"+str(K)+".csv "))
+
+    equivalence_classes = get_equivalence_classes(df_anonymize, list(data.data_anonymized))
+
+    equivalence_classes.to_csv(os.path.join("results", "real", "Equivalence_Classes_real_K"+str(K)+".csv"))
+    print("\n\nEquivalence Classes:\n\n", equivalence_classes)
+
+    print("\n\n-------------------------------------EVALUATION---------------------------------------------\n\n")
+
+    print("CONDITION: C_dm >= k * total_records: ")
+
+    cdm = c_dm(equivalence_classes)
+    print(str(cdm), ">=", str(K), "*", str(len(df_anonymize)), ": "
+          , str(cdm >= (K * len(df_anonymize))))
+
+    print("CONDITION: C_avg >= 1: ")
+
+    cavg = c_avg(equivalence_classes, df_anonymize, K)
+    print(str(cavg), ">= 1: ",
+          str(cavg >= 1))
+
+    # SAVE ALL STATISTICS IN THE FOLDER RESULTS
+    f = open("results/real/statistics_result_real_K"+str(K)+".txt", "w")
+    f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
+    f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
+    f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
+    f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
+    f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
+    f.write("\nPartition created: {}\n".format(total_partition))
+    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.close()
+
+
+def debug_dataset():
+    global K, data
+    K = 3
+    dataset_name = "mainDB_100.csv"
+    dataset_folder = "dataset_generator/data"
+    n_sample_filename = dataset_name.split("_")[1].split(".")[0]
+
+    dataset = pd.read_csv(os.path.join(dataset_folder, dataset_name))
+    col_type = {"Name": Data.EI, "Gender": Data.CATEGORICAL, "Age": Data.NUMERICAL, "Zipcode": Data.CATEGORICAL,
+                "B-City": Data.CATEGORICAL, 'B-day': Data.DATE, 'Disease': Data.SD, 'Start Therapy': Data.DATE,
+                'End Therapy': Data.DATE,
+                'Blood type': Data.CATEGORICAL, 'Weight (Kg)': Data.NUMERICAL, 'Height (cm)': Data.NUMERICAL}
+
+    data = Data(dataset, col_type)
+    # ANONYMIZE QUASI-IDENTIFIERS DATA
+    t0 = datetime.now()
+    dict_phi = anonymize(data.data_to_anonymize)
+    t1 = datetime.now()
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
+    t2 = datetime.now()
+
+    data.data_anonymized = df_anonymize
+    len_dataset = len(dataset)
+    n_dim = len(list(data.data_to_anonymize.data))
+    print("n_row:{}  -  n_dim:{}  -  k:{}".format(len_dataset, n_dim, K))
+    total_partition = sum(partition_size.values())
+    print("-Partition created:", total_partition)
+    print("-Total time:      ", t2 - t0)
+    print("-Compute phi time:", t1 - t0)
+    print(partition_size)
+    print("__________________________________________________________")
+    print(df_anonymize)
+
+    if not os.path.isdir("results"):
+        os.mkdir("results")
 
     df_anonymize.to_csv(os.path.join("results", "Anonymized_Dataset_DB_" + n_sample_filename + ".cvs"))
 
@@ -233,10 +310,10 @@ def debug_dataset():
           str(cavg >= 1))
 
     # SAVE ALL STATISTICS IN THE FOLDER RESULTS
-    f = open("results/statistics_result_DB_"+n_sample_filename+".txt", "w")
+    f = open("results/statistics_result_DB_" + n_sample_filename + ".txt", "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
-    f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
+    f.write("\nNormalized Average Equivalence Class Size Metric: {}\n".format(cavg))
     f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
     f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
     f.write("\nPartition created: {}\n".format(total_partition))
@@ -247,7 +324,7 @@ def debug_dataset():
 def debug():
     df, cols_to_anonymize = toy_dataset()
     global K, data
-    K = 20
+    K = 3
 
     print(df)
     # Create dictionary with Range statistic and Median for each QI
@@ -256,10 +333,10 @@ def debug():
 
     # ANONYMIZE QUASI-IDENTIFIERS DATA
     t0 = datetime.now()
-    dict_phi = anonymize(data.partition_to_anonymize)
+    dict_phi = anonymize(data.data_to_anonymize)
     t1 = datetime.now()
 
-    df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
+    df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
     t2 = datetime.now()
 
     data.data_anonymized = df_anonymize
@@ -286,6 +363,13 @@ def debug():
 
     print(str(c_avg(equivalence_classes, df_anonymize, K)), ">= 1: ",
           str(c_avg(equivalence_classes, df_anonymize, K) >= 1))
+    """
+        for col in df_anonymize.columns:
+        print("{}: ".format(col))
+        print(np.unique(df_anonymize[col], return_counts=True))
+        print("__________________________________________________________")
+
+    """
 
 
 def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
@@ -297,8 +381,8 @@ def algorithm_evaluation_on_k(df, col_type, k_list, column_list):
     for k in k_list:
         K = k
         print("\n\nK=", K, "\n\n")
-        dict_phi = anonymize(data.partition_to_anonymize)
-        df_anonymize = anonymization(data.partition_to_anonymize.data, dict_phi)
+        dict_phi = anonymize(data.data_to_anonymize)
+        df_anonymize = anonymization(data.data_to_anonymize.data, dict_phi)
         data.data_anonymized = df_anonymize
         equivalence_classes = get_equivalence_classes(df_anonymize, column_list)
         print("\n\nEquivalence Classes:\n\n", equivalence_classes)
@@ -341,4 +425,5 @@ def plot_evaluations():
 if __name__ == "__main__":
     # debug()
     # plot_evaluations()
-    debug_dataset()
+    # debug_dataset()
+    debug_real_dataset()
