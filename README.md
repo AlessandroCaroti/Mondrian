@@ -36,6 +36,7 @@ pip3 install -r requirements.txt
 - pandas==1.1.2
 - argparse==1.4.0
 - datetime==4.3
+- matplotlib~=3.2.1
 
 ### Data
 We provide 2 kind of data as an example: one synthetic and one real.
