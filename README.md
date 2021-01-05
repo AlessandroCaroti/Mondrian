@@ -9,7 +9,7 @@ This is an example of how you can use the program.
 ```
  python3 anonymizer.py
 ```
-In this case _Mondrian_ is executed with all the default settings: dataset provided by us and K=10.
+In this case _Mondrian_ is executed with all the default settings: synthetic dataset provided by us and K=10.
 
 #### Parameters
 
