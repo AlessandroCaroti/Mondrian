@@ -63,16 +63,16 @@ def plot_and_save_evaluations(args, dataset, k_list):
     plt.ylabel("$C_{avg}$", fontsize=15)
     plt.grid()
 
-    plt.show()
-
     if not os.path.isdir("Evaluation/graphics"):
         os.makedirs("Evaluation/graphics")
 
-    plt.savefig("Evaluation/graphics/Graphic_" + args.folder_name + "_" + args.dataset_name + ".png")
+    plt.savefig("Evaluation/graphics/Graphic_" + args.folder_name + "_" + args.dataset_name.split('.')[0], dpi=100)
+    plt.show()
     res = pd.DataFrame()
     res['K'] = k_list
     res['Execution_time'] = execution_time_list
-    res.to_csv("Evaluation/Execution_time.csv", index=False, header=True)
+    res.to_csv("Evaluation/Execution_time_" + args.folder_name + "_" + args.dataset_name.split('.')[0] + ".csv",
+               index=False, header=True)
 
 
 if __name__ == "__main__":
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # print algorithm parameters
     print_args(args)
 
-    k_list = list(range(1, 10))
+    k_list = range(2, 100, 2)
     dataset = data.Data(args.folder_name, args.dataset_name, args.columns_type, args.result_name)
 
     plot_and_save_evaluations(args=args, dataset=dataset, k_list=k_list)
