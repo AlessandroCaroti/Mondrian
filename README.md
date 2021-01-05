@@ -32,4 +32,4 @@ pip3 install -r requirements.txt
 - numpy==1.18.5
 - pandas==1.1.2
 - argparse==1.4.0
-- datatime==4.3
+- datetime==4.3
