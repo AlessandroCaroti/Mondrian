@@ -1,7 +1,7 @@
 from Utility.utility import *
 import os
 import Utility.data as data
-from mandorian import main
+from mondrian import main
 
 if __name__ == "__main__":
 
