@@ -44,7 +44,7 @@ def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K
     f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
     f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
     f.write("\nPartition created: {}\n".format(n_partitions))
-    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(n_tuple, n_dim, K))
+    f.write("\nSize of the Dataset_synthetic: {}  -  Number of Attribute: {}  -  K: {}".format(n_tuple, n_dim, K))
     f.close()
 
 

@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     # Load the database to anonymize
     print("LOAD DATASET")
-    data = data.Data(args.dataset_name, args.columns_type, args.result_name)
+    data = data.Data(args.folder_name, args.dataset_name, args.columns_type, args.result_name)
 
     # if don't exist the folder Results, create it
     if not os.path.isdir(os.path.join(data.data_folder, data.result_folder)):

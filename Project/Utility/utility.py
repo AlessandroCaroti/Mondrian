@@ -7,8 +7,10 @@ def get_parser():
     # add arguments...
 
     # as default dataset the syntethic one created by us
+    parser.add_argument("-folder_name", help="name of folder containing all the files regarding the data, including "
+                                             "the folder containing the Hierarchies", default="Dataset_synthetic")
     parser.add_argument("-dataset_name", help="name of csv file containing the data", default="mainDB_10000.csv")
-    parser.add_argument("-columns_type", help="name of csv file containing for each row the column_name and the type " +
+    parser.add_argument("-columns_type", help="name of csv file containing for each row the column_name and the type "
                                               "(EI, SD, NUMERICAL, DATE, CATEGORICAL)", default="columns_type.csv")
 
     parser.add_argument("-K", help="parameter K", type=int, default=10)

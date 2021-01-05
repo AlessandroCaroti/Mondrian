@@ -125,7 +125,7 @@ if __name__ == "__main__":
     df_name = pd.read_csv(name_path, header=0, names=['Name', 'Gender'])
     df_name.replace({'Gender': gender_map}, inplace=True)
     random.seed(43)
-    # Dataset with a list of disease
+    # Dataset_synthetic with a list of disease
     df_disease = pd.read_csv(disease_path)
     df_city = pd.read_csv(city_path, header=0, names=['city', 'county', 'region', 'country'])
     df_zip = pd.read_csv(zip_path, header=0, names=['zip_0', 'zip_1', 'zip_2', 'zip_3', 'zip_4','zip_5'])

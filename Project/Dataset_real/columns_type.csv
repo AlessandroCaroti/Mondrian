@@ -1,0 +1,14 @@
+Column_name,Type
+age,NUMERICAL
+workclass,CATEGORICAL
+education,CATEGORICAL
+martial-status,CATEGORICAL
+occupation,CATEGORICAL
+relationship,CATEGORICAL
+race,CATEGORICAL
+sex,CATEGORICAL
+captital-gain,NUMERICAL
+capital-loss,NUMERICAL
+native-country,CATEGORICAL
+hours-per-week,NUMERICAL
+annual-gain,SD

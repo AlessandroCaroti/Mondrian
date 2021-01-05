@@ -63,6 +63,7 @@ def compute_phi(partition):
     global partition_size, num_partition, N_PARTITIONS
 
     #partition_size[len(partition.data.index)] += 1
+
     N_PARTITIONS += 1
 
     summary = []

@@ -78,7 +78,7 @@ def prova():
     bday_p = pa.Partition(ages, {0: len(root.leaf)}, {0: root})
     median = CategoricalManager.median(bday_p, 0)
     [l, r] = CategoricalManager.split(bday_p, 0, median)  # I know there are two partitions because of the
-    # generalization
+    # Hierarchies
     # (it's a particular case)
 
     print("MEDIAN:", median.data)

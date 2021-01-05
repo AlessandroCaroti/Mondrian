@@ -24,16 +24,16 @@ class DGH:
         self.gen_level = None
         """
         Dictionary whose keys are the hierarchies root values and whose values are the hierarchies 
-        depths (number of generalization levels).
+        depths (number of Hierarchies levels).
         """
 
     def generalize(self, value, gen_level=None):
 
         """
-        Returns the upper lever generalization of a value in the domain.
+        Returns the upper lever Hierarchies of a value in the domain.
 
         :param value:       Value to generalize.
-        :param gen_level:   Current level of generalization, where 0 means it's not generalized.
+        :param gen_level:   Current level of Hierarchies, where 0 means it's not generalized.
         :return:            The generalized value on the level above, None if it's a root.
         :raises KeyError:   If the value is not part of the domain.
         """
@@ -71,7 +71,7 @@ class CsvDGH(DGH):
                     # If it doesn't exist a hierarchy with this root, add if only it's the first:
                     if i == 0:
                         self.hierarchy = Tree(Node(values[-1]))
-                        # Add the number of generalization levels:
+                        # Add the number of Hierarchies levels:
                         self.gen_level = len(values) - 1
 
                     # Only one tree, so if the value is not in the hierarchy it's ignored (unless it's the first)

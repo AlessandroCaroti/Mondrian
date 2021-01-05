@@ -187,7 +187,7 @@ def debug_real_dataset():
     global K, data
     K = 3
 
-    dataset_folder = "real_dataset/adult_final.csv"
+    dataset_folder = "Dataset_real/adult_final.csv"
 
     dataset = pd.read_csv(os.path.join(dataset_folder))
     cols = {'age': Data.NUMERICAL, 'workclass': Data.CATEGORICAL, 'education': Data.CATEGORICAL,
@@ -248,7 +248,7 @@ def debug_real_dataset():
     f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
     f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
     f.write("\nPartition created: {}\n".format(total_partition))
-    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.write("\nSize of the Dataset_synthetic: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
     f.close()
 
 
@@ -317,7 +317,7 @@ def debug_dataset():
     f.write("\nTotal Execution Time: {}\n".format(t2 - t0))
     f.write("\nExecution Time - Computation PHI: {}\n".format(t1 - t0))
     f.write("\nPartition created: {}\n".format(total_partition))
-    f.write("\nSize of the Dataset: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
+    f.write("\nSize of the Dataset_synthetic: {}  -  Number of Attribute: {}  -  K: {}".format(len_dataset, n_dim, K))
     f.close()
 
 

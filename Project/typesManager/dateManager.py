@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from dataset_generator.database_generator import random_Bday
+from Dataset_synthetic.dataset_generator.database_generator import random_Bday
 from typesManager.abstractType import AbstractType
 import Utility.partition as pa
 

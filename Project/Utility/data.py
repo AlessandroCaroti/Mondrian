@@ -10,9 +10,9 @@ import os
 
 class Data(object):
 
-    def __init__(self, data, columns_type, result_name):
+    def __init__(self, data_folder, data, columns_type, result_name):
 
-        self.data_folder = "Dataset"  # folder containing the csv file
+        self.data_folder = data_folder  # folder containing the csv file
         self.hierarchy_folder = "Hierarchies"  # folder containing the csv files of the dgh
         self.result_folder = "Results"  # folder containing the resulting files
         self.result_name = result_name  # name used to save the result
@@ -98,17 +98,20 @@ class Data(object):
 
         for index, col_type in dataframe.items():
 
+            # all letters uppercase
+            type = col_type["Type"].upper()
+
             # Primary keys are ignored
-            if col_type["Type"] == Type.EI.value:
+            if type == Type.EI.value:
                 continue
 
             # Sensitive data added to list (no need to know other info about them)
-            if col_type["Type"] == Type.SD.value:
+            if type == Type.SD.value:
                 SD.append(col_type["Column_name"])
                 continue
 
             # Quasi-identifier added to dict
-            QI[col_type["Column_name"]] = col_type["Type"]
+            QI[col_type["Column_name"]] = type
 
         return QI, SD
 
@@ -118,7 +121,7 @@ class Data(object):
         """
 
         if self.data_anonymized is None:
-            Exception("Dataset not anonymized yet!")
+            Exception("Dataset_synthetic not anonymized yet!")
 
         df_merged = pd.concat([self.data_anonymized, self.data_SD], axis=1, sort=False)
         df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name))
