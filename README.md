@@ -1,6 +1,6 @@
 # Mondrian K-Anonymity
 
-This implementation supports numeric, date and categorical attributes: each categorical attribute must have its own _generalization hierarchies_.
+This implementation (following the [paper](https://github.com/simocampi/MondrianMultidimentional_K-Anonymity/blob/master/36MondrianMultidimensionalK-Anonymit.pdf)) supports numerical, date and categorical attributes: each categorical attribute must have its own **generalization hierarchy**.
 
 ### Usage 
 
@@ -52,8 +52,8 @@ Each record has the following attributes:
 - Blood type
 - Weight (Kg)
 - Height (cm)
-- Disease: kind of disease affecting the person, attribute considered as _Sensitive data_
+- Disease: kind of disease affecting the person, attribute considered as **Sensitive data**
 
 #### Real
 This is taken from [here](https://archive.ics.uci.edu/ml/datasets/adult). The records containing missing values are removed and we get rid of *education-num* and *final-weight* attributes.
-The *annual-gain* is treated as Sensitive data.
+The *annual-gain* is treated as **Sensitive data**.
