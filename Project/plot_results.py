@@ -35,7 +35,7 @@ def evaluate(dataset, k):
     columns = df_anonymize.columns.tolist()
     equivalence_classes = get_equivalence_classes(df_anonymize, columns)
 
-    cavg = c_avg(equivalence_classes, df_anonymize, K)
+    cavg = c_avg(equivalence_classes, df_anonymize, k)
 
     return cavg, execution_time
 
