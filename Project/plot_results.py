@@ -29,6 +29,7 @@ def evaluate(dataset, k):
 
     # save result in a file
     dataset.data_anonymized = df_anonymize
+    dataset.save_anonymized(K)
 
     print("Total time:      ", execution_time)
 
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     # print algorithm parameters
     print_args(args)
 
-    k_list = range(2, 100, 2)
+    k_list = [2] + list(range(5, 105, 5))
     dataset = data.Data(args.folder_name, args.dataset_name, args.columns_type, args.result_name)
 
     plot_and_save_evaluations(args=args, dataset=dataset, k_list=k_list)
