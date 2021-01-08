@@ -8,11 +8,10 @@ K = 1  # parameter K
 N_PARTITIONS = 0
 
 
-def init(data=None, k=1, N_Partitions=0):
-    global DATA, K, N_PARTITIONS
+def init(data=None, k=1):
+    global DATA, K
     DATA = data
     K = k
-    N_PARTITIONS = N_Partitions
 
 
 # partition_size = {i: 0 for i in range(1, 100)}
@@ -74,7 +73,6 @@ def compute_phi(partition):
     # partition_size[len(partition.data.index)] += 1
 
     N_PARTITIONS += 1
-
     summary = []
     for dim in partition.data.columns:
         col_summary = partition.compute_phi(dim)
@@ -96,7 +94,6 @@ def allowable_cut(partition_list):
 
 def anonymize(partition, first=False):
     columns = partition.data.columns.tolist()
-
     while columns:
 
         dim = chose_dimension(partition, columns, first)
@@ -157,7 +154,7 @@ def main(args, data):
 
     # save result in a file
     data.data_anonymized = df_anonymize
-    data.save_anonymized()
+    data.save_anonymized(K)
     print("\nResult saved!")
 
     print("Total time:      ", t2 - t0)
@@ -172,4 +169,5 @@ def main(args, data):
 
         save_statistics(DATA.get_path_results(), cdm, cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
                         len(columns), K)
-        equivalence_classes.to_csv(os.path.join(DATA.get_path_results(), "Equivalence_Classes.csv"), index=False)
+        equivalence_classes.to_csv(os.path.join(DATA.get_path_results(), "Equivalence_Classes_K_" + str(K) + ".csv"),
+                                   index=False)

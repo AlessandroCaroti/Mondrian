@@ -115,16 +115,15 @@ class Data(object):
 
         return QI, SD
 
-    def save_anonymized(self):
+    def save_anonymized(self, k):
         """
         Save a csv file containing the anonymized QI and SD
         """
 
         if self.data_anonymized is None:
             Exception("Dataset_synthetic not anonymized yet!")
-
         df_merged = pd.concat([self.data_anonymized, self.data_SD], axis=1, sort=False)
-        df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name), index=False)
+        df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name+"_K_"+str(k)+".csv"), index=False)
 
     def get_path_results(self):
 

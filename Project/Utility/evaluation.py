@@ -2,7 +2,6 @@ import os
 
 """
 @param e_c: group-bys on quasi-identifier (equivalence classes)
-ref: https://www.mdpi.com/2079-9292/9/5/716/html
 """
 
 
@@ -32,12 +31,13 @@ def c_dm(e_c):
 @param k: param k of k-anonymity
 """
 
+
 def c_avg(e_c, anon_table, k):
     return round(len(anon_table) / (len(e_c) * k), 3)
 
-def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
 
-    f = open(os.path.join(path, "statistics_result.txt"), "w")
+def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
+    f = open(os.path.join(path, "statistics_result_K_"+str(K)+".txt"), "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
     f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))
@@ -46,8 +46,3 @@ def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K
     f.write("\nPartition created: {}\n".format(n_partitions))
     f.write("\nSize of the Dataset_synthetic: {}  -  Number of Attribute: {}  -  K: {}".format(n_tuple, n_dim, K))
     f.close()
-
-
-
-
-
