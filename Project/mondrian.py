@@ -15,8 +15,6 @@ def init(data=None, k=1, n_partition=0):
     N_PARTITIONS = n_partition
 
 
-
-
 # partition_size = {i: 0 for i in range(1, 100)}
 
 def update_stats(partitions):
@@ -92,7 +90,6 @@ def allowable_cut(partition_list):
 
     if len(partition_list) <= 1:
         return False
-
     return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
@@ -167,7 +164,7 @@ def main(args, data):
     if args.save_info:
         columns = df_anonymize.columns.tolist()
 
-        cavg = c_avg(df_anonymize, K)
+        cavg = c_avg(N_PARTITIONS, df_anonymize, K)
 
         save_statistics(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
                         len(columns), K)
