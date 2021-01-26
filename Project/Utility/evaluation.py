@@ -1,25 +1,5 @@
 import os
-
-"""
-@param e_c: group-bys on quasi-identifier (equivalence classes)
-"""
-
-
-# A group of records that are indistinguishable from each other is
-# often referred to as an equivalence class.
-
-def get_equivalence_classes(anon_dataset, columns_list):
-    return anon_dataset.groupby(by=columns_list).size().reset_index(name='counts')
-
-
-def c_dm(e_c):
-    # Discernibly Penalty
-    # assignment of penalty (cost) to each tuple in the generalized data set.
-    # sum of  size( equivalence classes )^2
-    tot_penalty = 0
-    for e in e_c['counts']:
-        tot_penalty += e ** 2
-    return tot_penalty
+import Project.mondrian as mondrian
 
 
 #  The normalized average
@@ -32,12 +12,13 @@ def c_dm(e_c):
 """
 
 
-def c_avg(e_c, anon_table, k):
-    return round(len(anon_table) / (len(e_c) * k), 3)
+def c_avg(n_partition,anon_table, k):
+
+    return round(len(anon_table) / (n_partition * k), 3)
 
 
-def save_statistics(path, cdm, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
-    f = open(os.path.join(path, "statistics_result_K_"+str(K)+".txt"), "w")
+def save_statistics(path, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
+    f = open(os.path.join(path, "statistics_result_K_" + str(K) + ".txt"), "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nDiscernability Penalty Metric: {}\n".format(cdm))
     f.write("\nDiscernability Penalty Metric: {}\n".format(cavg))

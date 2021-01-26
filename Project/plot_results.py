@@ -18,12 +18,9 @@ def convert_time(str_time):
     return tsec / 60
 
 
-def evaluate(args, dataset, k):
-
+def evaluate(dataset, k):
     mondrian.init(data=dataset, k=k)
-    backup_folder_path = r"Evaluation/backup/Partitions/" + "partitions_" + args.dataset_name.split('.')[0]
-    backup_filename_partition = os.path.join(backup_folder_path, "equivalence_classes_" + args.folder_name + "_" \
-                                             + args.dataset_name.split('.')[0] + "K_" + str(k) + ".csv")
+
     print("START MONDRIAN")
 
     t0 = datetime.now()
@@ -44,20 +41,12 @@ def evaluate(args, dataset, k):
 
     print("Total time:      ", execution_time)
 
-    columns = df_anonymize.columns.tolist()
-    equivalence_classes = get_equivalence_classes(df_anonymize, columns)
-    print("\n\n-----------------------------\n\nmin count >= K ? ", str(equivalence_classes.min().counts >= k),
-          "\n\n-----------------------------\n\n")
-    cavg = c_avg(equivalence_classes, df_anonymize, k)
-
-    if not os.path.isdir(backup_folder_path):
-        os.makedirs(backup_folder_path)
-    equivalence_classes.to_csv(backup_filename_partition, header=True, index=False)
+    cavg = c_avg(mondrian.N_PARTITIONS, df_anonymize, k)
 
     return cavg, execution_time
 
 
-def algorithm_evaluation_on_k(args, dataset, k_list, backup_file_path):
+def algorithm_evaluation_on_k(dataset, k_list, backup_file_path):
     cavg_results = []
     execution_time_list = []
     backup_folder_path = r"Evaluation/backup"
@@ -65,7 +54,7 @@ def algorithm_evaluation_on_k(args, dataset, k_list, backup_file_path):
     for k in k_list:
         print("\n\nK={}\n\n".format(k))
 
-        cavg, execution_time = evaluate(args, dataset, k)
+        cavg, execution_time = evaluate(dataset, k)
         execution_time = convert_time(execution_time)
 
         cavg_results.append(cavg)
@@ -86,7 +75,7 @@ def algorithm_evaluation_on_k(args, dataset, k_list, backup_file_path):
 
 
 def plot_and_save_evaluations(args, dataset, k_list, backup_file_path):
-    cavg_results, execution_time_list = algorithm_evaluation_on_k(args, dataset, k_list, backup_file_path)
+    cavg_results, execution_time_list = algorithm_evaluation_on_k(dataset, k_list, backup_file_path)
     print(cavg_results, '\n', k_list)
     plt.plot(k_list, cavg_results)
     plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)

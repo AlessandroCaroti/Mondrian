@@ -8,10 +8,13 @@ K = 1  # parameter K
 N_PARTITIONS = 0
 
 
-def init(data=None, k=1):
-    global DATA, K
+def init(data=None, k=1, n_partition=0):
+    global DATA, K, N_PARTITIONS
     DATA = data
     K = k
+    N_PARTITIONS = n_partition
+
+
 
 
 # partition_size = {i: 0 for i in range(1, 100)}
@@ -33,6 +36,7 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 def chose_dimension(partition, columns, first=False):
     """
+    :param first:
     :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
@@ -68,7 +72,7 @@ def merge_dictionary(dict_list):
 
 
 def compute_phi(partition):
-    global partition_size, num_partition, N_PARTITIONS
+    global N_PARTITIONS
 
     # partition_size[len(partition.data.index)] += 1
 
@@ -162,12 +166,8 @@ def main(args, data):
 
     if args.save_info:
         columns = df_anonymize.columns.tolist()
-        equivalence_classes = get_equivalence_classes(df_anonymize, columns)
 
-        cdm = c_dm(equivalence_classes)
-        cavg = c_avg(equivalence_classes, df_anonymize, K)
+        cavg = c_avg(df_anonymize, K)
 
-        save_statistics(DATA.get_path_results(), cdm, cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
+        save_statistics(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
                         len(columns), K)
-        equivalence_classes.to_csv(os.path.join(DATA.get_path_results(), "Equivalence_Classes_K_" + str(K) + ".csv"),
-                                   index=False)
