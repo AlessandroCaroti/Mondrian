@@ -97,6 +97,11 @@ def plot_and_save_evaluations(args, dataset, k_list, backup_file_path):
 
 
 if __name__ == "__main__":
+
+    k_list_copy = [2] + list(range(5, 105, 5))
+    backup_file_path = r"Evaluation/backup/backup_result_mainDB_1000000.csv"
+    backup = pd.read_csv(backup_file_path)
+    """
     parser = get_parser()
     args = parser.parse_args()
     # print algorithm parameters
@@ -106,7 +111,7 @@ if __name__ == "__main__":
     k_list = [2] + list(range(5, 105, 5))
     if os.path.isfile(backup_file_path):
         backup = pd.read_csv(backup_file_path)
-        """Se c'è il backup riparte dal k che era rimasto"""
+        '''Riprende dall'ultimo k terminato'''
         i = 0
         for l1, l2 in zip(backup['K'].tolist(), k_list):
             if l1 != l2:
@@ -117,3 +122,9 @@ if __name__ == "__main__":
     dataset = data.Data(args.folder_name, args.dataset_name, args.columns_type, args.result_name)
 
     plot_and_save_evaluations(args=args, dataset=dataset, k_list=k_list, backup_file_path=backup_file_path)
+    """
+    plt.plot(backup['k'].toliist(), backup['C_Avg'])
+    plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)
+    plt.xlabel("K", fontsize=15)
+    plt.ylabel("$C_{avg}$", fontsize=15)
+    plt.grid()
