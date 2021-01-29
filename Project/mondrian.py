@@ -15,8 +15,6 @@ def init(data=None, k=1, n_partition=0):
     N_PARTITIONS = n_partition
 
 
-# partition_size = {i: 0 for i in range(1, 100)}
-
 def update_stats(partitions):
     for p in partitions:
         for dim in p.data.columns:
@@ -34,7 +32,7 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 def chose_dimension(partition, columns, first=False):
     """
-    :param first:
+    :param first: if first time split
     :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
@@ -72,8 +70,6 @@ def merge_dictionary(dict_list):
 def compute_phi(partition):
     global N_PARTITIONS
 
-    # partition_size[len(partition.data.index)] += 1
-
     N_PARTITIONS += 1
     summary = []
     for dim in partition.data.columns:
@@ -88,9 +84,10 @@ def compute_phi(partition):
 def allowable_cut(partition_list):
     global K
 
-    if len(partition_list) <= 1:
+    if len(partition_list) < 1:
         return False
-    return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
+
+    return np.all([len(p.data.index) >= K for p in partition_list])
 
 
 def anonymize(partition, first=False):
@@ -109,7 +106,7 @@ def anonymize(partition, first=False):
         # the median and width can change after cut so recompute it...
         partition_list = update_stats(partition_list)
 
-        return merge_dictionary([anonymize(p, False) for p in partition_list])
+        return merge_dictionary([anonymize(p) for p in partition_list])
 
     return compute_phi(partition)  # return phi: partition -> summary
 
@@ -159,12 +156,11 @@ def main(args, data):
     print("\nResult saved!")
 
     print("Total time:      ", t2 - t0)
-    # print("-Compute phi time:", t1 - t0)
 
     if args.save_info:
         columns = df_anonymize.columns.tolist()
 
         cavg = c_avg(N_PARTITIONS, df_anonymize, K)
 
-        save_statistics(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
-                        len(columns), K)
+        save_info(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
+                  len(columns), K)

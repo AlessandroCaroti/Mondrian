@@ -15,7 +15,7 @@ def c_avg(n_partition, anon_table, k):
     return round(len(anon_table) / (n_partition * k), 3)
 
 
-def save_statistics(path, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
+def save_info(path, cavg, t0, t1, t2, n_partitions, n_tuple, n_dim, K):
     f = open(os.path.join(path, "statistics_result_K_" + str(K) + ".txt"), "w")
     f.write("\n---------------------------------EVALUATION-STATISTICS-------------------------------------------\n")
     f.write("\nnormalized average equivalence class size metric: {}\n".format(cavg))
