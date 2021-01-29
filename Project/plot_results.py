@@ -134,5 +134,3 @@ if __name__ == "__main__":
     plt.ylabel("Time ( Minutes )", fontsize=12)
     plt.grid()
     plt.savefig(execution_path, dpi=100)
-
-    print("aaaaaaaaaaaaaa")
