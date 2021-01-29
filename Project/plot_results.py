@@ -74,10 +74,15 @@ def algorithm_evaluation_on_k(dataset, k_list, backup_file_path):
     return cavg_results, execution_time_list
 
 
-def plot_and_save_evaluations(args, dataset, k_list, backup_file_path):
+def plot_and_save_evaluations(args, dataset, k_list, k_list_original, backup_file_path):
     cavg_results, execution_time_list = algorithm_evaluation_on_k(dataset, k_list, backup_file_path)
-    print(cavg_results, '\n', k_list)
-    plt.plot(k_list, cavg_results)
+
+    if len(k_list_original) > len(cavg_results):
+        cavg_results_back = pd.read_csv(backup_file_path)['C_Avg']
+        plt.plot(k_list_original, cavg_results_back)
+    else:
+        plt.plot(k_list_original, cavg_results)
+
     plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)
     plt.xlabel("K", fontsize=15)
     plt.ylabel("$C_{avg}$", fontsize=15)
@@ -88,43 +93,46 @@ def plot_and_save_evaluations(args, dataset, k_list, backup_file_path):
 
     plt.savefig("Evaluation/graphics/Graphic_" + args.folder_name + "_" + args.dataset_name.split('.')[0], dpi=100)
     plt.show()
-    res = pd.DataFrame()
-    res['K'] = k_list
-    res['Execution_time'] = execution_time_list
-    res['Cavg'] = cavg_results
-    res.to_csv("Evaluation/Execution_time_" + args.folder_name + "_" + args.dataset_name.split('.')[0] + ".csv",
-               index=False, header=True)
 
 
 if __name__ == "__main__":
 
-    k_list_copy = [2] + list(range(5, 105, 5))
-    backup_file_path = r"Evaluation/backup/backup_result_mainDB_1000000.csv"
-    backup = pd.read_csv(backup_file_path)
-    """
     parser = get_parser()
     args = parser.parse_args()
     # print algorithm parameters
     print_args(args)
     backup_file_path = r"Evaluation/backup/backup_result_" + args.dataset_name.split('.')[0] + ".csv"
+    k_list_original = [2] + list(range(5, 105, 5))
 
-    k_list = [2] + list(range(5, 105, 5))
+    print(backup_file_path)
+    k_list_backup = [2] + list(range(5, 105, 5))
     if os.path.isfile(backup_file_path):
         backup = pd.read_csv(backup_file_path)
         '''Riprende dall'ultimo k terminato'''
         i = 0
-        for l1, l2 in zip(backup['K'].tolist(), k_list):
+        for l1, l2 in zip(backup['K'].tolist(), k_list_original):
             if l1 != l2:
                 break
             i += 1
-        k_list = k_list[i:]
+        k_list_backup = k_list_original[i:]
 
     dataset = data.Data(args.folder_name, args.dataset_name, args.columns_type, args.result_name)
 
-    plot_and_save_evaluations(args=args, dataset=dataset, k_list=k_list, backup_file_path=backup_file_path)
-    """
-    plt.plot(backup['k'].toliist(), backup['C_Avg'])
-    plt.title("Normalized Average Equivalence Class Size Metric", fontsize=15)
+    plot_and_save_evaluations(args=args, dataset=dataset, k_list=k_list_backup, k_list_original=k_list_original,
+                              backup_file_path=backup_file_path)
+
+    """ PLOT AND SAVE Save EXECUTION TIME """
+
+    backup = pd.read_csv(backup_file_path)
+
+    execution_path = "Evaluation/graphics/ex_time_Dataset_" + args.dataset_name.split('.')[0] + ".png"
+
+    plt.figure()
+    backup.plot.bar(x='K', y="Execution Time (minutes)", rot=0)
+    plt.title("Execution Time", fontsize=15)
     plt.xlabel("K", fontsize=15)
-    plt.ylabel("$C_{avg}$", fontsize=15)
+    plt.ylabel("Time ( Minutes )", fontsize=12)
     plt.grid()
+    plt.savefig(execution_path, dpi=100)
+
+    print("aaaaaaaaaaaaaa")
