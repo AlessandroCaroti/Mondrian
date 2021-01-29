@@ -1,6 +1,7 @@
 import datetime
 import os
 import random
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -11,10 +12,12 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 2000000
+n_entry = 200000
 
 # path & filename variable
 dataset_folder = "data"
+dataset_folder_synthetic = Path(__file__).parents[1]
+
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease_small.csv")
 
@@ -186,4 +189,4 @@ if __name__ == "__main__":
     print(df)
 
     # main_df = df[mainTable_indices]
-    df.to_csv(os.path.join(dataset_folder, mainDB_filename))
+    df.to_csv(os.path.join(dataset_folder_synthetic, mainDB_filename))

@@ -8,11 +8,11 @@ K = 1  # parameter K
 N_PARTITIONS = 0
 
 
-def init(data=None, k=1, N_Partitions=0):
+def init(data=None, k=1, n_partition=0):
     global DATA, K, N_PARTITIONS
     DATA = data
     K = k
-    N_PARTITIONS = N_Partitions
+    N_PARTITIONS = n_partition
 
 
 # partition_size = {i: 0 for i in range(1, 100)}
@@ -34,6 +34,7 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 def chose_dimension(partition, columns, first=False):
     """
+    :param first:
     :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
@@ -69,12 +70,11 @@ def merge_dictionary(dict_list):
 
 
 def compute_phi(partition):
-    global partition_size, num_partition, N_PARTITIONS
+    global N_PARTITIONS
 
     # partition_size[len(partition.data.index)] += 1
 
     N_PARTITIONS += 1
-
     summary = []
     for dim in partition.data.columns:
         col_summary = partition.compute_phi(dim)
@@ -90,13 +90,11 @@ def allowable_cut(partition_list):
 
     if len(partition_list) <= 1:
         return False
-
     return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
 
 
 def anonymize(partition, first=False):
     columns = partition.data.columns.tolist()
-
     while columns:
 
         dim = chose_dimension(partition, columns, first)
@@ -157,7 +155,7 @@ def main(args, data):
 
     # save result in a file
     data.data_anonymized = df_anonymize
-    data.save_anonymized()
+    data.save_anonymized(K)
     print("\nResult saved!")
 
     print("Total time:      ", t2 - t0)
@@ -165,11 +163,8 @@ def main(args, data):
 
     if args.save_info:
         columns = df_anonymize.columns.tolist()
-        equivalence_classes = get_equivalence_classes(df_anonymize, columns)
 
-        cdm = c_dm(equivalence_classes)
-        cavg = c_avg(equivalence_classes, df_anonymize, K)
+        cavg = c_avg(N_PARTITIONS, df_anonymize, K)
 
-        save_statistics(DATA.get_path_results(), cdm, cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
+        save_statistics(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
                         len(columns), K)
-        equivalence_classes.to_csv(os.path.join(DATA.get_path_results(), "Equivalence_Classes.csv"), index=False)
