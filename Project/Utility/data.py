@@ -1,4 +1,3 @@
-
 from Utility.partition import Partition
 from DGH.dgh import CsvDGH
 from Utility.type import Type
@@ -45,7 +44,8 @@ class Data(object):
         self.median_list = {dim: self.init_median_dim(dim) for dim in col_to_anonymize}
 
         # create a Partition with the table to anonymize
-        self.partition_to_anonymize = Partition(self.dataFrame[col_to_anonymize], self.dim_QI, self.width_list, self.median_list)
+        self.partition_to_anonymize = Partition(self.dataFrame[col_to_anonymize], self.dim_QI, self.width_list,
+                                                self.median_list)
 
         # contains only the columns defined as Sensitive data
         self.data_SD = self.dataFrame[self.dim_SD]
@@ -76,10 +76,10 @@ class Data(object):
         if self.dim_QI[dim] == Type.CATEGORICAL.value:
             item = self.dgh_list[dim].hierarchy
 
-            return item.root.find_minimal_node(np.unique(self.dataFrame[dim]))  # the initial median is the root Node of the DGH
+            return item.root.find_minimal_node(
+                np.unique(self.dataFrame[dim]))  # the initial median is the root Node of the DGH
 
         return Partition(self.dataFrame, self.dim_QI).find_median(dim)
-
 
     def get_columns_type(self, file):
         """
@@ -115,17 +115,15 @@ class Data(object):
 
         return QI, SD
 
-    def save_anonymized(self):
+    def save_anonymized(self, k):
         """
         Save a csv file containing the anonymized QI and SD
         """
 
         if self.data_anonymized is None:
             Exception("Dataset_synthetic not anonymized yet!")
-
         df_merged = pd.concat([self.data_anonymized, self.data_SD], axis=1, sort=False)
-        df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name))
-
+        df_merged.to_csv(os.path.join(self.get_path_results(), self.result_name+"_K_"+str(k)+".csv"), index=False)
 
     def get_path_results(self):
 

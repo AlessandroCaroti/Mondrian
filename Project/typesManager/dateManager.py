@@ -134,35 +134,3 @@ class DateManager(AbstractType):
                _min.strftime(DateManager.data_format) + \
                " - " + \
                _max.strftime(DateManager.data_format) + "]"
-
-
-def test():
-    n_sample = 20
-    np.random.seed(42)
-    ages = np.random.randint(0, 120, (n_sample,))
-    b_day = pd.DataFrame([random_Bday(age) for age in ages])
-    print(b_day)
-
-    bday_p = pa.Partition(b_day, {}, {})
-    median = DateManager.median(bday_p, 0)
-    l, r = DateManager.split(bday_p, 0, median)
-
-    print("LEFT_PART:")
-    print(l.data)
-    print("Width :", l.width)
-    print("Median :", l.median)
-
-    print()
-    print("RIGHT_PART:")
-    print(r.data)
-    print("Width :", r.width)
-    print("Median :", r.median)
-
-    print()
-
-    print("DIFFERENCE:", DateManager.width(bday_p, 0))
-    pass
-
-
-if __name__ == "__main__":
-    test()

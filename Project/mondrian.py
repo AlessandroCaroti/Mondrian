@@ -4,12 +4,18 @@ import numpy as np
 import pandas as pd
 
 DATA = None  # Class containing data to anonymize and global ranges and medians
-K = 1 # parameter K
-N_PARTITIONS = 0
-#partition_size = {i: 0 for i in range(1, 100)}
+K = 1  # parameter K
+N_PARTITIONS = 0 #
+
+
+def init(data=None, k=1, n_partition=0):
+    global DATA, K, N_PARTITIONS
+    DATA = data
+    K = k
+    N_PARTITIONS = n_partition
+
 
 def update_stats(partitions):
-
     for p in partitions:
         for dim in p.data.columns:
             p.update_width(dim)
@@ -17,13 +23,16 @@ def update_stats(partitions):
 
     return partitions
 
+
 def compute_normalized_width(partition, dim, norm_factor):
     width = partition.get_width(dim)
 
     return width / norm_factor  # normalized with statistic of the original dimension
 
-def chose_dimension(partition, columns, first = False):
+
+def chose_dimension(partition, columns, first=False):
     """
+    :param first:
     :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
@@ -59,16 +68,11 @@ def merge_dictionary(dict_list):
 
 
 def compute_phi(partition):
-
-    global partition_size, num_partition, N_PARTITIONS
-
-    #partition_size[len(partition.data.index)] += 1
+    global N_PARTITIONS
 
     N_PARTITIONS += 1
-
     summary = []
     for dim in partition.data.columns:
-
         col_summary = partition.compute_phi(dim)
         summary.append(col_summary)
 
@@ -76,20 +80,19 @@ def compute_phi(partition):
     phi = {idx: summary for idx in partition.data.index}
     return phi
 
+
 def allowable_cut(partition_list):
     global K
 
-    if len(partition_list) <= 1:
+    if len(partition_list) < 1:
         return False
 
-    return np.all([len(p.data.index) >= K for p in partition_list])  # strict and relaxed version
+    return np.all([len(p.data.index) >= K for p in partition_list])
 
 
-def anonymize(partition, first = False):
-
+def anonymize(partition, first=False):
 
     columns = partition.data.columns.tolist()
-
     while columns:
 
         dim = chose_dimension(partition, columns, first)
@@ -104,15 +107,17 @@ def anonymize(partition, first = False):
         # the median and width can change after cut so recompute it...
         partition_list = update_stats(partition_list)
 
-        return merge_dictionary([anonymize(p, False) for p in partition_list])
+        return merge_dictionary([anonymize(p) for p in partition_list])
 
     return compute_phi(partition)  # return phi: partition -> summary
 
 
 def anonymization(df, anon_dict):
+
     # Reorder the semi-identifiers anonymize
     dict_phi = {k: anon_dict[k] for k in sorted(anon_dict)}
     columns_to_anonymize = list(df.columns)
+
     # Crete a Dataframe from the dictionary
     cols_anonymize = [col + "_anon" for col in columns_to_anonymize]
 
@@ -127,7 +132,6 @@ def anonymization(df, anon_dict):
 
 
 def main(args, data):
-
     global DATA, K, N_PARTITIONS
 
     DATA = data
@@ -138,7 +142,7 @@ def main(args, data):
     t0 = datetime.now()
 
     # ANONYMIZE QUASI-IDENTIFIERS: find phi function
-    dict_phi = anonymize(data.partition_to_anonymize, False)
+    dict_phi = anonymize(data.partition_to_anonymize, True)
 
     t1 = datetime.now()
 
@@ -151,20 +155,15 @@ def main(args, data):
 
     # save result in a file
     data.data_anonymized = df_anonymize
-    data.save_anonymized()
+    data.save_anonymized(K)
     print("\nResult saved!")
 
     print("Total time:      ", t2 - t0)
-    #print("-Compute phi time:", t1 - t0)
 
     if args.save_info:
-
         columns = df_anonymize.columns.tolist()
-        equivalence_classes = get_equivalence_classes(df_anonymize, columns)
 
-        cdm = c_dm(equivalence_classes)
-        cavg = c_avg(equivalence_classes, df_anonymize, K)
+        cavg = c_avg(N_PARTITIONS, df_anonymize, K)
 
-        save_statistics(DATA.get_path_results(), cdm, cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index), len(columns), K)
-        equivalence_classes.to_csv(os.path.join(DATA.get_path_results(), "Equivalence_Classes.csv"))
-
+        save_info(DATA.get_path_results(), cavg, t0, t1, t2, N_PARTITIONS, len(df_anonymize.index),
+                  len(columns), K)

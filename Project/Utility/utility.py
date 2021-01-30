@@ -1,7 +1,7 @@
 import argparse
 
-def get_parser():
 
+def get_parser():
     parser = argparse.ArgumentParser(description="Mondrian algorithm's parameters")
 
     # add arguments...
@@ -14,15 +14,17 @@ def get_parser():
                                               "(EI, SD, NUMERICAL, DATE, CATEGORICAL)", default="columns_type.csv")
 
     parser.add_argument("-K", help="parameter K", type=int, default=10)
-    parser.add_argument("-result_name", help="name of the file will contain the resulting data", default="anonymized.csv")
+    parser.add_argument("-result_name", help="name of the file will contain the resulting data",
+                        default="anonymized.csv")
 
     # if False the result may contains columns with max generalizations (in particular CATEGORICAL)
-    parser.add_argument("-save_info", help="whether to save time execution and equivalence classes", type=bool, default=True)
+    parser.add_argument("-save_info", help="whether to save time execution and equivalence classes", type=bool,
+                        default=True)
 
     return parser
 
-def print_args(args):
 
+def print_args(args):
     print()
     print("===================")
     print("    Parameters")
@@ -35,4 +37,3 @@ def print_args(args):
 
     print("===================")
     print()
-

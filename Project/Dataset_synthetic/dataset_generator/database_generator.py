@@ -1,6 +1,7 @@
 import datetime
 import os
 import random
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -11,10 +12,12 @@ pd.set_option('display.width', 1000)
 # parameters for the data generation
 gender_map = {'boy': 'Male', 'girl': 'Female'}
 age_bound = [18, 105]
-n_entry = 2000000
+n_entry = 200000
 
 # path & filename variable
 dataset_folder = "data"
+dataset_folder_synthetic = Path(__file__).parents[1]
+
 name_path = os.path.join(dataset_folder, "babynames.csv")
 disease_path = os.path.join(dataset_folder, "disease_small.csv")
 
@@ -26,7 +29,7 @@ externalDB_filename = 'externalDB_' + str(n_entry) + '.csv'
 
 # variable that specify the column of the main dataset and an external one public that can be used for a join
 quasi_identifiers = ['Gender', 'Age', 'Zipcode', 'B-City', 'B-day', 'Height (cm)', 'Weight (Kg)',
-                     'Blood type', 'Start ', 'Therapy', 'End Therapy']
+                     'Blood type', 'Start Therapy', 'End Therapy']
 
 explicit_identifiers = ['Name']
 sensitive_data = ['Disease']
@@ -116,8 +119,6 @@ def pick_geography_from_csv(path):
 
 if __name__ == "__main__":
 
-    # pick_geography_from_csv("data/original_geography_dataset.csv")
-
     # array to store all the data
     data = []
 
@@ -125,6 +126,7 @@ if __name__ == "__main__":
     df_name = pd.read_csv(name_path, header=0, names=['Name', 'Gender'])
     df_name.replace({'Gender': gender_map}, inplace=True)
     random.seed(43)
+
     # Dataset_synthetic with a list of disease
     df_disease = pd.read_csv(disease_path)
     df_city = pd.read_csv(city_path, header=0, names=['city', 'county', 'region', 'country'])
@@ -185,5 +187,4 @@ if __name__ == "__main__":
 
     print(df)
 
-    # main_df = df[mainTable_indices]
-    df.to_csv(os.path.join(dataset_folder, mainDB_filename))
+    df.to_csv(os.path.join(dataset_folder_synthetic, mainDB_filename))

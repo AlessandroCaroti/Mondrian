@@ -96,38 +96,3 @@ class NumericManager(AbstractType):
         _max, _min = np.max(data), np.min(data)
 
         return "[" + str(_min) + " - " + str(_max) + "]"
-
-
-def test():
-    n_sample = 20
-    np.random.seed(42)
-    ages = np.random.randint(0, 120, (n_sample,))
-    ages = pd.DataFrame(ages)
-    print(ages)
-
-    bday_p = pa.Partition(ages, {}, {})
-    median = NumericManager.median(bday_p, 0)
-    l, r = NumericManager.split(bday_p, 0, median)
-
-    print("MEDIAN:", median)
-    print("RANGE:", NumericManager.summary_statistic(bday_p, 0))
-
-    print("LEFT_PART:")
-    print(l.data)
-    print("Width :", l.width)
-    print("Median :", l.median)
-
-    print()
-    print("RIGHT_PART:")
-    print(r.data)
-    print("Width :", r.width)
-    print("Median :", r.median)
-
-    print()
-
-    print("DIFFERENCE:", NumericManager.width(bday_p, 0))
-    pass
-
-
-if __name__ == "__main__":
-    test()

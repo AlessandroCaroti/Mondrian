@@ -1,19 +1,4 @@
-import numpy as np
-import pandas as pd
-import os
-from pathlib import Path
-from dataset_generator.database_generator import *
-# import pycountry_convert as pc
-from geopy.geocoders import Nominatim
-from geopy.extra.rate_limiter import RateLimiter
-import multiprocessing
-from itertools import product
-import reverse_geocoder
-from datetime import datetime
-
-"""
-:param zipcode_col: colum of original dataset with all the zip code
-"""
+from Project.Dataset_synthetic.dataset_generator.database_generator import *
 
 
 def zipcode_generalization(relative_csv_path):
@@ -64,11 +49,6 @@ def blood_groups_generalization():
     print(blood_generalizations.sort_values(1))
 
 
-def op(tupl):
-    return reverse_geocoder.search(tupl[0], tupl[1])[0]['cc']
-    # return tupl[2].reverse(str(tupl[0]) + "," + str(tupl[1])).raw['address']['country']
-
-
 # city, county, state, continent
 def city_generalization(relative_csv_path):
     path = Path(__file__)
@@ -80,31 +60,6 @@ def city_generalization(relative_csv_path):
     continent = list(map(lambda x: x.split('/')[0], timezones))
     timezones = list(map(lambda x: x.split('/')[1], timezones))
 
-    # Latitude = csv['lat'].tolist()
-    # Longitude = csv['lng'].tolist()
-    # zipcode = csv['zip'].tolist()
-
-    geolocator = Nominatim(user_agent="application")
-    # aux_val = [(lat, lng) for lat, lng in zip(Latitude, Longitude)]  # [geolocator for _ in range(len(csv))])]
-    # with multiprocessing.Pool(processes=multiprocessing.cpu_count()) as pool:
-    #    countries = list(pool.map(op, aux_val))
-    """
-    t1 = datetime.now()
-    countries = []
-    i = 0
-    for lat, lng in zip(Latitude, Longitude):
-        print(i, '/', len(csv))
-        country = geolocator.reverse(str(lat) + "," + str(lng)).raw['address']['country']
-        # country = geolocator.geocode(str(zip)).address.split(',')[-1]
-        countries.append(country)
-        if i % 100 == 0:
-            backup = pd.DataFrame()
-            backup['countries'] = countries
-            backup.to_csv(os.path.join("Generalization/backup", "backup_countries.csv_it_{}".format(i)))
-
-        i += 1
-    print(countries)
-    """
     new_dataframe = pd.DataFrame()
     cols = ['City', 'County', 'State', 'Timezone', 'Continent']
     for col, data_col in zip(cols, [csv['city'], csv['county_name'], csv['state_name'], timezones, continent]):
@@ -118,6 +73,6 @@ def city_generalization(relative_csv_path):
 if __name__ == "__main__":
     csv_relative_path = r"dataset_generator/data/geography_small.csv"
 
-    #blood_groups_generalization()
+    blood_groups_generalization()
     zipcode_generalization(csv_relative_path)
-    city_generalization(r"dataset_generator/data/geography_small.csv")
+    city_generalization(csv_relative_path)

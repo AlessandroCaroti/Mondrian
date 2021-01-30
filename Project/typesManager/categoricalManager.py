@@ -1,7 +1,5 @@
-from abc import ABC, abstractmethod
 
 import numpy as np
-import pandas as pd
 
 from DGH.dgh import CsvDGH
 import Utility.partition as pa
@@ -61,45 +59,3 @@ class CategoricalManager(AbstractType):
     def summary_statistic(partition, dim):
         return partition.median[dim].data
 
-
-
-
-def prova():
-    dgh = CsvDGH("test.csv")
-    root = dgh.hierarchy.root
-
-    dgh.hierarchy.print_leaf()
-
-    n_sample = 20
-    np.random.seed(42)
-    ages = np.random.randint(0, 8, (n_sample,))
-    ages = pd.DataFrame(ages)
-
-    bday_p = pa.Partition(ages, {0: len(root.leaf)}, {0: root})
-    median = CategoricalManager.median(bday_p, 0)
-    [l, r] = CategoricalManager.split(bday_p, 0, median)  # I know there are two partitions because of the
-    # Hierarchies
-    # (it's a particular case)
-
-    print("MEDIAN:", median.data)
-    print("RANGE:", CategoricalManager.summary_statistic(bday_p, 0))
-
-    print("LEFT_PART:")
-    print(l.data)
-    print("Width :", l.width)
-    print("Median :", l.median)
-
-    print()
-    print("RIGHT_PART:")
-    print(r.data)
-    print("Width :", r.width)
-    print("Median :", r.median)
-
-    print()
-
-    print("WIDTH:", CategoricalManager.width(bday_p, 0))
-    pass
-
-
-if __name__ == "__main__":
-    prova()
