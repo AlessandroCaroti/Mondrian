@@ -1,5 +1,6 @@
 from datetime import datetime
-
+from Utility import data
+from Utility.utility import *
 from Utility.evaluation import *
 import matplotlib.pyplot as plt
 from mondrian import anonymize, anonymization
@@ -47,7 +48,7 @@ def evaluate(dataset, k):
 def algorithm_evaluation_on_k(dataset, k_list, backup_file_path):
     cavg_results = []
     execution_time_list = []
-    backup_folder_path = r"Evaluation/backup"
+    backup_folder_path = r"../Evaluation/backup"
 
     for k in k_list:
         print("\n\nK={}\n\n".format(k))
@@ -86,8 +87,8 @@ def plot_and_save_evaluations(args, dataset, k_list, k_list_original, backup_fil
     plt.ylabel("$C_{avg}$", fontsize=15)
     plt.grid()
 
-    if not os.path.isdir("Evaluation/graphics"):
-        os.makedirs("Evaluation/graphics")
+    if not os.path.isdir("../Evaluation/graphics"):
+        os.makedirs("../Evaluation/graphics")
 
     plt.savefig("Evaluation/graphics/Graphic_" + args.folder_name + "_" + args.dataset_name.split('.')[0], dpi=100)
     plt.show()
