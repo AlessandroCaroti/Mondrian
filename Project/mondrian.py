@@ -30,7 +30,7 @@ def compute_normalized_width(partition, dim, norm_factor):
     return width / norm_factor  # normalized with statistic of the original dimension
 
 
-def chose_dimension(partition, columns, first=False):
+def chose_dimension(partition, columns):
     """
     :param first: if first time split
     :param columns: list of columns
@@ -42,12 +42,8 @@ def chose_dimension(partition, columns, first=False):
     # remove not necessary dimensions
     filtered_dim = filter(lambda item: item[0] in columns, DATA.width_list.items())
 
-    if first:
-        # the first time the function is called it makes no sense normalize
-        width_map = map(lambda item: [item[0], partition.get_width(item[0])], filtered_dim)
-    else:
-        # compute normalized width
-        width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], filtered_dim)
+    # compute normalized width
+    width_map = map(lambda item: [item[0], compute_normalized_width(partition, item[0], item[1])], filtered_dim)
 
     width_list = list(width_map)  # convert to list
 
@@ -90,12 +86,12 @@ def allowable_cut(partition_list):
     return np.all([len(p.data.index) >= K for p in partition_list])
 
 
-def anonymize(partition, first=False):
+def anonymize(partition):
 
     columns = partition.data.columns.tolist()
     while columns:
 
-        dim = chose_dimension(partition, columns, first)
+        dim = chose_dimension(partition, columns)
         split_val = partition.get_median(dim)
         partition_list = partition.split_partition(dim, split_val)
 
@@ -142,7 +138,7 @@ def main(args, data):
     t0 = datetime.now()
 
     # ANONYMIZE QUASI-IDENTIFIERS: find phi function
-    dict_phi = anonymize(data.partition_to_anonymize, True)
+    dict_phi = anonymize(data.partition_to_anonymize)
 
     t1 = datetime.now()
 
