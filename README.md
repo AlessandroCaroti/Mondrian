@@ -60,3 +60,10 @@ The records are generated randomly by means of a function provided in the projec
 #### Real
 This is taken from [here](https://archive.ics.uci.edu/ml/datasets/adult). The records containing missing values are removed and we get rid of *education-num* and *final-weight* attributes.
 The *annual-gain* is treated as **Sensitive data**.
+
+<b>Contributors:</b>
+<ul>
+ <li><a href="https://github.com/AlessandroCaroti">Alessandro Caroti</a></li>
+ <li><a href="https://github.com/simocampi">Simone Campisi</a></li>
+ <li><a href="https://github.com/LazyRacc00n">Jacopo Dapueto</a></li>
+</ul>
