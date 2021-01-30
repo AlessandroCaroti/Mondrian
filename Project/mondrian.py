@@ -5,7 +5,7 @@ import pandas as pd
 
 DATA = None  # Class containing data to anonymize and global ranges and medians
 K = 1  # parameter K
-N_PARTITIONS = 0 #
+N_PARTITIONS = 0 # count the number of partitions
 
 
 def init(data=None, k=1, n_partition=0):
@@ -32,7 +32,7 @@ def compute_normalized_width(partition, dim, norm_factor):
 
 def chose_dimension(partition, columns, first=False):
     """
-    :param first:
+    :param first: if first time split
     :param columns: list of columns
     :param partition: partition to split
     :return: the dimension with max width and which allow cut, and the partitions list
